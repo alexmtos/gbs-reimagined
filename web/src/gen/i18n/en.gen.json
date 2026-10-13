@@ -1,0 +1,247 @@
+{
+  "locale": "en",
+  "name": "English",
+  "groups": {
+    "output": "Output",
+    "input": "Input",
+    "picture": "Picture",
+    "system": "System"
+  },
+  "settings": {
+    "output.resolution": {
+      "label": "Output resolution",
+      "hint": "What the TV receives",
+      "help": "The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends HD and PC sources unscaled.",
+      "values": {
+        "auto": "Auto",
+        "r1080p": "1080p",
+        "r1024p": "1280x1024",
+        "r960p": "1280x960",
+        "r720p": "720p",
+        "r480p": "480p / 576p",
+        "r15khz": "15 kHz (CRT)",
+        "passthrough": "Passthrough"
+      }
+    },
+    "output.frameLock": {
+      "label": "Frame lock",
+      "hint": "Match source rate",
+      "help": "Makes the output refresh exactly follow the console, which removes judder and tearing. Turn it off only if your display refuses the slightly non-standard rate."
+    },
+    "output.force60": {
+      "label": "Force 60 Hz",
+      "hint": "50 Hz games at 60 Hz",
+      "help": "Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz."
+    },
+    "output.blankOnChange": {
+      "label": "Blank on change",
+      "hint": "Hide mode switches",
+      "help": "Shows black instead of a distorted frame while the source changes resolution."
+    },
+    "output.aspect": {
+      "label": "Aspect",
+      "hint": "Picture shape",
+      "help": "The shape of the picture on screen. Most consoles were designed for 4:3.",
+      "values": {
+        "a4x3": "4:3",
+        "a16x9": "16:9",
+        "full": "Full screen"
+      }
+    },
+    "output.hPosition": {
+      "label": "Horizontal position",
+      "hint": "Move left / right",
+      "help": "Moves the picture left or right."
+    },
+    "output.vPosition": {
+      "label": "Vertical position",
+      "hint": "Move up / down",
+      "help": "Moves the picture up or down."
+    },
+    "output.hSize": {
+      "label": "Horizontal size",
+      "hint": "Narrower / wider",
+      "help": "Makes the picture narrower or wider."
+    },
+    "output.vSize": {
+      "label": "Vertical size",
+      "hint": "Shorter / taller",
+      "help": "Makes the picture shorter or taller."
+    },
+    "input.port": {
+      "label": "Input",
+      "hint": "Where the console is",
+      "help": "Auto watches all inputs and switches to the one with a signal. RGB covers SCART, the RGBS jacks and VGA; Component is YPbPr.",
+      "values": {
+        "auto": "Auto",
+        "rgb": "RGB (SCART/RGBS/VGA)",
+        "component": "Component (YPbPr)"
+      }
+    },
+    "input.syncThreshold": {
+      "label": "Sync threshold",
+      "hint": "SOG slicer level",
+      "help": "The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes.",
+      "values": {
+        "auto": "Auto"
+      }
+    },
+    "input.phase": {
+      "label": "Sampling phase",
+      "hint": "Pixel sharpness",
+      "help": "When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase.",
+      "values": {
+        "auto": "Auto"
+      }
+    },
+    "input.autoGain": {
+      "label": "Auto gain",
+      "hint": "Adjust input levels",
+      "help": "Lowers the input gain until the brightest white no longer clips. Show a white screen for a few seconds after turning it on."
+    },
+    "input.videoLpf": {
+      "label": "Video LPF",
+      "hint": "Input low-pass filter",
+      "help": "Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources.",
+      "values": {
+        "auto": "Auto",
+        "f150": "150 MHz",
+        "f110": "110 MHz",
+        "f70": "70 MHz",
+        "f40": "40 MHz"
+      }
+    },
+    "picture.brightness": {
+      "label": "Brightness",
+      "hint": "Black level",
+      "help": "Raises or lowers the whole picture."
+    },
+    "picture.contrast": {
+      "label": "Contrast",
+      "hint": "White level",
+      "help": "Increases or decreases the difference between dark and bright areas."
+    },
+    "picture.saturation": {
+      "label": "Saturation",
+      "hint": "Colour intensity",
+      "help": "Makes colours stronger or weaker."
+    },
+    "picture.sharpness": {
+      "label": "Sharpness",
+      "hint": "Edge enhancement",
+      "help": "Emphasises edges. Off shows the source as sampled.",
+      "values": {
+        "off": "Off",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "picture.scanlines": {
+      "label": "Scanlines",
+      "hint": "CRT-style lines",
+      "help": "Darkens every other output line pair to imitate a CRT. Works on progressive 15 kHz sources."
+    },
+    "picture.scanlineStrength": {
+      "label": "Scanline strength",
+      "hint": "Line darkness",
+      "help": "How dark the scanlines are."
+    },
+    "picture.deinterlace": {
+      "label": "Deinterlacer",
+      "hint": "For 480i / 576i",
+      "help": "How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing.",
+      "values": {
+        "motionAdaptive": "Motion adaptive",
+        "bob": "Bob"
+      }
+    },
+    "system.language": {
+      "label": "Language",
+      "hint": "Menus and web page",
+      "help": "The language of the web page and the display. The serial console is always English.",
+      "values": {
+        "en": "English",
+        "ptBR": "Português (Brasil)"
+      }
+    },
+    "system.oledSaver": {
+      "label": "Display saver",
+      "hint": "Dim the display",
+      "help": "Turns the display off after a period without use, to protect the OLED from burn-in.",
+      "values": {
+        "off": "Off",
+        "m1": "1 min",
+        "m3": "3 min",
+        "m5": "5 min",
+        "m10": "10 min"
+      }
+    },
+    "system.encoderReverse": {
+      "label": "Reverse knob",
+      "hint": "Swap knob direction",
+      "help": "Swaps the direction of the knob."
+    },
+    "system.revertSeconds": {
+      "label": "Confirm within",
+      "hint": "Time to keep changes",
+      "help": "How long you have to confirm a change that could leave the screen black before it is undone.",
+      "values": {
+        "s10": "10 s",
+        "s20": "20 s",
+        "s30": "30 s"
+      }
+    },
+    "system.showAdvanced": {
+      "label": "Show advanced",
+      "hint": "Expert settings",
+      "help": "Shows the settings for sampling, sync and diagnostics."
+    },
+    "system.startupProfile": {
+      "label": "Startup profile",
+      "hint": "Loaded at power-on",
+      "help": "The profile loaded when the board starts: the last one used, one chosen automatically from the incoming signal, or a fixed profile.",
+      "values": {
+        "lastUsed": "Last used",
+        "autoByInput": "Auto by input"
+      }
+    }
+  },
+  "messages": {
+    "app.title": "GBS Reimagined",
+    "nav.status": "Status",
+    "nav.picture": "Picture",
+    "nav.output": "Output",
+    "nav.input": "Input",
+    "nav.profiles": "Profiles",
+    "nav.system": "System",
+    "conn.live": "Live",
+    "conn.reconnecting": "Reconnecting…",
+    "conn.mismatch": "Firmware and page differ — reload",
+    "headline.scalerMissing": "The scaler chip is not answering",
+    "headline.noSignal": "No signal on {input}",
+    "headline.syncUnstable": "Sync is arriving, but it is not stable",
+    "headline.settling": "Signal found, settling",
+    "headline.locking": "Locking to the source",
+    "headline.scaling": "Scaling {source} to {output}",
+    "headline.paused": "Output paused",
+    "status.source": "Source",
+    "status.output": "Output",
+    "status.board": "Board",
+    "status.hfreq": "H frequency",
+    "status.vfreq": "V frequency",
+    "status.lines": "Lines",
+    "status.pixelClock": "Pixel clock",
+    "status.frameLock": "Frame lock",
+    "status.heap": "Free memory",
+    "status.uptime": "Uptime",
+    "status.version": "Firmware",
+    "common.on": "On",
+    "common.off": "Off",
+    "common.keep": "Keep",
+    "common.revert": "Revert",
+    "common.unknown": "—",
+    "revert.countdown": "Keep these settings? Reverting in {seconds} s",
+    "settings.advanced": "Show advanced settings"
+  }
+}

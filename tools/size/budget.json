@@ -1,0 +1,8 @@
+{
+  "comment": "Firmware memory budgets, see docs/design/memory-budget.md. Bytes.",
+  "static_ram_max": 40960,
+  "static_ram_growth_max": 512,
+  "iram_max": 32768,
+  "flash_max": 819200,
+  "web_bundle_gzip_max": 65536
+}

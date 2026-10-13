@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(pio test *)",
+      "Bash(pio run -e native *)",
+      "Bash(pio run -e gbsc)",
+      "Bash(pio check *)",
+      "Bash(uv run tools/codegen/generate.py *)",
+      "Bash(uv run tools/codegen/generate.py)",
+      "Bash(uv run tools/checks/*)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run ruff *)",
+      "Bash(pnpm -C web test *)",
+      "Bash(pnpm -C web run *)",
+      "Bash(clang-format *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(pio run -e gbsc -t upload *)",
+      "Bash(uv run tools/board/*)",
+      "Bash(gh release *)"
+    ],
+    "deny": [
+      "Edit(/firmware/src/**/*.gen.*)",
+      "Edit(/web/src/**/*.gen.*)",
+      "Edit(/docs/reference/register-map.md)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-generated.mjs"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/format-edited.mjs"],
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

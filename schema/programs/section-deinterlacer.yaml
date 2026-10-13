@@ -1,0 +1,16 @@
+# Baseline register program for the TV5725. Factual chip configuration data;
+# see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.
+id: section-deinterlacer
+standard: any
+output: "deinterlacer, S2_00..S2_3F"
+source:
+  file: presetDeinterlacerSection.h
+  commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c
+bytes: 64
+segments: [2]
+# Runs of consecutive registers, at most 16 bytes, never crossing a 16-byte boundary.
+runs:
+  S2_00: "FF 03 EC 00 FF FF 00 1B 00 70 00 00 0F 04 7F 14"
+  S2_10: "18 00 8E 00 00 00 80 00 C0 61 04 15 00 00 00 10"
+  S2_20: "30 12 04 0F 04 00 4C 0C 00 00 00 00 00 00 00 00"
+  S2_30: "00 00 7F 7F 11 10 03 0B 04 44 60 04 0F 00 00 00"

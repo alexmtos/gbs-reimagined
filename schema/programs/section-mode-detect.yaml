@@ -1,0 +1,15 @@
+# Baseline register program for the TV5725. Factual chip configuration data;
+# see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.
+id: section-mode-detect
+standard: any
+output: "mode detector windows, S1_60..S1_83"
+source:
+  file: presetMdSection.h
+  commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c
+bytes: 36
+segments: [1]
+# Runs of consecutive registers, at most 16 bytes, never crossing a 16-byte boundary.
+runs:
+  S1_60: "B6 84 60 26 41 3E B2 9A 4E D6 B1 8E 7C 63 8B 76"
+  S1_70: "70 62 85 69 53 48 5D 94 B2 46 C6 EE 8C 62 76 2C"
+  S1_80: "FF FF 05 0C"

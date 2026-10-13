@@ -1,0 +1,1530 @@
+# TV5725 register database. Factual chip data; see NOTICE.md for provenance.
+# Edit by hand, then run `uv run tools/codegen/generate.py`. Imported by
+# tools/codegen/import_tv5725.py from field loci in gbs-control's tv5725.h and the vendor
+# register definition RD-5725-1.1.
+chip: TV5725
+i2c_address: 0x17
+segment_select: 0xF0
+segments: 6
+datasheet:
+  id: RD-5725-1.1
+  sha256: af5de99d6128cf996228c1624c4443aabad981aef25ef70d1fd28ca83f5ab36f
+
+# Every register the vendor documents: access, block title, datasheet page(s).
+registers:
+  S0_00: {access: ro, block: "INPUT MODE STATUS", pages: [4, 15]}
+  S0_01: {access: ro, block: "INPUT MODE STATUS", pages: [16]}
+  S0_02: {access: ro, block: "INPUT MODE STATUS", pages: [4, 16]}
+  S0_03: {access: ro, block: "INPUT MODE STATUS", pages: [17]}
+  S0_04: {access: ro, block: "INPUT MODE STATUS", pages: [4, 17]}
+  S0_05: {access: ro, block: "INPUT MODE STATUS", pages: [18]}
+  S0_06: {access: ro, block: "INPUT MODE STATUS", pages: [4, 18]}
+  S0_07: {access: ro, block: "INPUT SIZE STATUS", pages: [18]}
+  S0_08: {access: ro, block: "INPUT MODE STATUS", pages: [4, 19]}
+  S0_09: {access: ro, block: "MISC STATUS", pages: [19]}
+  S0_0A: {access: ro, block: "INPUT MODE STATUS", pages: [4, 19]}
+  S0_0B: {access: ro, block: "CHIP ID", pages: [20]}
+  S0_0C: {access: ro, block: "INPUT SIZE STATUS", pages: [4, 20]}
+  S0_0D: {access: ro, block: "CHIP ID", pages: [20]}
+  S0_0E: {access: ro, block: "INPUT SIZE STATUS", pages: [4, 21]}
+  S0_0F: {access: ro, block: "INTERRUPT STATUS", pages: [21]}
+  S0_10: {access: ro, block: "INPUT SIZE STATUS", pages: [4, 22]}
+  S0_11: {access: ro, block: "VIDEO_PROC STATUS", pages: [22]}
+  S0_12: {access: ro, block: "MISC STATUS", pages: [4, 22]}
+  S0_13: {access: ro, block: "MEM_FF STATUS", pages: [23]}
+  S0_14: {access: ro, block: "MISC STATUS", pages: [4, 23]}
+  S0_15: {access: ro, block: "DEINT STATUS", pages: [23]}
+  S0_16: {access: ro, block: "CHIP ID", pages: [4, 24]}
+  S0_17: {access: ro, block: "SYNC PROC STATUS", pages: [24]}
+  S0_18: {access: ro, block: "CHIP ID", pages: [4, 24]}
+  S0_19: {access: ro, block: "SYNC PROC STATUS", pages: [25]}
+  S0_1A: {access: ro, block: "CHIP ID", pages: [4, 25]}
+  S0_1B: {access: ro, block: "SYNC PROC STATUS", pages: [25]}
+  S0_1C: {access: ro, block: "GPIO STATUS", pages: [4, 25]}
+  S0_1D: {access: ro, block: "SYNC PROC STATUS", pages: [26]}
+  S0_1E: {access: ro, block: "INTERRUPT STATUS", pages: [4, 26]}
+  S0_1F: {access: ro, block: "TEST BUS STATUS", pages: [26]}
+  S0_20: {access: ro, block: "VIDEO_PROC STATUS", pages: [4, 26]}
+  S0_21: {access: ro, block: "TEST FIFO STATUS", pages: [27]}
+  S0_22: {access: ro, block: "VIDEO_PROC STATUS", pages: [4, 27]}
+  S0_23: {access: ro, block: "CRC PB STATUS", pages: [27]}
+  S0_24: {access: ro, block: "VIDEO_PROC STATUS", pages: [4, 27]}
+  S0_25: {access: ro, block: "CRC RESULT STATUS", pages: [28]}
+  S0_26: {access: ro, block: "MEM_FF STATUS", pages: [4, 28]}
+  S0_27: {access: ro, block: "CRC RESULT STATUS", pages: [28]}
+  S0_28: {access: ro, block: "MEM_FF STATUS", pages: [4, 28]}
+  S0_29: {access: ro, block: "CRC RESULT STATUS", pages: [29]}
+  S0_2A: {access: ro, block: "DEINT STATUS", pages: [4, 29]}
+  S0_2B: {access: ro, block: "CRC RESULT STATUS", pages: [29]}
+  S0_2C: {access: ro, block: "SYNC PROC STATUS", pages: [4, 29]}
+  S0_2D: {access: ro, block: "CRC RESULT STATUS", pages: [30]}
+  S0_2E: {access: ro, block: "SYNC PROC STATUS", pages: [4, 30]}
+  S0_2F: {access: ro, block: "TEST BUS STATUS", pages: [30]}
+  S0_40: {access: rw, block: "PLL648 CONTROL", pages: [7, 80]}
+  S0_41: {access: rw, block: "PLL648 CONTROL", pages: [81]}
+  S0_42: {access: rw, block: "PLL648 CONTROL", pages: [7, 82]}
+  S0_43: {access: rw, block: "PLL648 CONTROL", pages: [82]}
+  S0_44: {access: rw, block: "PLL648 CONTROL", pages: [7, 83]}
+  S0_45: {access: rw, block: "DAC CONTROL", pages: [84]}
+  S0_46: {access: rw, block: "PLL648 CONTROL", pages: [7, 85]}
+  S0_47: {access: rw, block: "RESET CONTROL", pages: [86]}
+  S0_48: {access: rw, block: "DAC CONTROL", pages: [7, 87]}
+  S0_49: {access: rw, block: "PAD CONTROL", pages: [88]}
+  S0_4A: {access: rw, block: "DAC CONTROL", pages: [7, 88]}
+  S0_4B: {access: rw, block: "DAC_MUX CONTROL", pages: [89]}
+  S0_4D: {access: rw, block: "RESET CONTROL", pages: [7, 89]}
+  S0_4E: {access: rw, block: "DIG_OUT CONTROL", pages: [89]}
+  S0_4F: {access: rw, block: "RESET CONTROL", pages: [7, 90]}
+  S0_50: {access: rw, block: "BLANK CONTROL", pages: [91]}
+  S0_52: {access: rw, block: "PAD CONTROL", pages: [7, 92]}
+  S0_53: {access: rw, block: "GPIO CONTROL", pages: [93]}
+  S0_54: {access: rw, block: "PAD CONTROL", pages: [7, 94]}
+  S0_57: {access: rw, block: "INVT_RING CONTROL", pages: [94]}
+  S0_58: {access: rw, block: "PAD CONTROL", pages: [7, 95]}
+  S0_59: {access: rw, block: "INTERRUPT CONTROL", pages: [8, 95]}
+  S0_90: {access: rw, block: "OSD_TOP_00", pages: [12, 190]}
+  S0_91: {access: rw, block: "OSD_TOP_01", pages: [12, 191]}
+  S0_92: {access: rw, block: "OSD_TOP_02", pages: [12, 192]}
+  S0_93: {access: rw, block: "OSD_REG_03", pages: [12, 192]}
+  S0_94: {access: rw, block: "OSD_REG_04", pages: [12, 193]}
+  S0_95: {access: rw, block: "OSD_REG_05", pages: [12, 193]}
+  S0_96: {access: rw, block: "OSD_REG_06", pages: [12, 193]}
+  S0_97: {access: rw, block: "OSD_REG_07", pages: [12, 194]}
+  S0_98: {access: rw, block: "OSD_REG_08", pages: [12, 194]}
+  S1_00: {access: rw, block: "INPUT_FORMATTER", pages: [5, 31]}
+  S1_01: {access: rw, block: "INPUT_FORMATTER", pages: [5, 32]}
+  S1_02: {access: rw, block: "INPUT_FORMATTER", pages: [5, 33]}
+  S1_03: {access: rw, block: "INPUT_FORMATTER", pages: [5, 34]}
+  S1_04: {access: rw, block: "INPUT_FORMATTER", pages: [5, 34]}
+  S1_05: {access: rw, block: "INPUT_FORMATTER", pages: [5, 34]}
+  S1_06: {access: rw, block: "INPUT_FORMATTER", pages: [5, 34]}
+  S1_07: {access: rw, block: "INPUT_FORMATTER", pages: [5, 35]}
+  S1_08: {access: rw, block: "INPUT_FORMATTER", pages: [5, 35]}
+  S1_09: {access: rw, block: "INPUT_FORMATTER", pages: [5, 35]}
+  S1_0A: {access: rw, block: "INPUT_FORMATTER", pages: [5, 35]}
+  S1_0B: {access: rw, block: "INPUT_FORMATTER", pages: [5, 36]}
+  S1_0C: {access: rw, block: "INPUT_FORMATTER", pages: [5, 36]}
+  S1_0D: {access: rw, block: "INPUT_FORMATTER", pages: [5, 37]}
+  S1_0E: {access: rw, block: "INPUT_FORMATTER", pages: [5, 37]}
+  S1_0F: {access: rw, block: "INPUT_FORMATTER", pages: [5, 37]}
+  S1_10: {access: rw, block: "INPUT_FORMATTER", pages: [5, 37]}
+  S1_11: {access: rw, block: "INPUT_FORMATTER", pages: [5, 38]}
+  S1_12: {access: rw, block: "INPUT_FORMATTER", pages: [5, 38]}
+  S1_13: {access: rw, block: "INPUT_FORMATTER", pages: [5, 38]}
+  S1_14: {access: rw, block: "INPUT_FORMATTER", pages: [5, 38]}
+  S1_15: {access: rw, block: "INPUT_FORMATTER", pages: [5, 39]}
+  S1_16: {access: rw, block: "INPUT_FORMATTER", pages: [5, 39]}
+  S1_17: {access: rw, block: "INPUT_FORMATTER", pages: [5, 39]}
+  S1_18: {access: rw, block: "INPUT_FORMATTER", pages: [5, 39]}
+  S1_19: {access: rw, block: "INPUT_FORMATTER", pages: [5, 40]}
+  S1_1A: {access: rw, block: "INPUT_FORMATTER", pages: [5, 40]}
+  S1_1B: {access: rw, block: "INPUT_FORMATTER", pages: [5, 40]}
+  S1_1C: {access: rw, block: "INPUT_FORMATTER", pages: [5, 40]}
+  S1_1D: {access: rw, block: "INPUT_FORMATTER", pages: [5, 41]}
+  S1_1E: {access: rw, block: "INPUT_FORMATTER", pages: [5, 41]}
+  S1_1F: {access: rw, block: "INPUT_FORMATTER", pages: [5, 41]}
+  S1_20: {access: rw, block: "INPUT_FORMATTER", pages: [5, 41]}
+  S1_21: {access: rw, block: "INPUT_FORMATTER", pages: [5, 42]}
+  S1_22: {access: rw, block: "INPUT_FORMATTER", pages: [5, 42]}
+  S1_23: {access: rw, block: "INPUT_FORMATTER", pages: [5, 42]}
+  S1_24: {access: rw, block: "INPUT_FORMATTER", pages: [5, 42]}
+  S1_25: {access: rw, block: "INPUT_FORMATTER", pages: [5, 43]}
+  S1_26: {access: rw, block: "INPUT_FORMATTER", pages: [5, 43]}
+  S1_27: {access: rw, block: "INPUT_FORMATTER", pages: [5, 43]}
+  S1_28: {access: rw, block: "INPUT_FORMATTER", pages: [5, 44]}
+  S1_29: {access: rw, block: "INPUT_FORMATTER", pages: [5, 44]}
+  S1_2A: {access: rw, block: "INPUT_FORMATTER", pages: [5, 45]}
+  S1_30: {access: rw, block: "HD_BYPS", pages: [6, 70]}
+  S1_31: {access: rw, block: "HD_BYPS", pages: [6, 70]}
+  S1_32: {access: rw, block: "HD_BYPS", pages: [6, 71]}
+  S1_33: {access: rw, block: "HD_BYPS", pages: [6, 71]}
+  S1_34: {access: rw, block: "HD_BYPS", pages: [7, 71]}
+  S1_35: {access: rw, block: "HD_BYPS", pages: [7, 71]}
+  S1_36: {access: rw, block: "HD_BYPS", pages: [7, 72]}
+  S1_37: {access: rw, block: "HD_BYPS", pages: [7, 72]}
+  S1_38: {access: rw, block: "HD_BYPS", pages: [7, 72]}
+  S1_39: {access: rw, block: "HD_BYPS", pages: [7, 72]}
+  S1_3A: {access: rw, block: "HD_BYPS", pages: [7, 73]}
+  S1_3B: {access: rw, block: "HD_BYPS", pages: [7, 73]}
+  S1_3C: {access: rw, block: "HD_BYPS", pages: [7, 73]}
+  S1_3D: {access: rw, block: "HD_BYPS", pages: [7, 73]}
+  S1_3E: {access: rw, block: "HD_BYPS", pages: [7, 74]}
+  S1_3F: {access: rw, block: "HD_BYPS", pages: [7, 74]}
+  S1_40: {access: rw, block: "HD_BYPS", pages: [7, 74]}
+  S1_41: {access: rw, block: "HD_BYPS", pages: [7, 74]}
+  S1_42: {access: rw, block: "HD_BYPS", pages: [7, 75]}
+  S1_43: {access: rw, block: "HD_BYPS", pages: [7, 75]}
+  S1_44: {access: rw, block: "HD_BYPS", pages: [7, 75]}
+  S1_45: {access: rw, block: "HD_BYPS", pages: [7, 75]}
+  S1_46: {access: rw, block: "HD_BYPS", pages: [7, 76]}
+  S1_47: {access: rw, block: "HD_BYPS", pages: [7, 76]}
+  S1_48: {access: rw, block: "HD_BYPS", pages: [7, 76]}
+  S1_49: {access: rw, block: "HD_BYPS", pages: [7, 76]}
+  S1_4A: {access: rw, block: "HD_BYPS", pages: [7, 77]}
+  S1_4B: {access: rw, block: "HD_BYPS", pages: [7, 77]}
+  S1_4C: {access: rw, block: "HD_BYPS", pages: [7, 77]}
+  S1_4D: {access: rw, block: "HD_BYPS", pages: [7, 77]}
+  S1_4E: {access: rw, block: "HD_BYPS", pages: [7, 78]}
+  S1_4F: {access: rw, block: "HD_BYPS", pages: [7, 78]}
+  S1_50: {access: rw, block: "HD_BYPS", pages: [7, 78]}
+  S1_51: {access: rw, block: "HD_BYPS", pages: [7, 78]}
+  S1_52: {access: rw, block: "HD_BYPS", pages: [7, 79]}
+  S1_53: {access: rw, block: "HD_BYPS", pages: [7, 79]}
+  S1_54: {access: rw, block: "HD_BYPS", pages: [7, 79]}
+  S1_55: {access: rw, block: "HD_BYPS", pages: [7, 79]}
+  S1_60: {access: rw, block: "MODE_DET", pages: [12, 195]}
+  S1_61: {access: rw, block: "MODE_DET", pages: [12, 195]}
+  S1_62: {access: rw, block: "MODE_DET", pages: [12, 196]}
+  S1_63: {access: rw, block: "MODE_DET", pages: [12, 196]}
+  S1_64: {access: rw, block: "MODE_DET", pages: [12, 197]}
+  S1_65: {access: rw, block: "MODE_DET", pages: [12, 197]}
+  S1_66: {access: rw, block: "MODE_DET", pages: [12, 197]}
+  S1_67: {access: rw, block: "MODE_DET", pages: [12, 198]}
+  S1_68: {access: rw, block: "MODE_DET", pages: [12, 198]}
+  S1_69: {access: rw, block: "MODE_DET", pages: [12, 198]}
+  S1_6A: {access: rw, block: "MODE_DET", pages: [12, 198]}
+  S1_6B: {access: rw, block: "MODE_DET", pages: [12, 199]}
+  S1_6C: {access: rw, block: "MODE_DET", pages: [12, 199]}
+  S1_6D: {access: rw, block: "MODE_DET", pages: [12, 199]}
+  S1_6E: {access: rw, block: "MODE_DET", pages: [12, 199]}
+  S1_6F: {access: rw, block: "MODE_DET", pages: [12, 200]}
+  S1_70: {access: rw, block: "MODE_DET", pages: [12, 200]}
+  S1_71: {access: rw, block: "MODE_DET", pages: [12, 200]}
+  S1_72: {access: rw, block: "MODE_DET", pages: [12, 201]}
+  S1_73: {access: rw, block: "MODE_DET", pages: [12, 201]}
+  S1_74: {access: rw, block: "MODE_DET", pages: [12, 201]}
+  S1_75: {access: rw, block: "MODE_DET", pages: [12, 202]}
+  S1_76: {access: rw, block: "MODE_DET", pages: [12, 202]}
+  S1_77: {access: rw, block: "MODE_DET", pages: [12, 202]}
+  S1_78: {access: rw, block: "MODE_DET", pages: [12, 203]}
+  S1_79: {access: rw, block: "MODE_DET", pages: [12, 203]}
+  S1_7A: {access: rw, block: "MODE_DET", pages: [12, 203]}
+  S1_7B: {access: rw, block: "MODE_DET", pages: [12, 203]}
+  S1_7C: {access: rw, block: "MODE_DET", pages: [12, 204]}
+  S1_7D: {access: rw, block: "MODE_DET", pages: [12, 204]}
+  S1_7E: {access: rw, block: "MODE_DET", pages: [12, 204]}
+  S1_7F: {access: rw, block: "MODE_DET", pages: [12, 204]}
+  S1_80: {access: rw, block: "MODE_DET", pages: [12, 205]}
+  S1_81: {access: rw, block: "MODE_DET", pages: [12, 205]}
+  S1_82: {access: rw, block: "MODE_DET", pages: [12, 206]}
+  S1_83: {access: rw, block: "MODE_DET", pages: [12, 207]}
+  S2_00: {access: rw, block: "DEINTERLACER", pages: [5, 46]}
+  S2_01: {access: rw, block: "DEINTERLACER", pages: [5, 46]}
+  S2_02: {access: rw, block: "DEINTERLACER", pages: [5, 47]}
+  S2_03: {access: rw, block: "DEINTERLACER", pages: [5, 47]}
+  S2_04: {access: rw, block: "DEINTERLACER", pages: [5, 48]}
+  S2_05: {access: rw, block: "DEINTERLACER", pages: [5, 48]}
+  S2_06: {access: rw, block: "DEINTERLACER", pages: [5, 48]}
+  S2_07: {access: rw, block: "DEINTERLACER", pages: [5, 49]}
+  S2_08: {access: rw, block: "DEINTERLACER", pages: [5, 49]}
+  S2_09: {access: rw, block: "DEINTERLACER", pages: [5, 49]}
+  S2_0A: {access: rw, block: "DEINTERLACER", pages: [6, 50]}
+  S2_0B: {access: rw, block: "DEINTERLACER", pages: [6, 50]}
+  S2_0C: {access: rw, block: "DEINTERLACER", pages: [6, 51]}
+  S2_0D: {access: rw, block: "DEINTERLACER", pages: [6, 51]}
+  S2_0E: {access: rw, block: "DEINTERLACER", pages: [6, 51]}
+  S2_0F: {access: rw, block: "DEINTERLACER", pages: [6, 52]}
+  S2_10: {access: rw, block: "DEINTERLACER", pages: [6, 52]}
+  S2_11: {access: rw, block: "DEINTERLACER", pages: [6, 53]}
+  S2_12: {access: rw, block: "DEINTERLACER", pages: [6, 53]}
+  S2_13: {access: rw, block: "DEINTERLACER", pages: [6, 54]}
+  S2_14: {access: rw, block: "DEINTERLACER", pages: [6, 54]}
+  S2_15: {access: rw, block: "DEINTERLACER", pages: [6, 54]}
+  S2_16: {access: rw, block: "DEINTERLACER", pages: [6, 55]}
+  S2_17: {access: rw, block: "DEINTERLACER", pages: [6, 56]}
+  S2_18: {access: rw, block: "DEINTERLACER", pages: [6, 57]}
+  S2_19: {access: rw, block: "DEINTERLACER", pages: [6, 57]}
+  S2_1A: {access: rw, block: "DEINTERLACER", pages: [6, 57]}
+  S2_1B: {access: rw, block: "DEINTERLACER", pages: [6, 58]}
+  S2_1C: {access: rw, block: "DEINTERLACER", pages: [6, 58]}
+  S2_1D: {access: rw, block: "DEINTERLACER", pages: [6, 58]}
+  S2_1E: {access: rw, block: "DEINTERLACER", pages: [6, 58]}
+  S2_1F: {access: rw, block: "DEINTERLACER", pages: [6, 59]}
+  S2_20: {access: rw, block: "DEINTERLACER", pages: [6, 59]}
+  S2_21: {access: rw, block: "DEINTERLACER", pages: [6, 59]}
+  S2_22: {access: rw, block: "DEINTERLACER", pages: [6, 60]}
+  S2_23: {access: rw, block: "DEINTERLACER", pages: [6, 60]}
+  S2_24: {access: rw, block: "DEINTERLACER", pages: [6, 60]}
+  S2_25: {access: rw, block: "DEINTERLACER", pages: [6, 61]}
+  S2_26: {access: rw, block: "DEINTERLACER", pages: [6, 61]}
+  S2_27: {access: rw, block: "DEINTERLACER", pages: [6, 61]}
+  S2_28: {access: rw, block: "DEINTERLACER", pages: [6, 61]}
+  S2_29: {access: rw, block: "DEINTERLACER", pages: [6, 62]}
+  S2_2A: {access: rw, block: "DEINTERLACER", pages: [6, 62]}
+  S2_2B: {access: rw, block: "DEINTERLACER", pages: [6, 62]}
+  S2_2C: {access: rw, block: "DEINTERLACER", pages: [6, 62]}
+  S2_2D: {access: rw, block: "DEINTERLACER", pages: [6, 63]}
+  S2_2E: {access: rw, block: "DEINTERLACER", pages: [6, 63]}
+  S2_2F: {access: rw, block: "DEINTERLACER", pages: [6, 63]}
+  S2_30: {access: rw, block: "DEINTERLACER", pages: [6, 63]}
+  S2_31: {access: rw, block: "DEINTERLACER", pages: [6, 64]}
+  S2_32: {access: rw, block: "DEINTERLACER", pages: [6, 64]}
+  S2_33: {access: rw, block: "DEINTERLACER", pages: [6, 65]}
+  S2_34: {access: rw, block: "DEINTERLACER", pages: [6, 65]}
+  S2_35: {access: rw, block: "DEINTERLACER", pages: [6, 66]}
+  S2_36: {access: rw, block: "DEINTERLACER", pages: [6, 66]}
+  S2_37: {access: rw, block: "DEINTERLACER", pages: [6, 66]}
+  S2_38: {access: rw, block: "DEINTERLACER", pages: [6, 67]}
+  S2_39: {access: rw, block: "DEINTERLACER", pages: [6, 67]}
+  S2_3A: {access: rw, block: "DEINTERLACER", pages: [6, 68]}
+  S2_3B: {access: rw, block: "DEINTERLACER", pages: [6, 68]}
+  S2_3C: {access: rw, block: "DEINTERLACER", pages: [6, 69]}
+  S3_00: {access: rw, block: "VDS_PROC", pages: [9, 143]}
+  S3_01: {access: rw, block: "VDS_PROC", pages: [9, 144]}
+  S3_02: {access: rw, block: "VDS_PROC", pages: [9, 144]}
+  S3_03: {access: rw, block: "VDS_PROC", pages: [9, 144]}
+  S3_04: {access: rw, block: "VDS_PROC", pages: [9, 145]}
+  S3_05: {access: rw, block: "VDS_PROC", pages: [9, 145]}
+  S3_06: {access: rw, block: "VDS_PROC", pages: [9, 145]}
+  S3_07: {access: rw, block: "VDS_PROC", pages: [9, 145]}
+  S3_08: {access: rw, block: "VDS_PROC", pages: [9, 146]}
+  S3_09: {access: rw, block: "VDS_PROC", pages: [9, 146]}
+  S3_0A: {access: rw, block: "VDS_PROC", pages: [9, 146]}
+  S3_0B: {access: rw, block: "VDS_PROC", pages: [9, 147]}
+  S3_0C: {access: rw, block: "VDS_PROC", pages: [9, 147]}
+  S3_0D: {access: rw, block: "VDS_PROC", pages: [9, 147]}
+  S3_0E: {access: rw, block: "VDS_PROC", pages: [9, 148]}
+  S3_0F: {access: rw, block: "VDS_PROC", pages: [10, 148]}
+  S3_10: {access: rw, block: "VDS_PROC", pages: [10, 148]}
+  S3_11: {access: rw, block: "VDS_PROC", pages: [10, 149]}
+  S3_12: {access: rw, block: "VDS_PROC", pages: [10, 149]}
+  S3_13: {access: rw, block: "VDS_PROC", pages: [10, 149]}
+  S3_14: {access: rw, block: "VDS_PROC", pages: [10, 150]}
+  S3_15: {access: rw, block: "VDS_PROC", pages: [10, 150]}
+  S3_16: {access: rw, block: "VDS_PROC", pages: [10, 150]}
+  S3_17: {access: rw, block: "VDS_PROC", pages: [10, 151]}
+  S3_18: {access: rw, block: "VDS_PROC", pages: [10, 151]}
+  S3_19: {access: rw, block: "VDS_PROC", pages: [10, 152]}
+  S3_1A: {access: rw, block: "VDS_PROC", pages: [10, 152]}
+  S3_1B: {access: rw, block: "VDS_PROC", pages: [10, 153]}
+  S3_1C: {access: rw, block: "VDS_PROC", pages: [10, 153]}
+  S3_1D: {access: rw, block: "VDS_PROC", pages: [10, 153]}
+  S3_1E: {access: rw, block: "VDS_PROC", pages: [10, 153]}
+  S3_1F: {access: rw, block: "VDS_PROC", pages: [10, 154]}
+  S3_20: {access: rw, block: "VDS_PROC", pages: [10, 154]}
+  S3_21: {access: rw, block: "VDS_PROC", pages: [10, 155]}
+  S3_22: {access: rw, block: "VDS_PROC", pages: [10, 155]}
+  S3_23: {access: rw, block: "VDS_PROC", pages: [10, 155]}
+  S3_24: {access: rw, block: "VDS_PROC", pages: [10, 156]}
+  S3_25: {access: rw, block: "VDS_PROC", pages: [10, 156]}
+  S3_26: {access: rw, block: "VDS_PROC", pages: [10, 157]}
+  S3_27: {access: rw, block: "VDS_PROC", pages: [10, 157]}
+  S3_28: {access: rw, block: "VDS_PROC", pages: [10, 157]}
+  S3_29: {access: rw, block: "VDS_PROC", pages: [10, 158]}
+  S3_2A: {access: rw, block: "VDS_PROC", pages: [10, 158]}
+  S3_2B: {access: rw, block: "VDS_PROC", pages: [10, 158]}
+  S3_2C: {access: rw, block: "VDS_PROC", pages: [10, 159]}
+  S3_2D: {access: rw, block: "VDS_PROC", pages: [10, 159]}
+  S3_2E: {access: rw, block: "VDS_PROC", pages: [10, 159]}
+  S3_2F: {access: rw, block: "VDS_PROC", pages: [10, 159]}
+  S3_30: {access: rw, block: "VDS_PROC", pages: [10, 160]}
+  S3_31: {access: rw, block: "VDS_PROC", pages: [10, 160]}
+  S3_32: {access: rw, block: "VDS_PROC", pages: [10, 161]}
+  S3_33: {access: rw, block: "VDS_PROC", pages: [10, 161]}
+  S3_34: {access: rw, block: "VDS_PROC", pages: [10, 161]}
+  S3_35: {access: rw, block: "VDS_PROC", pages: [10, 162]}
+  S3_36: {access: rw, block: "VDS_PROC", pages: [10, 162]}
+  S3_37: {access: rw, block: "VDS_PROC", pages: [10, 162]}
+  S3_38: {access: rw, block: "VDS_PROC", pages: [10, 162]}
+  S3_39: {access: rw, block: "VDS_PROC", pages: [10, 163]}
+  S3_3A: {access: rw, block: "VDS_PROC", pages: [10, 163]}
+  S3_3B: {access: rw, block: "VDS_PROC", pages: [10, 163]}
+  S3_3C: {access: rw, block: "VDS_PROC", pages: [10, 163]}
+  S3_3D: {access: rw, block: "VDS_PROC", pages: [10, 164]}
+  S3_3E: {access: rw, block: "VDS_PROC", pages: [10, 164]}
+  S3_3F: {access: rw, block: "VDS_PROC", pages: [10, 164]}
+  S3_40: {access: rw, block: "VDS_PROC", pages: [10, 165]}
+  S3_41: {access: rw, block: "VDS_PROC", pages: [10, 165]}
+  S3_42: {access: rw, block: "VDS_PROC", pages: [10, 166]}
+  S3_43: {access: rw, block: "VDS_PROC", pages: [10, 166]}
+  S3_44: {access: rw, block: "VDS_PROC", pages: [10, 167]}
+  S3_45: {access: rw, block: "VDS_PROC", pages: [10, 167]}
+  S3_46: {access: rw, block: "VDS_PROC", pages: [10, 167]}
+  S3_47: {access: rw, block: "VDS_PROC", pages: [10, 168]}
+  S3_48: {access: rw, block: "VDS_PROC", pages: [10, 168]}
+  S3_49: {access: rw, block: "VDS_PROC", pages: [11, 168]}
+  S3_4A: {access: rw, block: "VDS_PROC", pages: [11, 169]}
+  S3_4B: {access: rw, block: "VDS_PROC", pages: [11, 169]}
+  S3_4C: {access: rw, block: "VDS_PROC", pages: [11, 169]}
+  S3_4D: {access: rw, block: "VDS_PROC", pages: [11, 170]}
+  S3_4E: {access: rw, block: "VDS_PROC", pages: [11, 170]}
+  S3_4F: {access: rw, block: "VDS_PROC", pages: [11, 171]}
+  S3_50: {access: rw, block: "VDS_PROC", pages: [11, 171]}
+  S3_51: {access: rw, block: "VDS_PROC", pages: [11, 171]}
+  S3_52: {access: rw, block: "VDS_PROC", pages: [11, 172]}
+  S3_53: {access: rw, block: "VDS_PROC", pages: [11, 172]}
+  S3_54: {access: rw, block: "VDS_PROC", pages: [11, 173]}
+  S3_55: {access: rw, block: "VDS_PROC", pages: [11, 173]}
+  S3_56: {access: rw, block: "VDS_PROC", pages: [11, 174]}
+  S3_57: {access: rw, block: "VDS_PROC", pages: [11, 174]}
+  S3_58: {access: rw, block: "VDS_PROC", pages: [11, 174]}
+  S3_59: {access: rw, block: "VDS_PROC", pages: [11, 174]}
+  S3_5A: {access: rw, block: "VDS_PROC", pages: [11, 175]}
+  S3_5B: {access: rw, block: "VDS_PROC", pages: [11, 175]}
+  S3_5C: {access: rw, block: "VDS_PROC", pages: [11, 175]}
+  S3_5D: {access: rw, block: "VDS_PROC", pages: [11, 176]}
+  S3_5E: {access: rw, block: "VDS_PROC", pages: [11, 176]}
+  S3_5F: {access: rw, block: "VDS_PROC", pages: [11, 176]}
+  S3_60: {access: rw, block: "VDS_PROC", pages: [11, 177]}
+  S3_61: {access: rw, block: "VDS_PROC", pages: [11, 177]}
+  S3_62: {access: rw, block: "VDS_PROC", pages: [11, 178]}
+  S3_63: {access: rw, block: "VDS_PROC", pages: [11, 178]}
+  S3_64: {access: rw, block: "VDS_PROC 100", pages: [11, 178]}
+  S3_65: {access: rw, block: "VDS_PROC 101", pages: [11, 179]}
+  S3_66: {access: rw, block: "VDS_PROC 102", pages: [11, 179]}
+  S3_67: {access: rw, block: "VDS_PROC 103", pages: [11, 179]}
+  S3_68: {access: rw, block: "VDS_PROC 104", pages: [11, 180]}
+  S3_69: {access: rw, block: "VDS_PROC 105", pages: [11, 180]}
+  S3_6A: {access: rw, block: "VDS_PROC 106", pages: [11, 180]}
+  S3_6B: {access: rw, block: "VDS_PROC 107", pages: [11, 181]}
+  S3_6C: {access: rw, block: "VDS_PROC 108", pages: [11, 181]}
+  S3_6D: {access: rw, block: "VDS_PROC 109", pages: [11, 181]}
+  S3_6E: {access: rw, block: "VDS_PROC 110", pages: [11, 182]}
+  S3_6F: {access: rw, block: "VDS_PROC 111", pages: [11, 182]}
+  S3_70: {access: rw, block: "VDS_PROC 112", pages: [11, 182]}
+  S3_71: {access: rw, block: "VDS_PROC 113", pages: [11, 183]}
+  S3_72: {access: rw, block: "VDS_PROC 114", pages: [11, 183]}
+  S3_73: {access: rw, block: "VDS_PROC 115", pages: [11, 184]}
+  S3_74: {access: rw, block: "VDS_PROC 116", pages: [11, 184]}
+  S3_80: {access: rw, block: "PIP", pages: [11, 185]}
+  S3_81: {access: rw, block: "PIP", pages: [11, 186]}
+  S3_82: {access: rw, block: "PIP", pages: [11, 186]}
+  S3_83: {access: rw, block: "PIP", pages: [11, 186]}
+  S3_84: {access: rw, block: "PIP", pages: [11, 187]}
+  S3_85: {access: rw, block: "PIP", pages: [11, 187]}
+  S3_86: {access: rw, block: "PIP", pages: [11, 187]}
+  S3_87: {access: rw, block: "PIP", pages: [11, 187]}
+  S3_88: {access: rw, block: "PIP", pages: [11, 188]}
+  S3_89: {access: rw, block: "PIP", pages: [11, 188]}
+  S3_8A: {access: rw, block: "PIP", pages: [11, 188]}
+  S3_8B: {access: rw, block: "PIP", pages: [11, 188]}
+  S3_8C: {access: rw, block: "PIP", pages: [11, 189]}
+  S3_8D: {access: rw, block: "PIP", pages: [11, 189]}
+  S3_8E: {access: rw, block: "PIP", pages: [12, 189]}
+  S3_8F: {access: rw, block: "PIP", pages: [12, 189]}
+  S4_00: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 96]}
+  S4_01: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 96]}
+  S4_02: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 97]}
+  S4_03: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 97]}
+  S4_04: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 98]}
+  S4_05: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 99]}
+  S4_06: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 100]}
+  S4_07: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 101]}
+  S4_08: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 102]}
+  S4_09: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 103]}
+  S4_0A: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 104]}
+  S4_0B: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 105]}
+  S4_0C: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 106]}
+  S4_0D: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 107]}
+  S4_0E: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 108]}
+  S4_0F: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 108]}
+  S4_10: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 109]}
+  S4_11: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 110]}
+  S4_12: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 111]}
+  S4_13: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 111]}
+  S4_14: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 112]}
+  S4_15: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 113]}
+  S4_16: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 114]}
+  S4_17: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 114]}
+  S4_18: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 115]}
+  S4_19: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 116]}
+  S4_1A: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 117]}
+  S4_1B: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 118]}
+  S4_1C: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 119]}
+  S4_1D: {access: rw, block: "MEMORY CONTROLLER", pages: [8, 120]}
+  S4_20: {access: rw, block: "CAPTURE", pages: [8, 121]}
+  S4_21: {access: rw, block: "CAPTURE", pages: [8, 122]}
+  S4_22: {access: rw, block: "CAPTURE", pages: [8, 123]}
+  S4_23: {access: rw, block: "CAPTURE", pages: [8, 124]}
+  S4_24: {access: rw, block: "CAPTURE", pages: [8, 124]}
+  S4_25: {access: rw, block: "CAPTURE", pages: [8, 124]}
+  S4_26: {access: rw, block: "CAPTURE", pages: [8, 124]}
+  S4_27: {access: rw, block: "CAPTURE", pages: [8, 125]}
+  S4_28: {access: rw, block: "CAPTURE", pages: [8, 125]}
+  S4_29: {access: rw, block: "CAPTURE", pages: [8, 125]}
+  S4_2B: {access: rw, block: "PLAY BACK", pages: [8, 126]}
+  S4_2C: {access: rw, block: "PLAY BACK", pages: [8, 126]}
+  S4_2D: {access: rw, block: "PLAY BACK", pages: [8, 127]}
+  S4_2E: {access: rw, block: "PLAY BACK", pages: [8, 127]}
+  S4_2F: {access: rw, block: "PLAY BACK", pages: [8, 127]}
+  S4_30: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 128]}
+  S4_31: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 128]}
+  S4_32: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 128]}
+  S4_33: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 129]}
+  S4_34: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 129]}
+  S4_35: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [8, 129]}
+  S4_36: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 129]}
+  S4_37: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 130]}
+  S4_38: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 130]}
+  S4_39: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 130]}
+  S4_3A: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 131]}
+  S4_3B: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 131]}
+  S4_3C: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 131]}
+  S4_3D: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 132]}
+  S4_3E: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 132]}
+  S4_3F: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 132]}
+  S4_40: {access: rw, block: "CAPTURE AND PLAYBACK SHARED", pages: [9, 133]}
+  S4_41: {access: rw, block: "WRITE FIFO", pages: [9, 134]}
+  S4_42: {access: rw, block: "WRITE FIFO", pages: [9, 134]}
+  S4_43: {access: rw, block: "WRITE FIFO", pages: [9, 135]}
+  S4_44: {access: rw, block: "WRITE FIFO", pages: [9, 135]}
+  S4_45: {access: rw, block: "WRITE FIFO", pages: [9, 135]}
+  S4_46: {access: rw, block: "WRITE FIFO", pages: [9, 135]}
+  S4_47: {access: rw, block: "WRITE FIFO", pages: [9, 136]}
+  S4_48: {access: rw, block: "WRITE FIFO", pages: [9, 136]}
+  S4_49: {access: rw, block: "WRITE FIFO", pages: [9, 136]}
+  S4_4A: {access: rw, block: "WRITE FIFO", pages: [9, 137]}
+  S4_4B: {access: rw, block: "WRITE FIFO", pages: [9, 137]}
+  S4_4D: {access: rw, block: "READ FIFO", pages: [9, 138]}
+  S4_4E: {access: rw, block: "READ FIFO", pages: [9, 138]}
+  S4_4F: {access: rw, block: "READ FIFO", pages: [9, 139]}
+  S4_50: {access: rw, block: "READ FIFO", pages: [9, 139]}
+  S4_51: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 140]}
+  S4_52: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 140]}
+  S4_53: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 140]}
+  S4_54: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 140]}
+  S4_55: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 141]}
+  S4_56: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 141]}
+  S4_57: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 141]}
+  S4_58: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 141]}
+  S4_59: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 142]}
+  S4_5A: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 142]}
+  S4_5B: {access: rw, block: "READ FIFO AND WRITE FIFO SHARED", pages: [9, 142]}
+  S5_00: {access: rw, block: "ADC CLK CONTROL", pages: [12, 208]}
+  S5_02: {access: rw, block: "ADC CONTROL", pages: [12, 208]}
+  S5_03: {access: rw, block: "ADC CONTROL", pages: [13, 209]}
+  S5_04: {access: rw, block: "ADC CONTROL", pages: [13, 209]}
+  S5_05: {access: rw, block: "ADC CONTROL", pages: [13, 210]}
+  S5_06: {access: rw, block: "ADC CONTROL", pages: [13, 210]}
+  S5_07: {access: rw, block: "ADC CONTROL", pages: [13, 210]}
+  S5_08: {access: rw, block: "ADC CONTROL", pages: [13, 211]}
+  S5_09: {access: rw, block: "ADC CONTROL", pages: [13, 211]}
+  S5_0A: {access: rw, block: "ADC CONTROL", pages: [13, 211]}
+  S5_0B: {access: rw, block: "ADC CONTROL", pages: [13, 211]}
+  S5_0C: {access: rw, block: "ADC CONTROL", pages: [13, 212]}
+  S5_0E: {access: rw, block: "ADC AUTO_OFST", pages: [13, 212]}
+  S5_0F: {access: rw, block: "ADC AUTO_OFST", pages: [13, 213]}
+  S5_11: {access: rw, block: "PLLAD CONTROL", pages: [13, 213]}
+  S5_12: {access: rw, block: "PLLAD CONTROL", pages: [13, 214]}
+  S5_13: {access: rw, block: "PLLAD CONTROL", pages: [13, 214]}
+  S5_14: {access: rw, block: "PLLAD CONTROL", pages: [13, 214]}
+  S5_15: {access: rw, block: "PLLAD CONTROL", pages: [13, 214]}
+  S5_16: {access: rw, block: "PLLAD CONTROL", pages: [13, 215]}
+  S5_17: {access: rw, block: "PLLAD CONTROL", pages: [13, 216]}
+  S5_18: {access: rw, block: "PA_ADC CONTROL", pages: [13, 216]}
+  S5_19: {access: rw, block: "PA_SYNC PROC CONTROL", pages: [13, 217]}
+  S5_1E: {access: rw, block: "DEC_REG_00", pages: [13, 217]}
+  S5_1F: {access: rw, block: "DEC_REG_01", pages: [13, 218]}
+  S5_20: {access: rw, block: "SYNC_PROC", pages: [13, 219]}
+  S5_21: {access: rw, block: "SYNC_PROC", pages: [13, 219]}
+  S5_22: {access: rw, block: "SYNC_PROC", pages: [13, 220]}
+  S5_23: {access: rw, block: "SYNC_PROC", pages: [13, 220]}
+  S5_24: {access: rw, block: "SYNC_PROC", pages: [13, 220]}
+  S5_25: {access: rw, block: "SYNC_PROC", pages: [13, 220]}
+  S5_26: {access: rw, block: "SYNC_PROC", pages: [13, 221]}
+  S5_27: {access: rw, block: "SYNC_PROC", pages: [13, 221]}
+  S5_2A: {access: rw, block: "SYNC_PROC", pages: [13, 221]}
+  S5_2D: {access: rw, block: "SYNC_PROC", pages: [13, 221]}
+  S5_2E: {access: rw, block: "SYNC_PROC", pages: [13, 222]}
+  S5_2F: {access: rw, block: "SYNC_PROC", pages: [13, 222]}
+  S5_31: {access: rw, block: "SYNC_PROC", pages: [13, 222]}
+  S5_32: {access: rw, block: "SYNC_PROC", pages: [13, 222]}
+  S5_33: {access: rw, block: "SYNC_PROC", pages: [13, 223]}
+  S5_34: {access: rw, block: "SYNC_PROC", pages: [13, 223]}
+  S5_35: {access: rw, block: "SYNC_PROC", pages: [13, 223]}
+  S5_36: {access: rw, block: "SYNC_PROC", pages: [13, 223]}
+  S5_37: {access: rw, block: "SYNC_PROC", pages: [13, 224]}
+  S5_38: {access: rw, block: "SYNC_PROC", pages: [13, 224]}
+  S5_39: {access: rw, block: "SYNC_PROC", pages: [13, 224]}
+  S5_3A: {access: rw, block: "SYNC_PROC", pages: [13, 224]}
+  S5_3B: {access: rw, block: "SYNC_PROC", pages: [13, 225]}
+  S5_3E: {access: rw, block: "SYNC_PROC", pages: [13, 225]}
+  S5_3F: {access: rw, block: "SYNC_PROC", pages: [13, 226]}
+  S5_40: {access: rw, block: "SYNC_PROC", pages: [13, 226]}
+  S5_41: {access: rw, block: "SYNC_PROC", pages: [13, 226]}
+  S5_42: {access: rw, block: "SYNC_PROC", pages: [13, 226]}
+  S5_43: {access: rw, block: "SYNC_PROC", pages: [13, 227]}
+  S5_44: {access: rw, block: "SYNC_PROC", pages: [13, 227]}
+  S5_45: {access: rw, block: "SYNC_PROC", pages: [13, 227]}
+  S5_46: {access: rw, block: "SYNC_PROC", pages: [13, 227]}
+  S5_47: {access: rw, block: "SYNC_PROC", pages: [14, 228]}
+  S5_48: {access: rw, block: "SYNC_PROC", pages: [14, 228]}
+  S5_49: {access: rw, block: "SYNC_PROC", pages: [14, 228]}
+  S5_4A: {access: rw, block: "SYNC_PROC", pages: [14, 228]}
+  S5_4B: {access: rw, block: "SYNC_PROC", pages: [14, 229]}
+  S5_4C: {access: rw, block: "SYNC_PROC", pages: [14, 229]}
+  S5_4D: {access: rw, block: "SYNC_PROC", pages: [14, 229]}
+  S5_4E: {access: rw, block: "SYNC_PROC", pages: [14, 229]}
+  S5_4F: {access: rw, block: "SYNC_PROC", pages: [14, 230]}
+  S5_50: {access: rw, block: "SYNC_PROC", pages: [14, 230]}
+  S5_51: {access: rw, block: "SYNC_PROC", pages: [14, 230]}
+  S5_52: {access: rw, block: "SYNC_PROC", pages: [14, 230]}
+  S5_53: {access: rw, block: "SYNC_PROC", pages: [14, 231]}
+  S5_54: {access: rw, block: "SYNC_PROC", pages: [14, 231]}
+  S5_55: {access: rw, block: "SYNC_PROC", pages: [14, 231]}
+  S5_56: {access: rw, block: "SYNC_PROC", pages: [14, 232]}
+  S5_57: {access: rw, block: "SYNC_PROC", pages: [14, 233]}
+  S5_58: {access: rw, block: "SYNC_PROC", pages: [14, 233]}
+  S5_59: {access: rw, block: "SYNC_PROC", pages: [14, 233]}
+  S5_5A: {access: rw, block: "SYNC_PROC", pages: [14, 234]}
+  S5_5B: {access: rw, block: "SYNC_PROC", pages: [14, 234]}
+  S5_5C: {access: rw, block: "SYNC_PROC", pages: [14, 234]}
+  S5_63: {access: rw, block: "SYNC_PROC", pages: [14, 235]}
+
+# Fields: segment, byte offset, lowest bit, width in bits (little-endian across bytes).
+# access is derived from the registers the field occupies; doc: false means the vendor
+# document does not describe that register.
+fields:
+  STATUS_00: {seg: 0, addr: 0x00, lsb: 0, width: 8, access: ro}
+  STATUS_IF_VT_OK: {seg: 0, addr: 0x00, lsb: 0, width: 1, access: ro}
+  STATUS_IF_HT_OK: {seg: 0, addr: 0x00, lsb: 1, width: 1, access: ro}
+  STATUS_IF_HVT_OK: {seg: 0, addr: 0x00, lsb: 2, width: 1, access: ro}
+  STATUS_IF_INP_NTSC_INT: {seg: 0, addr: 0x00, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_NTSC_PRG: {seg: 0, addr: 0x00, lsb: 4, width: 1, access: ro}
+  STATUS_IF_INP_PAL_INT: {seg: 0, addr: 0x00, lsb: 5, width: 1, access: ro}
+  STATUS_IF_INP_PAL_PRG: {seg: 0, addr: 0x00, lsb: 6, width: 1, access: ro}
+  STATUS_IF_INP_SD: {seg: 0, addr: 0x00, lsb: 7, width: 1, access: ro}
+  STATUS_IF_INP_VGA60: {seg: 0, addr: 0x01, lsb: 0, width: 1, access: ro}
+  STATUS_IF_INP_VGA75: {seg: 0, addr: 0x01, lsb: 1, width: 1, access: ro}
+  STATUS_IF_INP_VGA86: {seg: 0, addr: 0x01, lsb: 2, width: 1, access: ro}
+  STATUS_IF_INP_VGA: {seg: 0, addr: 0x01, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_SVGA60: {seg: 0, addr: 0x01, lsb: 4, width: 1, access: ro}
+  STATUS_IF_INP_SVGA75: {seg: 0, addr: 0x01, lsb: 5, width: 1, access: ro}
+  STATUS_IF_INP_SVGA85: {seg: 0, addr: 0x01, lsb: 6, width: 1, access: ro}
+  STATUS_IF_INP_SVGA: {seg: 0, addr: 0x01, lsb: 7, width: 1, access: ro}
+  STATUS_IF_INP_XGA60: {seg: 0, addr: 0x02, lsb: 0, width: 1, access: ro}
+  STATUS_IF_INP_XGA70: {seg: 0, addr: 0x02, lsb: 1, width: 1, access: ro}
+  STATUS_IF_INP_XGA75: {seg: 0, addr: 0x02, lsb: 2, width: 1, access: ro}
+  STATUS_IF_INP_XGA85: {seg: 0, addr: 0x02, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_XGA: {seg: 0, addr: 0x02, lsb: 4, width: 1, access: ro}
+  STATUS_IF_INP_SXGA60: {seg: 0, addr: 0x02, lsb: 5, width: 1, access: ro}
+  STATUS_IF_INP_SXGA75: {seg: 0, addr: 0x02, lsb: 6, width: 1, access: ro}
+  STATUS_IF_INP_SXGA85: {seg: 0, addr: 0x02, lsb: 7, width: 1, access: ro}
+  STATUS_03: {seg: 0, addr: 0x03, lsb: 0, width: 8, access: ro}
+  STATUS_IF_INP_SXGA: {seg: 0, addr: 0x03, lsb: 0, width: 1, access: ro}
+  STATUS_IF_INP_PC: {seg: 0, addr: 0x03, lsb: 1, width: 1, access: ro}
+  STATUS_IF_INP_720P50: {seg: 0, addr: 0x03, lsb: 2, width: 1, access: ro}
+  STATUS_IF_INP_720P60: {seg: 0, addr: 0x03, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_720: {seg: 0, addr: 0x03, lsb: 4, width: 1, access: ro}
+  STATUS_IF_INP_2200_1125I: {seg: 0, addr: 0x03, lsb: 5, width: 1, access: ro}
+  STATUS_IF_INP_2376_1250I: {seg: 0, addr: 0x03, lsb: 6, width: 1, access: ro}
+  STATUS_IF_INP_2640_1125I: {seg: 0, addr: 0x03, lsb: 7, width: 1, access: ro}
+  STATUS_04: {seg: 0, addr: 0x04, lsb: 0, width: 8, access: ro}
+  STATUS_IF_INP_1080I: {seg: 0, addr: 0x04, lsb: 0, width: 1, access: ro}
+  STATUS_IF_INP_2200_1125P: {seg: 0, addr: 0x04, lsb: 1, width: 1, access: ro}
+  STATUS_IF_INP_2376_1250P: {seg: 0, addr: 0x04, lsb: 2, width: 1, access: ro}
+  STATUS_IF_INP_2640_1125P: {seg: 0, addr: 0x04, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_1808P: {seg: 0, addr: 0x04, lsb: 4, width: 1, access: ro}
+  STATUS_IF_INP_HD: {seg: 0, addr: 0x04, lsb: 5, width: 1, access: ro}
+  STATUS_IF_INP_INT: {seg: 0, addr: 0x04, lsb: 6, width: 1, access: ro}
+  STATUS_IF_INP_PRG: {seg: 0, addr: 0x04, lsb: 7, width: 1, access: ro}
+  STATUS_05: {seg: 0, addr: 0x05, lsb: 0, width: 8, access: ro}
+  STATUS_IF_INP_USER: {seg: 0, addr: 0x05, lsb: 0, width: 1, access: ro}
+  STATUS_IF_NO_SYNC: {seg: 0, addr: 0x05, lsb: 1, width: 1, access: ro}
+  STATUS_IF_HT_BAD: {seg: 0, addr: 0x05, lsb: 2, width: 1, access: ro}
+  STATUS_IF_VT_BAD: {seg: 0, addr: 0x05, lsb: 3, width: 1, access: ro}
+  STATUS_IF_INP_SW: {seg: 0, addr: 0x05, lsb: 4, width: 1, access: ro}
+  HPERIOD_IF: {seg: 0, addr: 0x06, lsb: 0, width: 9, access: ro}
+  VPERIOD_IF: {seg: 0, addr: 0x07, lsb: 1, width: 11, access: ro}
+  STATUS_MISC_PLL648_LOCK: {seg: 0, addr: 0x09, lsb: 6, width: 1, access: ro}
+  STATUS_MISC_PLLAD_LOCK: {seg: 0, addr: 0x09, lsb: 7, width: 1, access: ro}
+  STATUS_MISC_PIP_EN_V: {seg: 0, addr: 0x0A, lsb: 0, width: 1, access: ro}
+  STATUS_MISC_PIP_EN_H: {seg: 0, addr: 0x0A, lsb: 1, width: 1, access: ro}
+  STATUS_MISC_VBLK: {seg: 0, addr: 0x0A, lsb: 4, width: 1, access: ro}
+  STATUS_MISC_HBLK: {seg: 0, addr: 0x0A, lsb: 5, width: 1, access: ro}
+  STATUS_MISC_VSYNC: {seg: 0, addr: 0x0A, lsb: 6, width: 1, access: ro}
+  STATUS_MISC_HSYNC: {seg: 0, addr: 0x0A, lsb: 7, width: 1, access: ro}
+  CHIP_ID_FOUNDRY: {seg: 0, addr: 0x0B, lsb: 0, width: 8, access: ro}
+  CHIP_ID_PRODUCT: {seg: 0, addr: 0x0C, lsb: 0, width: 8, access: ro}
+  CHIP_ID_REVISION: {seg: 0, addr: 0x0D, lsb: 0, width: 8, access: ro}
+  STATUS_GPIO_GPIO: {seg: 0, addr: 0x0E, lsb: 0, width: 1, access: ro}
+  STATUS_GPIO_HALF: {seg: 0, addr: 0x0E, lsb: 1, width: 1, access: ro}
+  STATUS_GPIO_SCLSA: {seg: 0, addr: 0x0E, lsb: 2, width: 1, access: ro}
+  STATUS_GPIO_MBA: {seg: 0, addr: 0x0E, lsb: 3, width: 1, access: ro}
+  STATUS_GPIO_MCS1: {seg: 0, addr: 0x0E, lsb: 4, width: 1, access: ro}
+  STATUS_GPIO_HBOUT: {seg: 0, addr: 0x0E, lsb: 5, width: 1, access: ro}
+  STATUS_GPIO_VBOUT: {seg: 0, addr: 0x0E, lsb: 6, width: 1, access: ro}
+  STATUS_GPIO_CLKOUT: {seg: 0, addr: 0x0E, lsb: 7, width: 1, access: ro}
+  STATUS_0F: {seg: 0, addr: 0x0F, lsb: 0, width: 8, access: ro}
+  STATUS_INT_SOG_BAD: {seg: 0, addr: 0x0F, lsb: 0, width: 1, access: ro}
+  STATUS_INT_SOG_SW: {seg: 0, addr: 0x0F, lsb: 1, width: 1, access: ro}
+  STATUS_INT_SOG_OK: {seg: 0, addr: 0x0F, lsb: 2, width: 1, access: ro}
+  STATUS_INT_INP_SW: {seg: 0, addr: 0x0F, lsb: 3, width: 1, access: ro}
+  STATUS_INT_INP_NO_SYNC: {seg: 0, addr: 0x0F, lsb: 4, width: 1, access: ro}
+  STATUS_INT_INP_HSYNC: {seg: 0, addr: 0x0F, lsb: 5, width: 1, access: ro}
+  STATUS_INT_INP_VSYNC: {seg: 0, addr: 0x0F, lsb: 6, width: 1, access: ro}
+  STATUS_INT_INP_CSYNC: {seg: 0, addr: 0x0F, lsb: 7, width: 1, access: ro}
+  STATUS_VDS_FR_NUM: {seg: 0, addr: 0x10, lsb: 0, width: 4, access: ro}
+  STATUS_VDS_OUT_VSYNC: {seg: 0, addr: 0x10, lsb: 4, width: 1, access: ro}
+  STATUS_VDS_OUT_HSYNC: {seg: 0, addr: 0x10, lsb: 5, width: 1, access: ro}
+  STATUS_VDS_FIELD: {seg: 0, addr: 0x11, lsb: 0, width: 1, access: ro}
+  STATUS_VDS_OUT_BLANK: {seg: 0, addr: 0x11, lsb: 1, width: 1, access: ro}
+  STATUS_VDS_VERT_COUNT: {seg: 0, addr: 0x11, lsb: 4, width: 11, access: ro}
+  STATUS_MEM_FF_WFF_FIFO_FULL: {seg: 0, addr: 0x13, lsb: 0, width: 1, access: ro}
+  STATUS_MEM_FF_WFF_FIFO_EMPTY: {seg: 0, addr: 0x13, lsb: 1, width: 1, access: ro}
+  STATUS_MEM_FF_RFF_FIFO_FULL: {seg: 0, addr: 0x13, lsb: 2, width: 1, access: ro}
+  STATUS_MEM_FF_RFF_FIFO_EMPTY: {seg: 0, addr: 0x13, lsb: 3, width: 1, access: ro}
+  STATUS_MEM_FF_CAP_FIFO_FULL: {seg: 0, addr: 0x13, lsb: 4, width: 1, access: ro}
+  STATUS_MEM_FF_CAP_FIFO_EMPTY: {seg: 0, addr: 0x13, lsb: 5, width: 1, access: ro}
+  STATUS_MEM_FF_PLY_FIFO_FULL: {seg: 0, addr: 0x13, lsb: 6, width: 1, access: ro}
+  STATUS_MEM_FF_PLY_FIFO_EMPTY: {seg: 0, addr: 0x13, lsb: 7, width: 1, access: ro}
+  STATUS_MEM_FF_EXT_FIN: {seg: 0, addr: 0x14, lsb: 0, width: 1, access: ro}
+  STATUS_DEINT_PULLDN: {seg: 0, addr: 0x15, lsb: 7, width: 1, access: ro}
+  STATUS_16: {seg: 0, addr: 0x16, lsb: 0, width: 8, access: ro}
+  STATUS_SYNC_PROC_HSPOL: {seg: 0, addr: 0x16, lsb: 0, width: 1, access: ro}
+  STATUS_SYNC_PROC_HSACT: {seg: 0, addr: 0x16, lsb: 1, width: 1, access: ro}
+  STATUS_SYNC_PROC_VSPOL: {seg: 0, addr: 0x16, lsb: 2, width: 1, access: ro}
+  STATUS_SYNC_PROC_VSACT: {seg: 0, addr: 0x16, lsb: 3, width: 1, access: ro}
+  STATUS_SYNC_PROC_HTOTAL: {seg: 0, addr: 0x17, lsb: 0, width: 12, access: ro}
+  STATUS_SYNC_PROC_HLOW_LEN: {seg: 0, addr: 0x19, lsb: 0, width: 12, access: ro}
+  STATUS_SYNC_PROC_VTOTAL: {seg: 0, addr: 0x1B, lsb: 0, width: 11, access: ro}
+  TEST_BUS_1F: {seg: 0, addr: 0x1F, lsb: 0, width: 8, access: ro}
+  TEST_FF_STATUS: {seg: 0, addr: 0x20, lsb: 0, width: 16, access: ro}
+  TEST_BUS_23: {seg: 0, addr: 0x23, lsb: 0, width: 8, access: ro}
+  TEST_BUS: {seg: 0, addr: 0x2E, lsb: 0, width: 16, access: ro}
+  TEST_BUS_2E: {seg: 0, addr: 0x2E, lsb: 0, width: 8, access: ro}
+  TEST_BUS_2F: {seg: 0, addr: 0x2F, lsb: 0, width: 8, access: ro}
+  PLL_CKIS: {seg: 0, addr: 0x40, lsb: 0, width: 1, access: rw}
+  PLL_DIVBY2Z: {seg: 0, addr: 0x40, lsb: 1, width: 1, access: rw}
+  PLL_IS: {seg: 0, addr: 0x40, lsb: 2, width: 1, access: rw}
+  PLL_ADS: {seg: 0, addr: 0x40, lsb: 3, width: 1, access: rw}
+  PLL_MS: {seg: 0, addr: 0x40, lsb: 4, width: 3, access: rw}
+  PLL648_CONTROL_01: {seg: 0, addr: 0x41, lsb: 0, width: 8, access: rw}
+  PLL_VS27: {seg: 0, addr: 0x41, lsb: 2, width: 2, access: rw}
+  PLL_VS4: {seg: 0, addr: 0x41, lsb: 4, width: 2, access: rw}
+  PLL_2XV: {seg: 0, addr: 0x41, lsb: 6, width: 1, access: rw}
+  PLL_4XV: {seg: 0, addr: 0x41, lsb: 7, width: 1, access: rw}
+  PLL648_CONTROL_03: {seg: 0, addr: 0x43, lsb: 0, width: 8, access: rw}
+  PLL_R: {seg: 0, addr: 0x43, lsb: 0, width: 2, access: rw}
+  PLL_S: {seg: 0, addr: 0x43, lsb: 2, width: 2, access: rw}
+  PLL_LEN: {seg: 0, addr: 0x43, lsb: 4, width: 1, access: rw}
+  PLL_VCORST: {seg: 0, addr: 0x43, lsb: 5, width: 1, access: rw}
+  DAC_RGBS_PWDNZ: {seg: 0, addr: 0x44, lsb: 0, width: 1, access: rw}
+  DAC_RGBS_R0ENZ: {seg: 0, addr: 0x44, lsb: 2, width: 1, access: rw}
+  DAC_RGBS_G0ENZ: {seg: 0, addr: 0x44, lsb: 5, width: 1, access: rw}
+  DAC_RGBS_B0ENZ: {seg: 0, addr: 0x45, lsb: 0, width: 1, access: rw}
+  DAC_RGBS_SPD: {seg: 0, addr: 0x45, lsb: 2, width: 1, access: rw}
+  DAC_RGBS_S0ENZ: {seg: 0, addr: 0x45, lsb: 3, width: 1, access: rw}
+  DAC_RGBS_S1EN: {seg: 0, addr: 0x45, lsb: 4, width: 1, access: rw}
+  CKT_FF_CNTRL: {seg: 0, addr: 0x45, lsb: 6, width: 2, access: rw}
+  RESET_CONTROL_0x46: {seg: 0, addr: 0x46, lsb: 0, width: 8, access: rw}
+  SFTRST_IF_RSTZ: {seg: 0, addr: 0x46, lsb: 0, width: 1, access: rw}
+  SFTRST_DEINT_RSTZ: {seg: 0, addr: 0x46, lsb: 1, width: 1, access: rw}
+  SFTRST_MEM_FF_RSTZ: {seg: 0, addr: 0x46, lsb: 2, width: 1, access: rw}
+  SFTRST_MEM_RSTZ: {seg: 0, addr: 0x46, lsb: 3, width: 1, access: rw}
+  SFTRST_FIFO_RSTZ: {seg: 0, addr: 0x46, lsb: 4, width: 1, access: rw}
+  SFTRST_OSD_RSTZ: {seg: 0, addr: 0x46, lsb: 5, width: 1, access: rw}
+  SFTRST_VDS_RSTZ: {seg: 0, addr: 0x46, lsb: 6, width: 1, access: rw}
+  RESET_CONTROL_0x47: {seg: 0, addr: 0x47, lsb: 0, width: 8, access: rw}
+  SFTRST_DEC_RSTZ: {seg: 0, addr: 0x47, lsb: 0, width: 1, access: rw}
+  SFTRST_MODE_RSTZ: {seg: 0, addr: 0x47, lsb: 1, width: 1, access: rw}
+  SFTRST_SYNC_RSTZ: {seg: 0, addr: 0x47, lsb: 2, width: 1, access: rw}
+  SFTRST_HDBYPS_RSTZ: {seg: 0, addr: 0x47, lsb: 3, width: 1, access: rw}
+  SFTRST_INT_RSTZ: {seg: 0, addr: 0x47, lsb: 4, width: 1, access: rw}
+  PAD_CONTROL_00_0x48: {seg: 0, addr: 0x48, lsb: 0, width: 8, access: rw}
+  PAD_BOUT_EN: {seg: 0, addr: 0x48, lsb: 0, width: 1, access: rw}
+  PAD_BIN_ENZ: {seg: 0, addr: 0x48, lsb: 1, width: 1, access: rw}
+  PAD_RIN_ENZ: {seg: 0, addr: 0x48, lsb: 3, width: 1, access: rw}
+  PAD_GIN_ENZ: {seg: 0, addr: 0x48, lsb: 5, width: 1, access: rw}
+  PAD_SYNC1_IN_ENZ: {seg: 0, addr: 0x48, lsb: 6, width: 1, access: rw}
+  PAD_SYNC2_IN_ENZ: {seg: 0, addr: 0x48, lsb: 7, width: 1, access: rw}
+  PAD_CONTROL_01_0x49: {seg: 0, addr: 0x49, lsb: 0, width: 8, access: rw}
+  PAD_CKIN_ENZ: {seg: 0, addr: 0x49, lsb: 0, width: 1, access: rw}
+  PAD_CKOUT_ENZ: {seg: 0, addr: 0x49, lsb: 1, width: 1, access: rw}
+  PAD_SYNC_OUT_ENZ: {seg: 0, addr: 0x49, lsb: 2, width: 1, access: rw}
+  PAD_BLK_OUT_ENZ: {seg: 0, addr: 0x49, lsb: 3, width: 1, access: rw}
+  PAD_TRI_ENZ: {seg: 0, addr: 0x49, lsb: 4, width: 1, access: rw}
+  PAD_PLDN_ENZ: {seg: 0, addr: 0x49, lsb: 5, width: 1, access: rw}
+  PAD_PLUP_ENZ: {seg: 0, addr: 0x49, lsb: 6, width: 1, access: rw}
+  PAD_OSC_CNTRL: {seg: 0, addr: 0x4A, lsb: 0, width: 3, access: rw}
+  DAC_RGBS_BYPS2DAC: {seg: 0, addr: 0x4B, lsb: 1, width: 1, access: rw}
+  DAC_RGBS_ADC2DAC: {seg: 0, addr: 0x4B, lsb: 2, width: 1, access: rw}
+  TEST_BUS_SEL: {seg: 0, addr: 0x4D, lsb: 0, width: 5, access: rw}
+  TEST_BUS_EN: {seg: 0, addr: 0x4D, lsb: 5, width: 1, access: rw}
+  OUT_CLK_PHASE_CNTRL: {seg: 0, addr: 0x4F, lsb: 1, width: 1, access: rw}
+  OUT_CLK_EN: {seg: 0, addr: 0x4F, lsb: 2, width: 2, access: rw}
+  OUT_SYNC_CNTRL: {seg: 0, addr: 0x4F, lsb: 5, width: 1, access: rw}
+  OUT_SYNC_SEL: {seg: 0, addr: 0x4F, lsb: 6, width: 2, access: rw}
+  OUT_BLANK_SEL_0: {seg: 0, addr: 0x50, lsb: 0, width: 1, access: rw}
+  OUT_BLANK_SEL_1: {seg: 0, addr: 0x50, lsb: 1, width: 1, access: rw}
+  IN_BLANK_SEL: {seg: 0, addr: 0x50, lsb: 4, width: 1, access: rw}
+  IN_BLANK_IREG_BYPS: {seg: 0, addr: 0x50, lsb: 5, width: 1, access: rw}
+  GPIO_CONTROL_00: {seg: 0, addr: 0x52, lsb: 0, width: 8, access: rw}
+  GPIO_SEL_1: {seg: 0, addr: 0x52, lsb: 1, width: 1, access: rw}
+  GPIO_SEL_2: {seg: 0, addr: 0x52, lsb: 2, width: 1, access: rw}
+  GPIO_SEL_3: {seg: 0, addr: 0x52, lsb: 3, width: 1, access: rw}
+  GPIO_SEL_4: {seg: 0, addr: 0x52, lsb: 4, width: 1, access: rw}
+  GPIO_SEL_5: {seg: 0, addr: 0x52, lsb: 5, width: 1, access: rw}
+  GPIO_SEL_6: {seg: 0, addr: 0x52, lsb: 6, width: 1, access: rw}
+  GPIO_SEL_7: {seg: 0, addr: 0x52, lsb: 7, width: 1, access: rw}
+  GPIO_CONTROL_01: {seg: 0, addr: 0x53, lsb: 0, width: 8, access: rw}
+  GPIO_EN_1: {seg: 0, addr: 0x53, lsb: 1, width: 1, access: rw}
+  GPIO_EN_2: {seg: 0, addr: 0x53, lsb: 2, width: 1, access: rw}
+  GPIO_EN_3: {seg: 0, addr: 0x53, lsb: 3, width: 1, access: rw}
+  GPIO_EN_4: {seg: 0, addr: 0x53, lsb: 4, width: 1, access: rw}
+  GPIO_EN_5: {seg: 0, addr: 0x53, lsb: 5, width: 1, access: rw}
+  GPIO_EN_6: {seg: 0, addr: 0x53, lsb: 6, width: 1, access: rw}
+  GPIO_EN_7: {seg: 0, addr: 0x53, lsb: 7, width: 1, access: rw}
+  GPIO_VAL_0: {seg: 0, addr: 0x54, lsb: 0, width: 1, access: rw}
+  GPIO_VAL_1: {seg: 0, addr: 0x54, lsb: 1, width: 1, access: rw}
+  GPIO_VAL_2: {seg: 0, addr: 0x54, lsb: 2, width: 1, access: rw}
+  GPIO_VAL_3: {seg: 0, addr: 0x54, lsb: 3, width: 1, access: rw}
+  GPIO_VAL_4: {seg: 0, addr: 0x54, lsb: 4, width: 1, access: rw}
+  GPIO_VAL_5: {seg: 0, addr: 0x54, lsb: 5, width: 1, access: rw}
+  GPIO_VAL_6: {seg: 0, addr: 0x54, lsb: 6, width: 1, access: rw}
+  GPIO_VAL_7: {seg: 0, addr: 0x54, lsb: 7, width: 1, access: rw}
+  INVT_RING_EN: {seg: 0, addr: 0x57, lsb: 7, width: 1, access: rw}
+  INTERRUPT_CONTROL_00: {seg: 0, addr: 0x58, lsb: 0, width: 8, access: rw}
+  INT_CONTROL_RST_SOGBAD: {seg: 0, addr: 0x58, lsb: 0, width: 1, access: rw}
+  INT_CONTROL_RST_SOGSWITCH: {seg: 0, addr: 0x58, lsb: 1, width: 1, access: rw}
+  INT_RST_2: {seg: 0, addr: 0x58, lsb: 2, width: 1, access: rw}
+  INT_RST_3: {seg: 0, addr: 0x58, lsb: 3, width: 1, access: rw}
+  INT_CONTROL_RST_NOHSYNC: {seg: 0, addr: 0x58, lsb: 4, width: 1, access: rw}
+  INT_RST_5: {seg: 0, addr: 0x58, lsb: 5, width: 1, access: rw}
+  INT_RST_6: {seg: 0, addr: 0x58, lsb: 6, width: 1, access: rw}
+  INT_RST_7: {seg: 0, addr: 0x58, lsb: 7, width: 1, access: rw}
+  INTERRUPT_CONTROL_01: {seg: 0, addr: 0x59, lsb: 0, width: 8, access: rw}
+  INT_ENABLE1: {seg: 0, addr: 0x59, lsb: 1, width: 1, access: rw}
+  INT_ENABLE2: {seg: 0, addr: 0x59, lsb: 2, width: 1, access: rw}
+  INT_ENABLE3: {seg: 0, addr: 0x59, lsb: 3, width: 1, access: rw}
+  INT_ENABLE4: {seg: 0, addr: 0x59, lsb: 4, width: 1, access: rw}
+  INT_ENABLE5: {seg: 0, addr: 0x59, lsb: 5, width: 1, access: rw}
+  INT_ENABLE6: {seg: 0, addr: 0x59, lsb: 6, width: 1, access: rw}
+  INT_ENABLE7: {seg: 0, addr: 0x59, lsb: 7, width: 1, access: rw}
+  OSD_SW_RESET: {seg: 0, addr: 0x90, lsb: 0, width: 1, access: rw}
+  OSD_HORIZONTAL_ZOOM: {seg: 0, addr: 0x90, lsb: 1, width: 3, access: rw}
+  OSD_VERTICAL_ZOOM: {seg: 0, addr: 0x90, lsb: 4, width: 2, access: rw}
+  OSD_DISP_EN: {seg: 0, addr: 0x90, lsb: 6, width: 1, access: rw}
+  OSD_MENU_EN: {seg: 0, addr: 0x90, lsb: 7, width: 1, access: rw}
+  OSD_MENU_ICON_SEL: {seg: 0, addr: 0x91, lsb: 0, width: 4, access: rw}
+  OSD_MENU_MOD_SEL: {seg: 0, addr: 0x91, lsb: 4, width: 4, access: rw}
+  OSD_MENU_BAR_FONT_FORCOR: {seg: 0, addr: 0x92, lsb: 0, width: 3, access: rw}
+  OSD_MENU_BAR_FONT_BGCOR: {seg: 0, addr: 0x92, lsb: 3, width: 3, access: rw}
+  OSD_MENU_BAR_BORD_COR: {seg: 0, addr: 0x92, lsb: 6, width: 3, access: rw}
+  OSD_MENU_BAR_BORD_CO: {seg: 0, addr: 0x93, lsb: 0, width: 1, access: rw}
+  OSD_MENU_SEL_FORCOR: {seg: 0, addr: 0x93, lsb: 1, width: 3, access: rw}
+  OSD_MENU_SEL_BGCOR: {seg: 0, addr: 0x93, lsb: 4, width: 3, access: rw}
+  OSD_COMMAND_FINISH: {seg: 0, addr: 0x93, lsb: 7, width: 1, access: rw}
+  OSD_MENU_DISP_STYLE: {seg: 0, addr: 0x94, lsb: 0, width: 1, access: rw}
+  OSD_YCBCR_RGB_FORMAT: {seg: 0, addr: 0x94, lsb: 2, width: 1, access: rw}
+  OSD_INT_NG_LAT: {seg: 0, addr: 0x94, lsb: 3, width: 1, access: rw}
+  OSD_TEST_SEL: {seg: 0, addr: 0x94, lsb: 4, width: 4, access: rw}
+  OSD_MENU_HORI_START: {seg: 0, addr: 0x95, lsb: 0, width: 8, access: rw}
+  OSD_MENU_VER_START: {seg: 0, addr: 0x96, lsb: 0, width: 8, access: rw}
+  OSD_BAR_LENGTH: {seg: 0, addr: 0x97, lsb: 0, width: 8, access: rw}
+  OSD_BAR_FOREGROUND_VALUE: {seg: 0, addr: 0x98, lsb: 0, width: 8, access: rw}
+  IF_IN_DREG_BYPS: {seg: 1, addr: 0x00, lsb: 0, width: 1, access: rw}
+  IF_MATRIX_BYPS: {seg: 1, addr: 0x00, lsb: 1, width: 1, access: rw}
+  IF_UV_REVERT: {seg: 1, addr: 0x00, lsb: 2, width: 1, access: rw}
+  IF_SEL_656: {seg: 1, addr: 0x00, lsb: 3, width: 1, access: rw}
+  IF_SEL16BIT: {seg: 1, addr: 0x00, lsb: 4, width: 1, access: rw}
+  IF_VS_SEL: {seg: 1, addr: 0x00, lsb: 5, width: 1, access: rw}
+  IF_PRGRSV_CNTRL: {seg: 1, addr: 0x00, lsb: 6, width: 1, access: rw}
+  IF_HS_FLIP: {seg: 1, addr: 0x00, lsb: 7, width: 1, access: rw}
+  IF_VS_FLIP: {seg: 1, addr: 0x01, lsb: 0, width: 1, access: rw}
+  IF_UV_FLIP: {seg: 1, addr: 0x01, lsb: 1, width: 1, access: rw}
+  IF_U_DELAY: {seg: 1, addr: 0x01, lsb: 2, width: 1, access: rw}
+  IF_V_DELAY: {seg: 1, addr: 0x01, lsb: 3, width: 1, access: rw}
+  IF_Y_DELAY: {seg: 1, addr: 0x01, lsb: 5, width: 2, access: rw}
+  IF_SEL24BIT: {seg: 1, addr: 0x01, lsb: 7, width: 1, access: rw}
+  INPUT_FORMATTER_02: {seg: 1, addr: 0x02, lsb: 0, width: 8, access: rw}
+  IF_SEL_WEN: {seg: 1, addr: 0x02, lsb: 0, width: 1, access: rw}
+  IF_HS_SEL_LPF: {seg: 1, addr: 0x02, lsb: 1, width: 1, access: rw}
+  IF_HS_INT_LPF_BYPS: {seg: 1, addr: 0x02, lsb: 2, width: 1, access: rw}
+  IF_HS_PSHIFT_BYPS: {seg: 1, addr: 0x02, lsb: 3, width: 1, access: rw}
+  IF_HS_TAP11_BYPS: {seg: 1, addr: 0x02, lsb: 4, width: 1, access: rw}
+  IF_HS_Y_PDELAY: {seg: 1, addr: 0x02, lsb: 5, width: 2, access: rw}
+  IF_HS_UV_SIGN2UNSIGN: {seg: 1, addr: 0x02, lsb: 7, width: 1, access: rw}
+  IF_HS_RATE_SEG0: {seg: 1, addr: 0x03, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG1: {seg: 1, addr: 0x04, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG2: {seg: 1, addr: 0x05, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG3: {seg: 1, addr: 0x06, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG4: {seg: 1, addr: 0x07, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG5: {seg: 1, addr: 0x08, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG6: {seg: 1, addr: 0x09, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_SEG7: {seg: 1, addr: 0x0A, lsb: 0, width: 8, access: rw}
+  IF_HS_RATE_LOW: {seg: 1, addr: 0x0B, lsb: 0, width: 4, access: rw}
+  IF_HS_DEC_FACTOR: {seg: 1, addr: 0x0B, lsb: 4, width: 2, access: rw}
+  IF_SEL_HSCALE: {seg: 1, addr: 0x0B, lsb: 6, width: 1, access: rw}
+  IF_LD_SEL_PROV: {seg: 1, addr: 0x0B, lsb: 7, width: 1, access: rw}
+  IF_LD_RAM_BYPS: {seg: 1, addr: 0x0C, lsb: 0, width: 1, access: rw}
+  IF_LD_ST: {seg: 1, addr: 0x0C, lsb: 1, width: 4, access: rw}
+  IF_INI_ST: {seg: 1, addr: 0x0C, lsb: 5, width: 11, access: rw}
+  IF_HSYNC_RST: {seg: 1, addr: 0x0E, lsb: 0, width: 11, access: rw}
+  IF_HB_ST: {seg: 1, addr: 0x10, lsb: 0, width: 11, access: rw}
+  IF_HB_SP: {seg: 1, addr: 0x12, lsb: 0, width: 11, access: rw}
+  IF_HB_ST1: {seg: 1, addr: 0x14, lsb: 0, width: 8, access: rw}
+  IF_HB_SP1: {seg: 1, addr: 0x16, lsb: 0, width: 11, access: rw}
+  IF_HB_ST2: {seg: 1, addr: 0x18, lsb: 0, width: 11, access: rw}
+  IF_HB_SP2: {seg: 1, addr: 0x1A, lsb: 0, width: 11, access: rw}
+  IF_VB_ST: {seg: 1, addr: 0x1C, lsb: 0, width: 11, access: rw}
+  IF_VB_SP: {seg: 1, addr: 0x1E, lsb: 0, width: 11, access: rw}
+  IF_LINE_ST: {seg: 1, addr: 0x20, lsb: 0, width: 12, access: rw}
+  IF_LINE_SP: {seg: 1, addr: 0x22, lsb: 0, width: 12, access: rw}
+  IF_HBIN_ST: {seg: 1, addr: 0x24, lsb: 0, width: 12, access: rw}
+  IF_HBIN_SP: {seg: 1, addr: 0x26, lsb: 0, width: 12, access: rw}
+  IF_LD_WRST_SEL: {seg: 1, addr: 0x28, lsb: 1, width: 1, access: rw}
+  IF_SEL_ADC_SYNC: {seg: 1, addr: 0x28, lsb: 2, width: 1, access: rw}
+  IF_TEST_EN: {seg: 1, addr: 0x28, lsb: 3, width: 1, access: rw}
+  IF_TEST_SEL: {seg: 1, addr: 0x28, lsb: 4, width: 4, access: rw}
+  IF_AUTO_OFST_EN: {seg: 1, addr: 0x29, lsb: 0, width: 1, access: rw}
+  IF_AUTO_OFST_PRD: {seg: 1, addr: 0x29, lsb: 1, width: 1, access: rw}
+  IF_AUTO_OFST_U_RANGE: {seg: 1, addr: 0x2A, lsb: 0, width: 4, access: rw}
+  IF_AUTO_OFST_V_RANGE: {seg: 1, addr: 0x2A, lsb: 4, width: 4, access: rw}
+  HD_IN_DREG_BYPS: {seg: 1, addr: 0x30, lsb: 0, width: 1, access: rw}
+  HD_MATRIX_BYPS: {seg: 1, addr: 0x30, lsb: 1, width: 1, access: rw}
+  HD_DYN_BYPS: {seg: 1, addr: 0x30, lsb: 2, width: 1, access: rw}
+  HD_SEL_BLK_IN: {seg: 1, addr: 0x30, lsb: 3, width: 1, access: rw}
+  HD_Y_GAIN: {seg: 1, addr: 0x31, lsb: 0, width: 8, access: rw}
+  HD_Y_OFFSET: {seg: 1, addr: 0x32, lsb: 0, width: 8, access: rw}
+  HD_U_GAIN: {seg: 1, addr: 0x33, lsb: 0, width: 8, access: rw}
+  HD_U_OFFSET: {seg: 1, addr: 0x34, lsb: 0, width: 8, access: rw}
+  HD_V_GAIN: {seg: 1, addr: 0x35, lsb: 0, width: 8, access: rw}
+  HD_V_OFFSET: {seg: 1, addr: 0x36, lsb: 0, width: 8, access: rw}
+  HD_HSYNC_RST: {seg: 1, addr: 0x37, lsb: 0, width: 11, access: rw}
+  HD_INI_ST: {seg: 1, addr: 0x39, lsb: 0, width: 11, access: rw}
+  HD_HB_ST: {seg: 1, addr: 0x3B, lsb: 0, width: 12, access: rw}
+  HD_HB_SP: {seg: 1, addr: 0x3D, lsb: 0, width: 12, access: rw}
+  HD_HS_ST: {seg: 1, addr: 0x3F, lsb: 0, width: 12, access: rw}
+  HD_HS_SP: {seg: 1, addr: 0x41, lsb: 0, width: 12, access: rw}
+  HD_VB_ST: {seg: 1, addr: 0x43, lsb: 0, width: 12, access: rw}
+  HD_VB_SP: {seg: 1, addr: 0x45, lsb: 0, width: 12, access: rw}
+  HD_VS_ST: {seg: 1, addr: 0x47, lsb: 0, width: 12, access: rw}
+  HD_VS_SP: {seg: 1, addr: 0x49, lsb: 0, width: 12, access: rw}
+  HD_EXT_VB_ST: {seg: 1, addr: 0x4B, lsb: 0, width: 8, access: rw}
+  HD_EXT_VB_SP: {seg: 1, addr: 0x4D, lsb: 0, width: 8, access: rw}
+  HD_EXT_HB_ST: {seg: 1, addr: 0x4F, lsb: 0, width: 8, access: rw}
+  HD_EXT_HB_SP: {seg: 1, addr: 0x51, lsb: 0, width: 8, access: rw}
+  HD_BLK_GY_DATA: {seg: 1, addr: 0x53, lsb: 0, width: 8, access: rw}
+  HD_BLK_BU_DATA: {seg: 1, addr: 0x54, lsb: 0, width: 8, access: rw}
+  HD_BLK_RV_DATA: {seg: 1, addr: 0x55, lsb: 0, width: 8, access: rw}
+  MD_HPERIOD_LOCK_VALUE: {seg: 1, addr: 0x60, lsb: 0, width: 5, access: rw}
+  MD_HPERIOD_UNLOCK_VALUE: {seg: 1, addr: 0x60, lsb: 5, width: 3, access: rw}
+  MD_VPERIOD_LOCK_VALUE: {seg: 1, addr: 0x61, lsb: 0, width: 5, access: rw}
+  MD_VPERIOD_UNLOCK_VALUE: {seg: 1, addr: 0x61, lsb: 5, width: 3, access: rw}
+  MD_NTSC_INT_CNTRL: {seg: 1, addr: 0x62, lsb: 0, width: 6, access: rw}
+  MD_WEN_CNTRL: {seg: 1, addr: 0x62, lsb: 6, width: 2, access: rw}
+  MD_PAL_INT_CNTRL: {seg: 1, addr: 0x63, lsb: 0, width: 6, access: rw}
+  MD_HS_FLIP: {seg: 1, addr: 0x63, lsb: 6, width: 1, access: rw}
+  MD_VS_FLIP: {seg: 1, addr: 0x63, lsb: 7, width: 1, access: rw}
+  MD_NTSC_PRG_CNTRL: {seg: 1, addr: 0x64, lsb: 0, width: 7, access: rw}
+  MD_VGA_CNTRL: {seg: 1, addr: 0x65, lsb: 0, width: 7, access: rw}
+  MD_SEL_VGA60: {seg: 1, addr: 0x65, lsb: 7, width: 1, access: rw}
+  MD_VGA_75HZ_CNTRL: {seg: 1, addr: 0x66, lsb: 0, width: 8, access: rw}
+  MD_VGA_85HZ_CNTRL: {seg: 1, addr: 0x67, lsb: 0, width: 8, access: rw}
+  MD_V1250_VCNTRL: {seg: 1, addr: 0x68, lsb: 0, width: 7, access: rw}
+  MD_V1250_HCNTRL: {seg: 1, addr: 0x69, lsb: 0, width: 8, access: rw}
+  MD_SVGA_60HZ_CNTRL: {seg: 1, addr: 0x6A, lsb: 0, width: 8, access: rw}
+  MD_SVGA_75HZ_CNTRL: {seg: 1, addr: 0x6B, lsb: 0, width: 8, access: rw}
+  MD_SVGA_85HZ_CNTRL: {seg: 1, addr: 0x6C, lsb: 0, width: 8, access: rw}
+  MD_XGA_CNTRL: {seg: 1, addr: 0x6D, lsb: 0, width: 7, access: rw}
+  MD_XGA_60HZ_CNTRL: {seg: 1, addr: 0x6E, lsb: 0, width: 8, access: rw}
+  MD_XGA_70HZ_CNTRL: {seg: 1, addr: 0x6F, lsb: 0, width: 7, access: rw}
+  MD_XGA_75HZ_CNTRL: {seg: 1, addr: 0x70, lsb: 0, width: 7, access: rw}
+  MD_XGA_85HZ_CNTRL: {seg: 1, addr: 0x71, lsb: 0, width: 7, access: rw}
+  MD_SXGA_CNTRL: {seg: 1, addr: 0x72, lsb: 0, width: 8, access: rw}
+  MD_SXGA_60HZ_CNTRL: {seg: 1, addr: 0x73, lsb: 0, width: 7, access: rw}
+  MD_SXGA_75HZ_CNTRL: {seg: 1, addr: 0x74, lsb: 0, width: 7, access: rw}
+  MD_SXGA_85HZ_CNTRL: {seg: 1, addr: 0x75, lsb: 0, width: 7, access: rw}
+  MD_HD720P_CNTRL: {seg: 1, addr: 0x76, lsb: 0, width: 7, access: rw}
+  MD_HD720P_60HZ_CNTRL: {seg: 1, addr: 0x77, lsb: 0, width: 8, access: rw}
+  MD_HD720P_50HZ_CNTRL: {seg: 1, addr: 0x78, lsb: 0, width: 8, access: rw}
+  MD_HD1125I_CNTRL: {seg: 1, addr: 0x79, lsb: 0, width: 7, access: rw}
+  MD_HD2200_1125I_CNTRL: {seg: 1, addr: 0x7A, lsb: 0, width: 8, access: rw}
+  MD_HD2640_1125I_CNTRL: {seg: 1, addr: 0x7B, lsb: 0, width: 8, access: rw}
+  MD_HD1125P_CNTRL: {seg: 1, addr: 0x7C, lsb: 0, width: 8, access: rw}
+  MD_HD2200_1125P_CNTRL: {seg: 1, addr: 0x7D, lsb: 0, width: 7, access: rw}
+  MD_HD2640_1125P_CNTRL: {seg: 1, addr: 0x7E, lsb: 0, width: 7, access: rw}
+  MD_HD1250P_CNTRL: {seg: 1, addr: 0x7F, lsb: 0, width: 7, access: rw}
+  MD_USER_DEF_VCNTRL: {seg: 1, addr: 0x80, lsb: 0, width: 8, access: rw}
+  MD_USER_DEF_HCNTRL: {seg: 1, addr: 0x81, lsb: 0, width: 8, access: rw}
+  MD_NOSYNC_DET_EN: {seg: 1, addr: 0x82, lsb: 0, width: 1, access: rw}
+  MD_NOSYNC_USER_ID: {seg: 1, addr: 0x82, lsb: 1, width: 1, access: rw}
+  MD_SW_DET_EN: {seg: 1, addr: 0x82, lsb: 2, width: 1, access: rw}
+  MD_SW_USER_ID: {seg: 1, addr: 0x82, lsb: 3, width: 1, access: rw}
+  MD_TIMER_DET_EN_H: {seg: 1, addr: 0x82, lsb: 4, width: 1, access: rw}
+  MD_TIMER_DET_EN_V: {seg: 1, addr: 0x82, lsb: 5, width: 1, access: rw}
+  MD_DET_BYPS_H: {seg: 1, addr: 0x82, lsb: 6, width: 1, access: rw}
+  MD_H_USER_ID: {seg: 1, addr: 0x82, lsb: 7, width: 1, access: rw}
+  MD_DET_BYPS_V: {seg: 1, addr: 0x83, lsb: 0, width: 1, access: rw}
+  MD_V_USER_ID: {seg: 1, addr: 0x83, lsb: 1, width: 1, access: rw}
+  MD_UNSTABLE_LOCK_VALUE: {seg: 1, addr: 0x83, lsb: 2, width: 4, access: rw}
+  DEINT_00: {seg: 2, addr: 0x00, lsb: 0, width: 8, access: rw}
+  DIAG_BOB_MIN_BYPS: {seg: 2, addr: 0x00, lsb: 0, width: 1, access: rw}
+  DIAG_BOB_COEF_SEL: {seg: 2, addr: 0x00, lsb: 1, width: 1, access: rw}
+  DIAG_BOB_WEAVE_BYPS: {seg: 2, addr: 0x00, lsb: 2, width: 1, access: rw}
+  DIAG_BOB_DET_BYPS: {seg: 2, addr: 0x00, lsb: 3, width: 2, access: rw}
+  DIAG_BOB_YTAP3_BYPS: {seg: 2, addr: 0x00, lsb: 5, width: 1, access: rw}
+  DIAG_BOB_MIN_CBYPS: {seg: 2, addr: 0x00, lsb: 6, width: 1, access: rw}
+  DIAG_BOB_PLDY_RAM_BYPS: {seg: 2, addr: 0x00, lsb: 7, width: 1, access: rw}
+  DIAG_BOB_PLDY_SP: {seg: 2, addr: 0x01, lsb: 0, width: 8, access: rw}
+  MADPT_SEL_22: {seg: 2, addr: 0x02, lsb: 5, width: 1, access: rw}
+  MADPT_Y_VSCALE_BYPS: {seg: 2, addr: 0x02, lsb: 6, width: 1, access: rw}
+  MADPT_UV_VSCALE_BYPS: {seg: 2, addr: 0x02, lsb: 7, width: 1, access: rw}
+  MADPT_NOISE_DET_SEL: {seg: 2, addr: 0x03, lsb: 0, width: 1, access: rw}
+  MADPT_NOISE_DET_SHIFT: {seg: 2, addr: 0x03, lsb: 1, width: 2, access: rw}
+  MADPT_NOISE_DET_RST: {seg: 2, addr: 0x03, lsb: 3, width: 2, access: rw}
+  MADPT_NOISE_THRESHO: {seg: 2, addr: 0x04, lsb: 0, width: 7, access: rw}
+  MADPT_GM_NOISE_VALUE: {seg: 2, addr: 0x06, lsb: 0, width: 8, access: rw}
+  MADPT_STILL_NOISE_VALUE: {seg: 2, addr: 0x07, lsb: 0, width: 8, access: rw}
+  MADPT_LESS_NOISE_VALUE: {seg: 2, addr: 0x08, lsb: 0, width: 8, access: rw}
+  MADPT_NOISE_EST_GAIN: {seg: 2, addr: 0x09, lsb: 0, width: 4, access: rw}
+  MADPT_STILL_NOISE_ES: {seg: 2, addr: 0x09, lsb: 4, width: 4, access: rw}
+  MADPT_NOISE_EST_EN: {seg: 2, addr: 0x0A, lsb: 4, width: 1, access: rw}
+  MADPT_STILL_NOISE_EST_EN: {seg: 2, addr: 0x0A, lsb: 5, width: 1, access: rw}
+  MADPT_Y_MI_DET_BYPS: {seg: 2, addr: 0x0A, lsb: 7, width: 1, access: rw}
+  MADPT_Y_MI_OFFSET: {seg: 2, addr: 0x0B, lsb: 0, width: 7, access: rw}
+  MADPT_Y_MI_GAIN: {seg: 2, addr: 0x0C, lsb: 0, width: 4, access: rw}
+  MADPT_MI_1BIT_BYPS: {seg: 2, addr: 0x0C, lsb: 4, width: 1, access: rw}
+  MADPT_MI_1BIT_FRAME2_EN: {seg: 2, addr: 0x0C, lsb: 5, width: 1, access: rw}
+  MADPT_MI_THRESHOLD: {seg: 2, addr: 0x0D, lsb: 0, width: 7, access: rw}
+  MADPT_STILL_DET_EN: {seg: 2, addr: 0x0F, lsb: 0, width: 1, access: rw}
+  MADPT_STILL_ID: {seg: 2, addr: 0x0F, lsb: 1, width: 1, access: rw}
+  MADPT_STILL_UNLOCK: {seg: 2, addr: 0x0F, lsb: 2, width: 2, access: rw}
+  MADPT_STILL_LOCK: {seg: 2, addr: 0x0F, lsb: 4, width: 4, access: rw}
+  MADPT_LESS_STILL_DET_EN: {seg: 2, addr: 0x10, lsb: 0, width: 1, access: rw}
+  MADPT_LESS_STILL_ID: {seg: 2, addr: 0x10, lsb: 1, width: 1, access: rw}
+  MADPT_LESS_STILL_UNLOCK: {seg: 2, addr: 0x10, lsb: 2, width: 2, access: rw}
+  MADPT_LESS_STILL_LOCK: {seg: 2, addr: 0x10, lsb: 4, width: 4, access: rw}
+  MADPT_EN_PULLDOWN32: {seg: 2, addr: 0x11, lsb: 3, width: 1, access: rw}
+  MADPT_PULLDOWN32_ID: {seg: 2, addr: 0x11, lsb: 4, width: 1, access: rw}
+  MADPT_PULLDOWN32_OFFSET: {seg: 2, addr: 0x11, lsb: 5, width: 3, access: rw}
+  MADPT_PULLDOWN32_LOCK_RST: {seg: 2, addr: 0x12, lsb: 0, width: 7, access: rw}
+  MADPT_EN_PULLDOWN22: {seg: 2, addr: 0x13, lsb: 0, width: 1, access: rw}
+  MADPT_PULLDOWN22_ID: {seg: 2, addr: 0x13, lsb: 1, width: 1, access: rw}
+  MADPT_PULLDOWN22_OFFSET: {seg: 2, addr: 0x13, lsb: 2, width: 1, access: rw}
+  MADPT_PULLDOWN22_DET_CNTRL: {seg: 2, addr: 0x13, lsb: 4, width: 3, access: rw}
+  MADPT_PULLDOWN22_THR: {seg: 2, addr: 0x14, lsb: 0, width: 8, access: rw}
+  MADPT_MO_ADP_Y_EN: {seg: 2, addr: 0x16, lsb: 4, width: 1, access: rw}
+  MADPT_MO_ADP_UV_EN: {seg: 2, addr: 0x16, lsb: 5, width: 1, access: rw}
+  MADPT_VT_FILTER_CNTRL: {seg: 2, addr: 0x16, lsb: 6, width: 1, access: rw}
+  MAPDT_VT_SEL_PRGV: {seg: 2, addr: 0x16, lsb: 7, width: 1, access: rw}
+  MADPT_Y_DELAY_UV_DELAY: {seg: 2, addr: 0x17, lsb: 0, width: 8, access: rw}
+  MADPT_Y_DELAY: {seg: 2, addr: 0x17, lsb: 0, width: 4, access: rw}
+  MADPT_UV_DELAY: {seg: 2, addr: 0x17, lsb: 4, width: 4, access: rw}
+  MADPT_DIVID_BYPS: {seg: 2, addr: 0x18, lsb: 0, width: 1, access: rw}
+  MADPT_DIVID_SEL: {seg: 2, addr: 0x18, lsb: 1, width: 1, access: rw}
+  MADPT_HTAP_BYPS: {seg: 2, addr: 0x18, lsb: 3, width: 1, access: rw}
+  MADPT_HTAP_COEFF: {seg: 2, addr: 0x18, lsb: 4, width: 4, access: rw}
+  MADPT_BIT_STILL_EN: {seg: 2, addr: 0x19, lsb: 0, width: 1, access: rw}
+  MADPT_VTAP2_BYPS: {seg: 2, addr: 0x19, lsb: 2, width: 1, access: rw}
+  MADPT_VTAP2_ROUND_SEL: {seg: 2, addr: 0x19, lsb: 3, width: 1, access: rw}
+  MADPT_VTAP2_COEFF: {seg: 2, addr: 0x19, lsb: 4, width: 4, access: rw}
+  MADPT_PIXEL_STILL_TH: {seg: 2, addr: 0x1A, lsb: 0, width: 8, access: rw}
+  MADPT_HFREQ_NOISE: {seg: 2, addr: 0x1F, lsb: 0, width: 8, access: rw}
+  MADPT_HFREQ_DET_EN: {seg: 2, addr: 0x20, lsb: 0, width: 1, access: rw}
+  MADPT_HFREQ_ID: {seg: 2, addr: 0x20, lsb: 1, width: 1, access: rw}
+  MADPT_HFREQ_LOCK: {seg: 2, addr: 0x20, lsb: 4, width: 4, access: rw}
+  MADPT_HFREQ_UNLOCK: {seg: 2, addr: 0x21, lsb: 0, width: 3, access: rw}
+  MADPT_EN_NOUT_FOR_STILL: {seg: 2, addr: 0x21, lsb: 4, width: 1, access: rw}
+  MADPT_EN_NOUT_FOR_LESS_STILL: {seg: 2, addr: 0x21, lsb: 5, width: 1, access: rw}
+  MADPT_PD_SP: {seg: 2, addr: 0x22, lsb: 0, width: 5, access: rw}
+  MADPT_PD_ST: {seg: 2, addr: 0x23, lsb: 0, width: 5, access: rw}
+  MADPT_PD_RAM_BYPS: {seg: 2, addr: 0x24, lsb: 2, width: 1, access: rw}
+  MADPT_VIIR_BYPS: {seg: 2, addr: 0x26, lsb: 6, width: 1, access: rw}
+  MADPT_VIIR_ROUND_SEL: {seg: 2, addr: 0x26, lsb: 7, width: 1, access: rw}
+  MADPT_VIIR_COEF: {seg: 2, addr: 0x27, lsb: 0, width: 7, access: rw}
+  MADPT_VSCALE_RATE_LOW: {seg: 2, addr: 0x28, lsb: 4, width: 4, access: rw}
+  MADPT_VSCALE_DEC_FACTOR: {seg: 2, addr: 0x31, lsb: 0, width: 2, access: rw}
+  MADPT_SEL_PHASE_INI: {seg: 2, addr: 0x31, lsb: 2, width: 1, access: rw}
+  MADPT_TEST_EN: {seg: 2, addr: 0x31, lsb: 3, width: 1, access: rw}
+  MADPT_TEST_SEL: {seg: 2, addr: 0x31, lsb: 4, width: 4, access: rw}
+  MADPT_Y_HTAP_CNTRL: {seg: 2, addr: 0x32, lsb: 0, width: 4, access: rw}
+  MADPT_Y_VTAP_CNTRL: {seg: 2, addr: 0x32, lsb: 4, width: 3, access: rw}
+  MADPT_NRD_SEL: {seg: 2, addr: 0x32, lsb: 7, width: 1, access: rw}
+  MADPT_M_HTAP_CNTRL: {seg: 2, addr: 0x33, lsb: 0, width: 4, access: rw}
+  MADPT_M_VTAP_CNTRL: {seg: 2, addr: 0x33, lsb: 4, width: 3, access: rw}
+  MADPT_Y_WOUT: {seg: 2, addr: 0x34, lsb: 1, width: 3, access: rw}
+  MADPT_UV_WOUT: {seg: 2, addr: 0x34, lsb: 5, width: 3, access: rw}
+  MADPT_Y_NRD_ENABLE: {seg: 2, addr: 0x35, lsb: 0, width: 1, access: rw}
+  MADPT_UV_NRD_ENABLE: {seg: 2, addr: 0x35, lsb: 1, width: 1, access: rw}
+  MADPT_NRD_OUT_SEL: {seg: 2, addr: 0x35, lsb: 2, width: 1, access: rw}
+  MADPT_DD0_SEL: {seg: 2, addr: 0x35, lsb: 3, width: 1, access: rw}
+  MADPT_NRD_VIIR_PD_BYPS: {seg: 2, addr: 0x35, lsb: 4, width: 1, access: rw}
+  MADPT_UVDLY_PD_BYPS: {seg: 2, addr: 0x35, lsb: 5, width: 1, access: rw}
+  MADPT_CMP_EN: {seg: 2, addr: 0x35, lsb: 6, width: 1, access: rw}
+  MADPT_CMP_USER_ID: {seg: 2, addr: 0x35, lsb: 7, width: 1, access: rw}
+  MADPT_CMP_LOW_THRESHOLD: {seg: 2, addr: 0x36, lsb: 0, width: 8, access: rw}
+  MADPT_CMP_HIGH_THRESHOLD: {seg: 2, addr: 0x37, lsb: 0, width: 8, access: rw}
+  MADPT_NRD_VIIR_PD_SP: {seg: 2, addr: 0x38, lsb: 0, width: 4, access: rw}
+  MADPT_NRD_VIIR_PD_ST: {seg: 2, addr: 0x38, lsb: 4, width: 4, access: rw}
+  MADPT_UVDLY_PD_SP: {seg: 2, addr: 0x39, lsb: 0, width: 4, access: rw}
+  MADPT_UVDLY_PD_ST: {seg: 2, addr: 0x39, lsb: 4, width: 4, access: rw}
+  MADPT_EN_UV_DEINT: {seg: 2, addr: 0x3A, lsb: 0, width: 1, access: rw}
+  MADPT_EN_PULLDWN_FOR_NRD: {seg: 2, addr: 0x3A, lsb: 1, width: 1, access: rw}
+  MADPT_EN_STILL_FOR_NRD: {seg: 2, addr: 0x3A, lsb: 3, width: 1, access: rw}
+  MADPT_EN_STILL_FOR_PULLDWN: {seg: 2, addr: 0x3A, lsb: 4, width: 1, access: rw}
+  MADPT_MI_1BIT_DLY: {seg: 2, addr: 0x3A, lsb: 5, width: 2, access: rw}
+  MADPT_UV_MI_DET_BYPS: {seg: 2, addr: 0x3A, lsb: 7, width: 1, access: rw}
+  MADPT_UV_MI_OFFSET: {seg: 2, addr: 0x3B, lsb: 0, width: 7, access: rw}
+  MADPT_UV_MI_GAIN: {seg: 2, addr: 0x3C, lsb: 0, width: 4, access: rw}
+  MADPT_MI_DELAY: {seg: 2, addr: 0x3C, lsb: 4, width: 3, access: rw}
+  VDS_SYNC_EN: {seg: 3, addr: 0x00, lsb: 0, width: 1, access: rw}
+  VDS_FIELDAB_EN: {seg: 3, addr: 0x00, lsb: 1, width: 1, access: rw}
+  VDS_DFIELD_EN: {seg: 3, addr: 0x00, lsb: 2, width: 1, access: rw}
+  VDS_FIELD_FLIP: {seg: 3, addr: 0x00, lsb: 3, width: 1, access: rw}
+  VDS_HSCALE_BYPS: {seg: 3, addr: 0x00, lsb: 4, width: 1, access: rw}
+  VDS_VSCALE_BYPS: {seg: 3, addr: 0x00, lsb: 5, width: 1, access: rw}
+  VDS_HALF_EN: {seg: 3, addr: 0x00, lsb: 6, width: 1, access: rw}
+  VDS_SRESET: {seg: 3, addr: 0x00, lsb: 7, width: 1, access: rw}
+  VDS_HSYNC_RST: {seg: 3, addr: 0x01, lsb: 0, width: 12, access: rw}
+  VDS_VSYNC_RST: {seg: 3, addr: 0x02, lsb: 4, width: 11, access: rw}
+  VDS_HB_ST: {seg: 3, addr: 0x04, lsb: 0, width: 12, access: rw}
+  VDS_HB_SP: {seg: 3, addr: 0x05, lsb: 4, width: 12, access: rw}
+  VDS_VB_ST: {seg: 3, addr: 0x07, lsb: 0, width: 11, access: rw}
+  VDS_VB_SP: {seg: 3, addr: 0x08, lsb: 4, width: 11, access: rw}
+  VDS_HS_ST: {seg: 3, addr: 0x0A, lsb: 0, width: 12, access: rw}
+  VDS_HS_SP: {seg: 3, addr: 0x0B, lsb: 4, width: 12, access: rw}
+  VDS_VS_ST: {seg: 3, addr: 0x0D, lsb: 0, width: 11, access: rw}
+  VDS_VS_SP: {seg: 3, addr: 0x0E, lsb: 4, width: 11, access: rw}
+  VDS_DIS_HB_ST: {seg: 3, addr: 0x10, lsb: 0, width: 12, access: rw}
+  VDS_DIS_HB_SP: {seg: 3, addr: 0x11, lsb: 4, width: 12, access: rw}
+  VDS_DIS_VB_ST: {seg: 3, addr: 0x13, lsb: 0, width: 11, access: rw}
+  VDS_DIS_VB_SP: {seg: 3, addr: 0x14, lsb: 4, width: 11, access: rw}
+  VDS_HSCALE: {seg: 3, addr: 0x16, lsb: 0, width: 10, access: rw}
+  VDS_VSCALE: {seg: 3, addr: 0x17, lsb: 4, width: 10, access: rw}
+  VDS_FRAME_RST: {seg: 3, addr: 0x19, lsb: 0, width: 10, access: rw}
+  VDS_FLOCK_EN: {seg: 3, addr: 0x1A, lsb: 4, width: 1, access: rw}
+  VDS_FREERUN_FID: {seg: 3, addr: 0x1A, lsb: 5, width: 1, access: rw}
+  VDS_FID_AA_DLY: {seg: 3, addr: 0x1A, lsb: 6, width: 1, access: rw}
+  VDS_FID_RST: {seg: 3, addr: 0x1A, lsb: 7, width: 1, access: rw}
+  VDS_FR_SELECT: {seg: 3, addr: 0x1B, lsb: 0, width: 32, access: rw}
+  VDS_FRAME_NO: {seg: 3, addr: 0x1F, lsb: 0, width: 4, access: rw}
+  VDS_DIF_FR_SEL_EN: {seg: 3, addr: 0x1F, lsb: 4, width: 1, access: rw}
+  VDS_EN_FR_NUM_RST: {seg: 3, addr: 0x1F, lsb: 5, width: 1, access: rw}
+  VDS_VSYN_SIZE1: {seg: 3, addr: 0x20, lsb: 0, width: 11, access: rw}
+  VDS_VSYN_SIZE2: {seg: 3, addr: 0x22, lsb: 0, width: 11, access: rw}
+  VDS_3_24: {seg: 3, addr: 0x24, lsb: 0, width: 8, access: rw}
+  VDS_UV_FLIP: {seg: 3, addr: 0x24, lsb: 0, width: 1, access: rw}
+  VDS_U_DELAY: {seg: 3, addr: 0x24, lsb: 1, width: 1, access: rw}
+  VDS_V_DELAY: {seg: 3, addr: 0x24, lsb: 2, width: 1, access: rw}
+  VDS_TAP6_BYPS: {seg: 3, addr: 0x24, lsb: 3, width: 1, access: rw}
+  VDS_Y_DELAY: {seg: 3, addr: 0x24, lsb: 4, width: 2, access: rw}
+  VDS_WEN_DELAY: {seg: 3, addr: 0x24, lsb: 6, width: 2, access: rw}
+  VDS_D_SP: {seg: 3, addr: 0x25, lsb: 0, width: 10, access: rw}
+  VDS_D_RAM_BYPS: {seg: 3, addr: 0x26, lsb: 6, width: 1, access: rw}
+  VDS_BLEV_AUTO_EN: {seg: 3, addr: 0x26, lsb: 7, width: 1, access: rw}
+  VDS_USER_MIN: {seg: 3, addr: 0x27, lsb: 0, width: 4, access: rw}
+  VDS_USER_MAX: {seg: 3, addr: 0x27, lsb: 4, width: 4, access: rw}
+  VDS_BLEV_LEVEL: {seg: 3, addr: 0x28, lsb: 0, width: 8, access: rw}
+  VDS_BLEV_GAIN: {seg: 3, addr: 0x29, lsb: 0, width: 8, access: rw}
+  VDS_BLEV_BYPS: {seg: 3, addr: 0x2A, lsb: 0, width: 1, access: rw}
+  VDS_STEP_DLY_CNTRL: {seg: 3, addr: 0x2A, lsb: 4, width: 2, access: rw}
+  VDS_0X2A_RESERVED_2BITS: {seg: 3, addr: 0x2A, lsb: 6, width: 2, access: rw}
+  VDS_STEP_GAIN: {seg: 3, addr: 0x2B, lsb: 0, width: 4, access: rw}
+  VDS_STEP_CLIP: {seg: 3, addr: 0x2B, lsb: 4, width: 3, access: rw}
+  VDS_UV_STEP_BYPS: {seg: 3, addr: 0x2B, lsb: 7, width: 1, access: rw}
+  VDS_SK_U_CENTER: {seg: 3, addr: 0x2C, lsb: 0, width: 8, access: rw}
+  VDS_SK_V_CENTER: {seg: 3, addr: 0x2D, lsb: 0, width: 8, access: rw}
+  VDS_SK_Y_LOW_TH: {seg: 3, addr: 0x2E, lsb: 0, width: 8, access: rw}
+  VDS_SK_Y_HIGH_TH: {seg: 3, addr: 0x2F, lsb: 0, width: 8, access: rw}
+  VDS_SK_RANGE: {seg: 3, addr: 0x30, lsb: 0, width: 8, access: rw}
+  VDS_SK_GAIN: {seg: 3, addr: 0x31, lsb: 0, width: 4, access: rw}
+  VDS_SK_Y_EN: {seg: 3, addr: 0x31, lsb: 4, width: 1, access: rw}
+  VDS_SK_BYPS: {seg: 3, addr: 0x31, lsb: 5, width: 1, access: rw}
+  VDS_SVM_BPF_CNTRL: {seg: 3, addr: 0x32, lsb: 0, width: 2, access: rw}
+  VDS_SVM_POL_FLIP: {seg: 3, addr: 0x32, lsb: 2, width: 1, access: rw}
+  VDS_SVM_2ND_BYPS: {seg: 3, addr: 0x32, lsb: 3, width: 1, access: rw}
+  VDS_SVM_VCLK_DELAY: {seg: 3, addr: 0x32, lsb: 4, width: 3, access: rw}
+  VDS_SVM_SIGMOID_BYPS: {seg: 3, addr: 0x32, lsb: 7, width: 1, access: rw}
+  VDS_SVM_GAIN: {seg: 3, addr: 0x33, lsb: 0, width: 8, access: rw}
+  VDS_SVM_OFFSET: {seg: 3, addr: 0x34, lsb: 0, width: 8, access: rw}
+  VDS_Y_GAIN: {seg: 3, addr: 0x35, lsb: 0, width: 8, access: rw}
+  VDS_UCOS_GAIN: {seg: 3, addr: 0x36, lsb: 0, width: 8, access: rw}
+  VDS_VCOS_GAIN: {seg: 3, addr: 0x37, lsb: 0, width: 8, access: rw}
+  VDS_USIN_GAIN: {seg: 3, addr: 0x38, lsb: 0, width: 8, access: rw}
+  VDS_VSIN_GAIN: {seg: 3, addr: 0x39, lsb: 0, width: 8, access: rw}
+  VDS_Y_OFST: {seg: 3, addr: 0x3A, lsb: 0, width: 8, access: rw}
+  VDS_U_OFST: {seg: 3, addr: 0x3B, lsb: 0, width: 8, access: rw}
+  VDS_V_OFST: {seg: 3, addr: 0x3C, lsb: 0, width: 8, access: rw}
+  VDS_SYNC_LEV: {seg: 3, addr: 0x3D, lsb: 0, width: 9, access: rw}
+  VDS_CONVT_BYPS: {seg: 3, addr: 0x3E, lsb: 3, width: 1, access: rw}
+  VDS_DYN_BYPS: {seg: 3, addr: 0x3E, lsb: 4, width: 1, access: rw}
+  VDS_BLK_BF_EN: {seg: 3, addr: 0x3E, lsb: 7, width: 1, access: rw}
+  VDS_UV_BLK_VAL: {seg: 3, addr: 0x3F, lsb: 0, width: 8, access: rw, signed: true}
+  VDS_1ST_INT_BYPS: {seg: 3, addr: 0x40, lsb: 0, width: 1, access: rw}
+  VDS_2ND_INT_BYPS: {seg: 3, addr: 0x40, lsb: 1, width: 1, access: rw}
+  VDS_IN_DREG_BYPS: {seg: 3, addr: 0x40, lsb: 2, width: 1, access: rw}
+  VDS_SVM_V4CLK_DELAY: {seg: 3, addr: 0x40, lsb: 4, width: 2, access: rw}
+  VDS_PK_LINE_BUF_SP: {seg: 3, addr: 0x41, lsb: 0, width: 10, access: rw}
+  VDS_PK_RAM_BYPS: {seg: 3, addr: 0x42, lsb: 6, width: 1, access: rw}
+  VDS_PK_VL_HL_SEL: {seg: 3, addr: 0x43, lsb: 0, width: 1, access: rw}
+  VDS_PK_VL_HH_SEL: {seg: 3, addr: 0x43, lsb: 1, width: 1, access: rw}
+  VDS_PK_VH_HL_SEL: {seg: 3, addr: 0x43, lsb: 2, width: 1, access: rw}
+  VDS_PK_VH_HH_SEL: {seg: 3, addr: 0x43, lsb: 3, width: 1, access: rw}
+  VDS_PK_LB_CORE: {seg: 3, addr: 0x44, lsb: 0, width: 3, access: rw}
+  VDS_PK_LB_CMP: {seg: 3, addr: 0x44, lsb: 3, width: 5, access: rw}
+  VDS_PK_LB_GAIN: {seg: 3, addr: 0x45, lsb: 0, width: 6, access: rw}
+  VDS_PK_LH_CORE: {seg: 3, addr: 0x46, lsb: 0, width: 3, access: rw}
+  VDS_PK_LH_CMP: {seg: 3, addr: 0x46, lsb: 3, width: 5, access: rw}
+  VDS_PK_LH_GAIN: {seg: 3, addr: 0x47, lsb: 0, width: 6, access: rw}
+  VDS_PK_HL_CORE: {seg: 3, addr: 0x48, lsb: 0, width: 3, access: rw}
+  VDS_PK_HL_CMP: {seg: 3, addr: 0x48, lsb: 3, width: 5, access: rw}
+  VDS_PK_HL_GAIN: {seg: 3, addr: 0x49, lsb: 0, width: 6, access: rw}
+  VDS_PK_HB_CORE: {seg: 3, addr: 0x4A, lsb: 0, width: 3, access: rw}
+  VDS_PK_HB_CMP: {seg: 3, addr: 0x4A, lsb: 3, width: 5, access: rw}
+  VDS_PK_HB_GAIN: {seg: 3, addr: 0x4B, lsb: 0, width: 6, access: rw}
+  VDS_PK_HH_CORE: {seg: 3, addr: 0x4C, lsb: 0, width: 3, access: rw}
+  VDS_PK_HH_CMP: {seg: 3, addr: 0x4C, lsb: 3, width: 5, access: rw}
+  VDS_PK_HH_GAIN: {seg: 3, addr: 0x4D, lsb: 0, width: 6, access: rw}
+  VDS_PK_Y_H_BYPS: {seg: 3, addr: 0x4E, lsb: 0, width: 1, access: rw}
+  VDS_PK_Y_V_BYPS: {seg: 3, addr: 0x4E, lsb: 1, width: 1, access: rw}
+  VDS_C_VPK_BYPS: {seg: 3, addr: 0x4E, lsb: 3, width: 1, access: rw}
+  VDS_C_VPK_CORE: {seg: 3, addr: 0x4E, lsb: 4, width: 3, access: rw}
+  VDS_C_VPK_GAIN: {seg: 3, addr: 0x4F, lsb: 0, width: 6, access: rw}
+  VDS_TEST_BUS_SEL: {seg: 3, addr: 0x50, lsb: 0, width: 4, access: rw}
+  VDS_TEST_EN: {seg: 3, addr: 0x50, lsb: 4, width: 1, access: rw}
+  VDS_DO_UV_DEV_BYPS: {seg: 3, addr: 0x50, lsb: 5, width: 1, access: rw}
+  VDS_DO_UVSEL_FLIP: {seg: 3, addr: 0x50, lsb: 6, width: 1, access: rw}
+  VDS_DO_16B_EN: {seg: 3, addr: 0x50, lsb: 7, width: 1, access: rw}
+  VDS_GLB_NOISE: {seg: 3, addr: 0x51, lsb: 7, width: 11, access: rw}
+  VDS_NR_Y_BYPS: {seg: 3, addr: 0x52, lsb: 4, width: 1, access: rw}
+  VDS_NR_C_BYPS: {seg: 3, addr: 0x52, lsb: 5, width: 1, access: rw}
+  VDS_NR_DIF_LPF5_BYPS: {seg: 3, addr: 0x52, lsb: 6, width: 1, access: rw}
+  VDS_NR_MI_TH_EN: {seg: 3, addr: 0x52, lsb: 7, width: 1, access: rw}
+  VDS_NR_MI_OFFSET: {seg: 3, addr: 0x53, lsb: 0, width: 7, access: rw}
+  VDS_NR_MIG_USER_EN: {seg: 3, addr: 0x53, lsb: 7, width: 1, access: rw}
+  VDS_NR_MI_GAIN: {seg: 3, addr: 0x54, lsb: 0, width: 4, access: rw}
+  VDS_NR_STILL_GAIN: {seg: 3, addr: 0x54, lsb: 4, width: 4, access: rw}
+  VDS_NR_MI_THRES: {seg: 3, addr: 0x55, lsb: 0, width: 4, access: rw}
+  VDS_NR_EN_H_NOISY: {seg: 3, addr: 0x55, lsb: 4, width: 1, access: rw}
+  VDS_NR_EN_GLB_STILL: {seg: 3, addr: 0x55, lsb: 6, width: 1, access: rw}
+  VDS_NR_GLB_STILL_MENU: {seg: 3, addr: 0x55, lsb: 7, width: 1, access: rw}
+  VDS_NR_NOISY_OFFSET: {seg: 3, addr: 0x56, lsb: 0, width: 7, access: rw}
+  VDS_W_LEV_BYPS: {seg: 3, addr: 0x56, lsb: 7, width: 1, access: rw}
+  VDS_W_LEV: {seg: 3, addr: 0x57, lsb: 0, width: 8, access: rw}
+  VDS_WLEV_GAIN: {seg: 3, addr: 0x58, lsb: 0, width: 8, access: rw}
+  VDS_NS_U_CENTER: {seg: 3, addr: 0x59, lsb: 0, width: 8, access: rw}
+  VDS_NS_V_CENTER: {seg: 3, addr: 0x5A, lsb: 0, width: 8, access: rw}
+  VDS_NS_U_GAIN: {seg: 3, addr: 0x5B, lsb: 0, width: 7, access: rw}
+  VDS_NS_SQUARE_RAD: {seg: 3, addr: 0x5B, lsb: 7, width: 15, access: rw}
+  VDS_NS_Y_HIGH_TH: {seg: 3, addr: 0x5D, lsb: 6, width: 8, access: rw}
+  VDS_NS_V_GAIN: {seg: 3, addr: 0x5E, lsb: 6, width: 7, access: rw}
+  VDS_NS_Y_LOW_TH: {seg: 3, addr: 0x5F, lsb: 5, width: 5, access: rw}
+  VDS_NS_BYPS: {seg: 3, addr: 0x60, lsb: 2, width: 1, access: rw}
+  VDS_NS_Y_ACTIVE_EN: {seg: 3, addr: 0x60, lsb: 3, width: 1, access: rw}
+  VDS_C1_TAG_LOW_SLOPE: {seg: 3, addr: 0x60, lsb: 4, width: 10, access: rw}
+  VDS_C1_TAG_HIGH_SLOPE: {seg: 3, addr: 0x61, lsb: 6, width: 10, access: rw}
+  VDS_C1_GAIN: {seg: 3, addr: 0x63, lsb: 0, width: 4, access: rw}
+  VDS_C1_U_LOW: {seg: 3, addr: 0x63, lsb: 4, width: 8, access: rw}
+  VDS_C1_U_HIGH: {seg: 3, addr: 0x64, lsb: 4, width: 8, access: rw}
+  VDS_C1_BYPS: {seg: 3, addr: 0x65, lsb: 4, width: 1, access: rw}
+  VDS_C1_Y_THRESH: {seg: 3, addr: 0x65, lsb: 5, width: 8, access: rw}
+  VDS_C2_TAG_LOW_SLOPE: {seg: 3, addr: 0x66, lsb: 5, width: 10, access: rw}
+  VDS_C2_TAG_HIGH_SLOPE: {seg: 3, addr: 0x67, lsb: 7, width: 10, access: rw}
+  VDS_C2_GAIN: {seg: 3, addr: 0x69, lsb: 1, width: 4, access: rw}
+  VDS_C2_U_LOW: {seg: 3, addr: 0x69, lsb: 5, width: 8, access: rw}
+  VDS_C2_U_HIGH: {seg: 3, addr: 0x6A, lsb: 5, width: 8, access: rw}
+  VDS_C2_BYPS: {seg: 3, addr: 0x6B, lsb: 5, width: 1, access: rw}
+  VDS_C2_Y_THRESH: {seg: 3, addr: 0x6B, lsb: 6, width: 8, access: rw}
+  VDS_EXT_HB_ST: {seg: 3, addr: 0x6D, lsb: 0, width: 12, access: rw}
+  VDS_EXT_HB_SP: {seg: 3, addr: 0x6E, lsb: 4, width: 12, access: rw}
+  VDS_EXT_VB_ST: {seg: 3, addr: 0x70, lsb: 0, width: 11, access: rw}
+  VDS_EXT_VB_SP: {seg: 3, addr: 0x71, lsb: 4, width: 11, access: rw}
+  VDS_SYNC_IN_SEL: {seg: 3, addr: 0x72, lsb: 7, width: 1, access: rw}
+  VDS_BLUE_RANGE: {seg: 3, addr: 0x73, lsb: 0, width: 3, access: rw}
+  VDS_BLUE_BYPS: {seg: 3, addr: 0x73, lsb: 3, width: 1, access: rw}
+  VDS_BLUE_UGAIN: {seg: 3, addr: 0x73, lsb: 4, width: 4, access: rw}
+  VDS_BLUE_VGAIN: {seg: 3, addr: 0x74, lsb: 0, width: 4, access: rw}
+  VDS_BLUE_Y_LEV: {seg: 3, addr: 0x74, lsb: 4, width: 4, access: rw}
+  PIP_UV_FLIP: {seg: 3, addr: 0x80, lsb: 0, width: 1, access: rw}
+  PIP_U_DELAY: {seg: 3, addr: 0x80, lsb: 1, width: 1, access: rw}
+  PIP_V_DELAY: {seg: 3, addr: 0x80, lsb: 2, width: 1, access: rw}
+  PIP_TAP3_BYPS: {seg: 3, addr: 0x80, lsb: 3, width: 1, access: rw}
+  PIP_Y_DELAY: {seg: 3, addr: 0x80, lsb: 4, width: 2, access: rw}
+  PIP_SUB_16B_SEL: {seg: 3, addr: 0x80, lsb: 6, width: 1, access: rw}
+  PIP_DYN_BYPS: {seg: 3, addr: 0x80, lsb: 7, width: 1, access: rw}
+  PIP_CONVT_BYPS: {seg: 3, addr: 0x81, lsb: 0, width: 1, access: rw}
+  PIP_DREG_BYPS: {seg: 3, addr: 0x81, lsb: 3, width: 1, access: rw}
+  PIP_EN: {seg: 3, addr: 0x81, lsb: 7, width: 1, access: rw}
+  PIP_Y_GAIN: {seg: 3, addr: 0x82, lsb: 0, width: 8, access: rw}
+  PIP_U_GAIN: {seg: 3, addr: 0x83, lsb: 0, width: 8, access: rw}
+  PIP_V_GAIN: {seg: 3, addr: 0x84, lsb: 0, width: 8, access: rw}
+  PIP_Y_OFST: {seg: 3, addr: 0x85, lsb: 0, width: 8, access: rw}
+  PIP_U_OFST: {seg: 3, addr: 0x86, lsb: 0, width: 8, access: rw}
+  PIP_V_OFST: {seg: 3, addr: 0x87, lsb: 0, width: 8, access: rw}
+  PIP_H_ST: {seg: 3, addr: 0x88, lsb: 0, width: 12, access: rw}
+  PIP_H_SP: {seg: 3, addr: 0x8A, lsb: 0, width: 12, access: rw}
+  PIP_V_ST: {seg: 3, addr: 0x8C, lsb: 0, width: 11, access: rw}
+  PIP_V_SP: {seg: 3, addr: 0x8E, lsb: 0, width: 11, access: rw}
+  SDRAM_RESET_CONTROL: {seg: 4, addr: 0x00, lsb: 0, width: 8, access: rw}
+  R_MSOFTH: {seg: 4, addr: 0x00, lsb: 1, width: 1, access: rw}
+  SDRAM_RESET_SIGNAL: {seg: 4, addr: 0x00, lsb: 4, width: 1, access: rw}
+  SDRAM_START_INITIAL_CYCLE: {seg: 4, addr: 0x00, lsb: 7, width: 1, access: rw}
+  MEM_MODE_REG: {seg: 4, addr: 0x01, lsb: 0, width: 8, access: rw}
+  MEM_MODE_BA0: {seg: 4, addr: 0x03, lsb: 0, width: 1, access: rw}
+  MEM_MODE_BA1: {seg: 4, addr: 0x03, lsb: 1, width: 1, access: rw}
+  MEM_MODE_CS0: {seg: 4, addr: 0x03, lsb: 2, width: 1, access: rw}
+  MEM_MODE_CS1: {seg: 4, addr: 0x03, lsb: 3, width: 1, access: rw}
+  MEM_MODE_CYC: {seg: 4, addr: 0x03, lsb: 4, width: 1, access: rw}
+  MEM_INI_REF_CYC: {seg: 4, addr: 0x03, lsb: 5, width: 1, access: rw}
+  MEM_FK_RD_DLY: {seg: 4, addr: 0x04, lsb: 0, width: 3, access: rw}
+  MEM_RD_LAT_PIP: {seg: 4, addr: 0x04, lsb: 4, width: 3, access: rw}
+  MEM_ACT_CYCLE: {seg: 4, addr: 0x05, lsb: 0, width: 2, access: rw}
+  MEM_PCHG_CYCLE: {seg: 4, addr: 0x05, lsb: 4, width: 2, access: rw}
+  MEM_REF_RATE: {seg: 4, addr: 0x06, lsb: 0, width: 3, access: rw}
+  MEM_REF_CYCLE: {seg: 4, addr: 0x06, lsb: 4, width: 3, access: rw}
+  MEM_TWR_SEL: {seg: 4, addr: 0x07, lsb: 0, width: 3, access: rw}
+  MEM_TRAS_SEL: {seg: 4, addr: 0x07, lsb: 4, width: 3, access: rw}
+  MEM_R2W_NOP_CYC: {seg: 4, addr: 0x08, lsb: 0, width: 2, access: rw}
+  MEM_W2R_SEL_CYC: {seg: 4, addr: 0x08, lsb: 4, width: 2, access: rw}
+  MEM_BK0_SEL: {seg: 4, addr: 0x09, lsb: 0, width: 2, access: rw}
+  MEM_BK1_SEL: {seg: 4, addr: 0x09, lsb: 2, width: 2, access: rw}
+  MEM_CS0_SEL: {seg: 4, addr: 0x09, lsb: 4, width: 2, access: rw}
+  MEM_CS1_SEL: {seg: 4, addr: 0x09, lsb: 6, width: 2, access: rw}
+  MEM_COL_ST_SEL: {seg: 4, addr: 0x0A, lsb: 0, width: 2, access: rw}
+  MEM_ROW_ST_SEL: {seg: 4, addr: 0x0A, lsb: 4, width: 2, access: rw}
+  MEM_ADR_REG: {seg: 4, addr: 0x0B, lsb: 0, width: 7, access: rw}
+  MEM_COL_ADR_VLD: {seg: 4, addr: 0x0C, lsb: 0, width: 4, access: rw}
+  MEM_SPECIAL_PIN: {seg: 4, addr: 0x0D, lsb: 0, width: 3, access: rw}
+  MEM_BA_ADR11_SEL: {seg: 4, addr: 0x0D, lsb: 4, width: 1, access: rw}
+  MEM_CS0_BA0_SEL: {seg: 4, addr: 0x0D, lsb: 5, width: 1, access: rw}
+  MEM_CS1_BA1_SEL: {seg: 4, addr: 0x0D, lsb: 6, width: 1, access: rw}
+  MEM_FST_REG: {seg: 4, addr: 0x0F, lsb: 0, width: 4, access: rw}
+  MEM_MISC_REG: {seg: 4, addr: 0x10, lsb: 0, width: 5, access: rw}
+  MEM_FBK_CLK_SEL: {seg: 4, addr: 0x11, lsb: 0, width: 1, access: rw}
+  MEM_FBK_SEL_MCLK: {seg: 4, addr: 0x11, lsb: 1, width: 1, access: rw}
+  MEM_FBK_CS2_SEL: {seg: 4, addr: 0x11, lsb: 2, width: 1, access: rw}
+  MEM_FBK_INV_PATH_SEL: {seg: 4, addr: 0x11, lsb: 4, width: 1, access: rw}
+  MEM_FBK_PATH_SEL: {seg: 4, addr: 0x11, lsb: 7, width: 1, access: rw}
+  MEM_INTER_DLYCELL_SEL: {seg: 4, addr: 0x12, lsb: 0, width: 1, access: rw}
+  MEM_CLK_DLYCELL_SEL: {seg: 4, addr: 0x12, lsb: 1, width: 1, access: rw}
+  MEM_FBK_CLK_DLYCELL_SEL: {seg: 4, addr: 0x12, lsb: 2, width: 1, access: rw}
+  MEM_PAD_CLK_INVERT: {seg: 4, addr: 0x13, lsb: 0, width: 1, access: rw}
+  MEM_RD_DATA_CLK_INVERT: {seg: 4, addr: 0x13, lsb: 1, width: 1, access: rw}
+  MEM_FBK_CLK_INVERT: {seg: 4, addr: 0x13, lsb: 2, width: 1, access: rw}
+  MEM_NEW_FUNC_CTL: {seg: 4, addr: 0x14, lsb: 0, width: 3, access: rw}
+  MEM_WRITE_CYCL_CTL: {seg: 4, addr: 0x14, lsb: 4, width: 1, access: rw}
+  MEM_MBUS32OR16_SEL: {seg: 4, addr: 0x14, lsb: 7, width: 1, access: rw}
+  MEM_REQ_PBH_RFFH: {seg: 4, addr: 0x15, lsb: 0, width: 1, access: rw}
+  MEM_REQ_PB_RFF_CAP: {seg: 4, addr: 0x15, lsb: 1, width: 1, access: rw}
+  MEM_REQ_WFF_CAP: {seg: 4, addr: 0x15, lsb: 2, width: 1, access: rw}
+  MEM_TEST_SEL: {seg: 4, addr: 0x16, lsb: 0, width: 3, access: rw}
+  MEM_WOEZ_DLY: {seg: 4, addr: 0x17, lsb: 0, width: 3, access: rw}
+  MEM_WOEZ_PIP: {seg: 4, addr: 0x17, lsb: 4, width: 1, access: rw}
+  MEM_WOEZ_SEL_DLYCELL: {seg: 4, addr: 0x17, lsb: 5, width: 1, access: rw}
+  MEM_DATA_DLY_REG: {seg: 4, addr: 0x18, lsb: 0, width: 3, access: rw}
+  MEM_WR_DATA_PIP: {seg: 4, addr: 0x18, lsb: 4, width: 2, access: rw}
+  MEM_RAS_DLY_REG: {seg: 4, addr: 0x19, lsb: 0, width: 3, access: rw}
+  MEM_CAS_DLY_REG: {seg: 4, addr: 0x19, lsb: 4, width: 3, access: rw}
+  MEM_WE_DLY_REG: {seg: 4, addr: 0x1A, lsb: 0, width: 3, access: rw}
+  MEM_DQM_DLY_REG: {seg: 4, addr: 0x1A, lsb: 4, width: 3, access: rw}
+  MEM_ADR_DLY_REG: {seg: 4, addr: 0x1B, lsb: 0, width: 3, access: rw}
+  MEM_CLK_DLY_REG: {seg: 4, addr: 0x1B, lsb: 4, width: 3, access: rw}
+  MEM_CS0_DLY_REG: {seg: 4, addr: 0x1C, lsb: 0, width: 3, access: rw}
+  MEM_CS1_DLY_REG: {seg: 4, addr: 0x1C, lsb: 4, width: 3, access: rw}
+  MEM_BA0_DLY_REG: {seg: 4, addr: 0x1D, lsb: 0, width: 3, access: rw}
+  MEM_BA1_DLY_REG: {seg: 4, addr: 0x1D, lsb: 4, width: 3, access: rw}
+  CAP_CNTRL_TST: {seg: 4, addr: 0x20, lsb: 0, width: 3, access: rw}
+  CAPTURE_ENABLE: {seg: 4, addr: 0x21, lsb: 0, width: 1, access: rw}
+  CAP_FF_HALF_REQ: {seg: 4, addr: 0x21, lsb: 1, width: 1, access: rw}
+  CAP_BUF_STA_INV: {seg: 4, addr: 0x21, lsb: 2, width: 1, access: rw}
+  CAP_DOUBLE_BUFFER: {seg: 4, addr: 0x21, lsb: 3, width: 1, access: rw}
+  CAP_SAFE_GUARD_EN: {seg: 4, addr: 0x21, lsb: 5, width: 1, access: rw}
+  CAP_VRST_FFRST_EN: {seg: 4, addr: 0x21, lsb: 6, width: 1, access: rw}
+  CAP_ADR_ADD_2: {seg: 4, addr: 0x21, lsb: 7, width: 1, access: rw}
+  CAP_REQ_OVER: {seg: 4, addr: 0x22, lsb: 0, width: 1, access: rw}
+  CAP_STATUS_SEL: {seg: 4, addr: 0x22, lsb: 1, width: 1, access: rw}
+  CAP_LAST_POP_CTL: {seg: 4, addr: 0x22, lsb: 2, width: 1, access: rw}
+  CAP_REQ_FREEZ: {seg: 4, addr: 0x22, lsb: 3, width: 1, access: rw}
+  CAP_FF_STATUS: {seg: 4, addr: 0x23, lsb: 0, width: 8, access: rw}
+  CAP_SAFE_GUARD_A: {seg: 4, addr: 0x24, lsb: 0, width: 21, access: rw}
+  CAP_SAFE_GUARD_B: {seg: 4, addr: 0x27, lsb: 0, width: 21, access: rw}
+  PB_CUT_REFRESH: {seg: 4, addr: 0x2B, lsb: 0, width: 1, access: rw}
+  PB_REQ_SEL: {seg: 4, addr: 0x2B, lsb: 1, width: 2, access: rw}
+  PB_BYPASS: {seg: 4, addr: 0x2B, lsb: 3, width: 1, access: rw}
+  PB_DB_FIELD_EN: {seg: 4, addr: 0x2B, lsb: 4, width: 1, access: rw}
+  PB_DB_BUFFER_EN: {seg: 4, addr: 0x2B, lsb: 5, width: 1, access: rw}
+  PB_2FRAME_EXCHG: {seg: 4, addr: 0x2B, lsb: 6, width: 1, access: rw}
+  PB_ENABLE: {seg: 4, addr: 0x2B, lsb: 7, width: 1, access: rw}
+  PB_MAST_FLAG_REG: {seg: 4, addr: 0x2C, lsb: 0, width: 8, access: rw}
+  PB_GENERAL_FLAG_REG: {seg: 4, addr: 0x2D, lsb: 0, width: 8, access: rw}
+  PB_UP_DOW_RBUF_INV: {seg: 4, addr: 0x2E, lsb: 0, width: 1, access: rw}
+  PB_UP_DOW_RBUF_SEL: {seg: 4, addr: 0x2E, lsb: 1, width: 1, access: rw}
+  PB_DOUBLE_REFRESH_EN: {seg: 4, addr: 0x2E, lsb: 7, width: 1, access: rw}
+  PB_TST_REG: {seg: 4, addr: 0x2F, lsb: 0, width: 4, access: rw}
+  PB_CAP_NOISE_CMD: {seg: 4, addr: 0x30, lsb: 0, width: 4, access: rw}
+  PB_CAP_BUF_STA_ADDR: {seg: 4, addr: 0x34, lsb: 0, width: 8, access: rw}
+  PB_CAP_OFFSET: {seg: 4, addr: 0x37, lsb: 0, width: 10, access: rw}
+  PB_FETCH_NUM: {seg: 4, addr: 0x39, lsb: 0, width: 10, access: rw}
+  WFF_TST_REG: {seg: 4, addr: 0x41, lsb: 0, width: 8, access: rw}
+  WFF_ENABLE: {seg: 4, addr: 0x42, lsb: 0, width: 1, access: rw}
+  WFF_FF_HALF_REQ: {seg: 4, addr: 0x42, lsb: 1, width: 1, access: rw}
+  WFF_FF_STA_INV: {seg: 4, addr: 0x42, lsb: 2, width: 1, access: rw}
+  WFF_SAFE_GUARD: {seg: 4, addr: 0x42, lsb: 3, width: 1, access: rw}
+  WFF_VRST_FF_RST: {seg: 4, addr: 0x42, lsb: 4, width: 1, access: rw}
+  WFF_ADR_ADD_2: {seg: 4, addr: 0x42, lsb: 5, width: 1, access: rw}
+  WFF_REQ_OVER: {seg: 4, addr: 0x42, lsb: 6, width: 1, access: rw}
+  WFF_FF_STATUS_SEL: {seg: 4, addr: 0x42, lsb: 7, width: 1, access: rw}
+  WFF_SAFE_GUARD_A: {seg: 4, addr: 0x44, lsb: 0, width: 21, access: rw}
+  WFF_SAFE_GUARD_B: {seg: 4, addr: 0x47, lsb: 0, width: 21, access: rw}
+  WFF_YUV_DEINTERLACE: {seg: 4, addr: 0x4A, lsb: 0, width: 1, access: rw}
+  WFF_LINE_FLIP: {seg: 4, addr: 0x4A, lsb: 4, width: 1, access: rw}
+  WFF_LAST_POP_CTL: {seg: 4, addr: 0x4A, lsb: 7, width: 1, access: rw}
+  WFF_HB_DELAY: {seg: 4, addr: 0x4B, lsb: 0, width: 3, access: rw}
+  WFF_VB_DELAY: {seg: 4, addr: 0x4B, lsb: 4, width: 3, access: rw}
+  RFF_NEW_PAGE: {seg: 4, addr: 0x4D, lsb: 0, width: 4, access: rw}
+  RFF_ADR_ADD_2: {seg: 4, addr: 0x4D, lsb: 4, width: 1, access: rw}
+  RFF_REQ_SEL: {seg: 4, addr: 0x4D, lsb: 5, width: 2, access: rw}
+  RFF_ENABLE: {seg: 4, addr: 0x4D, lsb: 7, width: 1, access: rw}
+  RFF_MASTER_FLAG: {seg: 4, addr: 0x4E, lsb: 0, width: 8, access: rw}
+  RFF_GENERAL_FLAG: {seg: 4, addr: 0x4F, lsb: 0, width: 6, access: rw}
+  RFF_TST_REG: {seg: 4, addr: 0x50, lsb: 0, width: 4, access: rw}
+  RFF_LINE_FLIP: {seg: 4, addr: 0x50, lsb: 5, width: 1, access: rw}
+  RFF_YUV_DEINTERLACE: {seg: 4, addr: 0x50, lsb: 6, width: 1, access: rw}
+  RFF_LREQ_CUT: {seg: 4, addr: 0x50, lsb: 7, width: 1, access: rw}
+  RFF_WFF_STA_ADDR_A: {seg: 4, addr: 0x51, lsb: 0, width: 21, access: rw}
+  RFF_WFF_STA_ADDR_B: {seg: 4, addr: 0x54, lsb: 0, width: 21, access: rw}
+  RFF_WFF_OFFSET: {seg: 4, addr: 0x57, lsb: 0, width: 10, access: rw}
+  RFF_FETCH_NUM: {seg: 4, addr: 0x59, lsb: 0, width: 10, access: rw}
+  MEM_FF_TOP_FF_SEL: {seg: 4, addr: 0x5B, lsb: 7, width: 1, access: rw}
+  ADC_5_00: {seg: 5, addr: 0x00, lsb: 0, width: 8, access: rw}
+  ADC_CLK_PA: {seg: 5, addr: 0x00, lsb: 0, width: 2, access: rw}
+  ADC_CLK_PLLAD: {seg: 5, addr: 0x00, lsb: 2, width: 1, access: rw}
+  ADC_CLK_ICLK2X: {seg: 5, addr: 0x00, lsb: 3, width: 1, access: rw}
+  ADC_CLK_ICLK1X: {seg: 5, addr: 0x00, lsb: 4, width: 1, access: rw}
+  ADC_SOGEN: {seg: 5, addr: 0x02, lsb: 0, width: 1, access: rw}
+  ADC_SOGCTRL: {seg: 5, addr: 0x02, lsb: 1, width: 5, access: rw}
+  ADC_INPUT_SEL: {seg: 5, addr: 0x02, lsb: 6, width: 2, access: rw}
+  ADC_5_03: {seg: 5, addr: 0x03, lsb: 0, width: 8, access: rw}
+  ADC_POWDZ: {seg: 5, addr: 0x03, lsb: 0, width: 1, access: rw}
+  ADC_RYSEL_R: {seg: 5, addr: 0x03, lsb: 1, width: 1, access: rw}
+  ADC_RYSEL_G: {seg: 5, addr: 0x03, lsb: 2, width: 1, access: rw}
+  ADC_RYSEL_B: {seg: 5, addr: 0x03, lsb: 3, width: 1, access: rw}
+  ADC_FLTR: {seg: 5, addr: 0x03, lsb: 4, width: 2, access: rw}
+  ADC_TEST_04: {seg: 5, addr: 0x04, lsb: 0, width: 8, access: rw}
+  ADC_TR_RSEL: {seg: 5, addr: 0x04, lsb: 0, width: 2, access: rw}
+  ADC_TR_RSEL_04_BIT1: {seg: 5, addr: 0x04, lsb: 1, width: 1, access: rw}
+  ADC_TR_ISEL: {seg: 5, addr: 0x04, lsb: 2, width: 3, access: rw}
+  ADC_TA_05_CTRL: {seg: 5, addr: 0x05, lsb: 0, width: 8, access: rw}
+  ADC_TA_05_EN: {seg: 5, addr: 0x05, lsb: 0, width: 1, access: rw}
+  ADC_TA_CTRL: {seg: 5, addr: 0x05, lsb: 1, width: 4, access: rw}
+  ADC_ROFCTRL: {seg: 5, addr: 0x06, lsb: 0, width: 8, access: rw}
+  ADC_GOFCTRL: {seg: 5, addr: 0x07, lsb: 0, width: 8, access: rw}
+  ADC_BOFCTRL: {seg: 5, addr: 0x08, lsb: 0, width: 8, access: rw}
+  ADC_RGCTRL: {seg: 5, addr: 0x09, lsb: 0, width: 8, access: rw}
+  ADC_GGCTRL: {seg: 5, addr: 0x0A, lsb: 0, width: 8, access: rw}
+  ADC_BGCTRL: {seg: 5, addr: 0x0B, lsb: 0, width: 8, access: rw}
+  ADC_TEST_0C: {seg: 5, addr: 0x0C, lsb: 0, width: 8, access: rw}
+  ADC_TEST_0C_BIT1: {seg: 5, addr: 0x0C, lsb: 1, width: 1, access: rw}
+  ADC_TEST_0C_BIT3: {seg: 5, addr: 0x0C, lsb: 3, width: 1, access: rw}
+  ADC_TEST_0C_BIT4: {seg: 5, addr: 0x0C, lsb: 4, width: 1, access: rw}
+  ADC_AUTO_OFST_EN: {seg: 5, addr: 0x0E, lsb: 0, width: 1, access: rw}
+  ADC_AUTO_OFST_PRD: {seg: 5, addr: 0x0E, lsb: 1, width: 1, access: rw}
+  ADC_AUTO_OFST_DELAY: {seg: 5, addr: 0x0E, lsb: 2, width: 2, access: rw}
+  ADC_AUTO_OFST_STEP: {seg: 5, addr: 0x0E, lsb: 4, width: 2, access: rw}
+  ADC_AUTO_OFST_TEST: {seg: 5, addr: 0x0E, lsb: 7, width: 1, access: rw}
+  ADC_AUTO_OFST_RANGE_REG: {seg: 5, addr: 0x0F, lsb: 0, width: 8, access: rw}
+  ADC_AUTO_OFST_V_RANGE: {seg: 5, addr: 0x0F, lsb: 4, width: 4, access: rw}
+  PLLAD_CONTROL_00_5x11: {seg: 5, addr: 0x11, lsb: 0, width: 8, access: rw}
+  PLLAD_VCORST: {seg: 5, addr: 0x11, lsb: 0, width: 1, access: rw}
+  PLLAD_LEN: {seg: 5, addr: 0x11, lsb: 1, width: 1, access: rw}
+  PLLAD_TEST: {seg: 5, addr: 0x11, lsb: 2, width: 1, access: rw}
+  PLLAD_TS: {seg: 5, addr: 0x11, lsb: 3, width: 1, access: rw}
+  PLLAD_PDZ: {seg: 5, addr: 0x11, lsb: 4, width: 1, access: rw}
+  PLLAD_FS: {seg: 5, addr: 0x11, lsb: 5, width: 1, access: rw}
+  PLLAD_BPS: {seg: 5, addr: 0x11, lsb: 6, width: 1, access: rw}
+  PLLAD_LAT: {seg: 5, addr: 0x11, lsb: 7, width: 1, access: rw}
+  PLLAD_MD: {seg: 5, addr: 0x12, lsb: 0, width: 12, access: rw}
+  PLLAD_ND: {seg: 5, addr: 0x14, lsb: 0, width: 8, access: rw}
+  PLLAD_5_16: {seg: 5, addr: 0x16, lsb: 0, width: 8, access: rw}
+  PLLAD_R: {seg: 5, addr: 0x16, lsb: 0, width: 2, access: rw}
+  PLLAD_S: {seg: 5, addr: 0x16, lsb: 2, width: 2, access: rw}
+  PLLAD_KS: {seg: 5, addr: 0x16, lsb: 4, width: 2, access: rw}
+  PLLAD_CKOS: {seg: 5, addr: 0x16, lsb: 6, width: 2, access: rw}
+  PLLAD_ICP: {seg: 5, addr: 0x17, lsb: 0, width: 3, access: rw}
+  PA_ADC_BYPSZ: {seg: 5, addr: 0x18, lsb: 0, width: 1, access: rw}
+  PA_ADC_S: {seg: 5, addr: 0x18, lsb: 1, width: 5, access: rw}
+  PA_ADC_LOCKOFF: {seg: 5, addr: 0x18, lsb: 6, width: 1, access: rw}
+  PA_ADC_LAT: {seg: 5, addr: 0x18, lsb: 7, width: 1, access: rw}
+  PA_SP_BYPSZ: {seg: 5, addr: 0x19, lsb: 0, width: 1, access: rw}
+  PA_SP_S: {seg: 5, addr: 0x19, lsb: 1, width: 5, access: rw}
+  PA_SP_LOCKOFF: {seg: 5, addr: 0x19, lsb: 6, width: 1, access: rw}
+  PA_SP_LAT: {seg: 5, addr: 0x19, lsb: 7, width: 1, access: rw}
+  DEC_WEN_MODE: {seg: 5, addr: 0x1E, lsb: 7, width: 1, access: rw}
+  DEC_5_1F: {seg: 5, addr: 0x1F, lsb: 0, width: 8, access: rw}
+  DEC1_BYPS: {seg: 5, addr: 0x1F, lsb: 0, width: 1, access: rw}
+  DEC2_BYPS: {seg: 5, addr: 0x1F, lsb: 1, width: 1, access: rw}
+  DEC_MATRIX_BYPS: {seg: 5, addr: 0x1F, lsb: 2, width: 1, access: rw}
+  DEC_TEST_ENABLE: {seg: 5, addr: 0x1F, lsb: 3, width: 1, access: rw}
+  DEC_TEST_SEL: {seg: 5, addr: 0x1F, lsb: 4, width: 3, access: rw}
+  DEC_IDREG_EN: {seg: 5, addr: 0x1F, lsb: 7, width: 1, access: rw}
+  SP_SOG_SRC_SEL: {seg: 5, addr: 0x20, lsb: 0, width: 1, access: rw}
+  SP_SOG_P_ATO: {seg: 5, addr: 0x20, lsb: 1, width: 1, access: rw}
+  SP_SOG_P_INV: {seg: 5, addr: 0x20, lsb: 2, width: 1, access: rw}
+  SP_EXT_SYNC_SEL: {seg: 5, addr: 0x20, lsb: 3, width: 1, access: rw}
+  SP_JITTER_SYNC: {seg: 5, addr: 0x20, lsb: 4, width: 1, access: rw}
+  SP_SYNC_TGL_THD: {seg: 5, addr: 0x21, lsb: 0, width: 8, access: rw}
+  SP_L_DLT_REG: {seg: 5, addr: 0x22, lsb: 0, width: 8, access: rw}
+  SP_T_DLT_REG: {seg: 5, addr: 0x24, lsb: 0, width: 8, access: rw}
+  SP_SYNC_PD_THD: {seg: 5, addr: 0x26, lsb: 0, width: 12, access: rw}
+  SP_PRD_EQ_THD: {seg: 5, addr: 0x2A, lsb: 0, width: 8, access: rw}
+  SP_VSYNC_TGL_THD: {seg: 5, addr: 0x2D, lsb: 0, width: 8, access: rw}
+  SP_SYNC_WIDTH_DTHD: {seg: 5, addr: 0x2E, lsb: 0, width: 8, access: rw}
+  SP_V_PRD_EQ_THD: {seg: 5, addr: 0x2F, lsb: 0, width: 8, access: rw}
+  SP_VT_DLT_REG: {seg: 5, addr: 0x31, lsb: 0, width: 8, access: rw}
+  SP_VSIN_INV_REG: {seg: 5, addr: 0x32, lsb: 0, width: 1, access: rw}
+  SP_H_TIMER_VAL: {seg: 5, addr: 0x33, lsb: 0, width: 8, access: rw}
+  SP_V_TIMER_VAL: {seg: 5, addr: 0x34, lsb: 0, width: 8, access: rw}
+  SP_DLT_REG: {seg: 5, addr: 0x35, lsb: 0, width: 12, access: rw}
+  SP_H_PULSE_IGNOR: {seg: 5, addr: 0x37, lsb: 0, width: 8, access: rw}
+  SP_PRE_COAST: {seg: 5, addr: 0x38, lsb: 0, width: 8, access: rw}
+  SP_POST_COAST: {seg: 5, addr: 0x39, lsb: 0, width: 8, access: rw}
+  SP_H_TOTAL_EQ_THD: {seg: 5, addr: 0x3A, lsb: 0, width: 8, access: rw}
+  SP_SDCS_VSST_REG_H: {seg: 5, addr: 0x3B, lsb: 0, width: 3, access: rw}
+  SP_SDCS_VSSP_REG_H: {seg: 5, addr: 0x3B, lsb: 4, width: 3, access: rw}
+  SP_CS_0x3E: {seg: 5, addr: 0x3E, lsb: 0, width: 8, access: rw}
+  SP_CS_P_SWAP: {seg: 5, addr: 0x3E, lsb: 0, width: 1, access: rw}
+  SP_HD_MODE: {seg: 5, addr: 0x3E, lsb: 1, width: 1, access: rw}
+  SP_H_COAST: {seg: 5, addr: 0x3E, lsb: 2, width: 1, access: rw}
+  SP_CS_INV_REG: {seg: 5, addr: 0x3E, lsb: 3, width: 1, access: rw}
+  SP_H_PROTECT: {seg: 5, addr: 0x3E, lsb: 4, width: 1, access: rw}
+  SP_DIS_SUB_COAST: {seg: 5, addr: 0x3E, lsb: 5, width: 1, access: rw}
+  SP_SDCS_VSST_REG_L: {seg: 5, addr: 0x3F, lsb: 0, width: 8, access: rw}
+  SP_SDCS_VSSP_REG_L: {seg: 5, addr: 0x40, lsb: 0, width: 8, access: rw}
+  SP_CS_CLP_ST: {seg: 5, addr: 0x41, lsb: 0, width: 12, access: rw}
+  SP_CS_CLP_SP: {seg: 5, addr: 0x43, lsb: 0, width: 12, access: rw}
+  SP_CS_HS_ST: {seg: 5, addr: 0x45, lsb: 0, width: 12, access: rw}
+  SP_CS_HS_SP: {seg: 5, addr: 0x47, lsb: 0, width: 12, access: rw}
+  SP_RT_HS_ST: {seg: 5, addr: 0x49, lsb: 0, width: 12, access: rw}
+  SP_RT_HS_SP: {seg: 5, addr: 0x4B, lsb: 0, width: 12, access: rw}
+  SP_H_CST_ST: {seg: 5, addr: 0x4D, lsb: 0, width: 12, access: rw}
+  SP_H_CST_SP: {seg: 5, addr: 0x4F, lsb: 0, width: 12, access: rw}
+  SP_RT_VS_ST: {seg: 5, addr: 0x51, lsb: 0, width: 8, access: rw}
+  SP_RT_VS_SP: {seg: 5, addr: 0x53, lsb: 0, width: 8, access: rw}
+  SP_HS_EP_DLY_SEL: {seg: 5, addr: 0x55, lsb: 0, width: 3, access: rw}
+  SP_HS_INV_REG: {seg: 5, addr: 0x55, lsb: 3, width: 1, access: rw}
+  SP_HS_POL_ATO: {seg: 5, addr: 0x55, lsb: 4, width: 1, access: rw}
+  SP_VS_INV_REG: {seg: 5, addr: 0x55, lsb: 5, width: 1, access: rw}
+  SP_VS_POL_ATO: {seg: 5, addr: 0x55, lsb: 6, width: 1, access: rw}
+  SP_HCST_AUTO_EN: {seg: 5, addr: 0x55, lsb: 7, width: 1, access: rw}
+  SP_5_56: {seg: 5, addr: 0x56, lsb: 0, width: 8, access: rw}
+  SP_SOG_MODE: {seg: 5, addr: 0x56, lsb: 0, width: 1, access: rw}
+  SP_HS2PLL_INV_REG: {seg: 5, addr: 0x56, lsb: 1, width: 1, access: rw}
+  SP_CLAMP_MANUAL: {seg: 5, addr: 0x56, lsb: 2, width: 1, access: rw}
+  SP_CLP_SRC_SEL: {seg: 5, addr: 0x56, lsb: 3, width: 1, access: rw}
+  SP_SYNC_BYPS: {seg: 5, addr: 0x56, lsb: 4, width: 1, access: rw}
+  SP_HS_PROC_INV_REG: {seg: 5, addr: 0x56, lsb: 5, width: 1, access: rw}
+  SP_VS_PROC_INV_REG: {seg: 5, addr: 0x56, lsb: 6, width: 1, access: rw}
+  SP_CLAMP_INV_REG: {seg: 5, addr: 0x56, lsb: 7, width: 1, access: rw}
+  SP_5_57: {seg: 5, addr: 0x57, lsb: 0, width: 8, access: rw}
+  SP_NO_CLAMP_REG: {seg: 5, addr: 0x57, lsb: 0, width: 1, access: rw}
+  SP_COAST_INV_REG: {seg: 5, addr: 0x57, lsb: 1, width: 1, access: rw}
+  SP_NO_COAST_REG: {seg: 5, addr: 0x57, lsb: 2, width: 1, access: rw}
+  SP_COAST_VALUE_REG: {seg: 5, addr: 0x57, lsb: 3, width: 1, access: rw}
+  SP_HS_LOOP_SEL: {seg: 5, addr: 0x57, lsb: 6, width: 1, access: rw}
+  SP_HS_REG: {seg: 5, addr: 0x57, lsb: 7, width: 1, access: rw}
+  SP_HT_DIFF_REG: {seg: 5, addr: 0x58, lsb: 0, width: 8, access: rw}
+  SP_VT_DIFF_REG: {seg: 5, addr: 0x5A, lsb: 0, width: 8, access: rw}
+  SP_STBLE_CNT_REG: {seg: 5, addr: 0x5C, lsb: 0, width: 8, access: rw}
+  ADC_UNUSED_60: {seg: 5, addr: 0x60, lsb: 0, width: 8, access: rw, doc: false}
+  ADC_UNUSED_61: {seg: 5, addr: 0x61, lsb: 0, width: 8, access: rw, doc: false}
+  ADC_UNUSED_62: {seg: 5, addr: 0x62, lsb: 0, width: 8, access: rw, doc: false}
+  TEST_BUS_SP_SEL: {seg: 5, addr: 0x63, lsb: 0, width: 8, access: rw}
+  SP_TEST_MODULE: {seg: 5, addr: 0x63, lsb: 1, width: 3, access: rw}
+  SP_TEST_SIGNAL_SEL: {seg: 5, addr: 0x63, lsb: 4, width: 3, access: rw}
+  ADC_UNUSED_64: {seg: 5, addr: 0x64, lsb: 0, width: 8, access: rw, doc: false}
+  ADC_UNUSED_65: {seg: 5, addr: 0x65, lsb: 0, width: 8, access: rw, doc: false}
+  ADC_UNUSED_66: {seg: 5, addr: 0x66, lsb: 0, width: 8, access: rw, doc: false}
+  ADC_UNUSED_67: {seg: 5, addr: 0x67, lsb: 0, width: 16, access: rw, doc: false}
+  ADC_UNUSED_69: {seg: 5, addr: 0x69, lsb: 0, width: 8, access: rw, doc: false}

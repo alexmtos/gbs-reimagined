@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "platformio.platformio-ide",
+    "biomejs.biome",
+    "xaver.clang-format",
+    "charliermarsh.ruff",
+    "anthropic.claude-code"
+  ]
+}

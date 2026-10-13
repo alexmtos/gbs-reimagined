@@ -1,0 +1,197 @@
+# User-facing settings: the single source for the firmware table, the web UI, the OLED menu, the
+# serial console and docs/reference/settings.md. Labels and help text live in schema/i18n/.
+#
+# Fields:
+#   type       enum | int | bool
+#   values     enum only: value ids, in display order
+#   min/max    int only (inclusive); step defaults to 1
+#   default    value id (enum), integer (int) or true/false (bool)
+#   tier       essential | advanced
+#   milestone  M1 | M2 | M3 (settings of later milestones are generated but hidden)
+#   risky      true when a change can blank the output: it arms the timed revert
+#   unit       optional display unit
+#
+# Ids are persisted by hash (FNV-1a of the id), so renaming an id resets that setting to its
+# default on existing boards. Add, remove or reorder freely; never reuse an old id for a new
+# meaning.
+schema_version: 1
+
+groups: [output, input, picture, system]
+
+settings:
+  output.resolution:
+    type: enum
+    values: [auto, r1080p, r1024p, r960p, r720p, r480p, r15khz, passthrough]
+    default: auto
+    tier: essential
+    milestone: M1
+    risky: true
+  output.frameLock:
+    type: bool
+    default: true
+    tier: essential
+    milestone: M1
+    risky: true
+  output.force60:
+    type: bool
+    default: false
+    tier: advanced
+    milestone: M2
+    risky: true
+  output.blankOnChange:
+    type: bool
+    default: false
+    tier: advanced
+    milestone: M2
+  output.aspect:
+    type: enum
+    values: [a4x3, a16x9, full]
+    default: a4x3
+    tier: essential
+    milestone: M2
+  output.hPosition:
+    type: int
+    min: -64
+    max: 64
+    default: 0
+    tier: essential
+    milestone: M2
+  output.vPosition:
+    type: int
+    min: -64
+    max: 64
+    default: 0
+    tier: essential
+    milestone: M2
+  output.hSize:
+    type: int
+    min: -64
+    max: 64
+    default: 0
+    tier: advanced
+    milestone: M2
+  output.vSize:
+    type: int
+    min: -64
+    max: 64
+    default: 0
+    tier: advanced
+    milestone: M2
+
+  input.port:
+    type: enum
+    values: [auto, rgb, component]
+    default: auto
+    tier: essential
+    milestone: M1
+  input.syncThreshold:
+    type: int
+    min: -1
+    max: 31
+    default: -1
+    tier: advanced
+    milestone: M2
+    special: {-1: auto}
+  input.phase:
+    type: int
+    min: -1
+    max: 31
+    default: -1
+    tier: advanced
+    milestone: M2
+    special: {-1: auto}
+  input.autoGain:
+    type: bool
+    default: false
+    tier: advanced
+    milestone: M2
+  input.videoLpf:
+    type: enum
+    values: [auto, f150, f110, f70, f40]
+    default: auto
+    tier: advanced
+    milestone: M2
+    risky: true
+
+  picture.brightness:
+    type: int
+    min: -32
+    max: 32
+    default: 0
+    tier: essential
+    milestone: M1
+  picture.contrast:
+    type: int
+    min: -32
+    max: 32
+    default: 0
+    tier: essential
+    milestone: M1
+  picture.saturation:
+    type: int
+    min: -32
+    max: 32
+    default: 0
+    tier: essential
+    milestone: M1
+  picture.sharpness:
+    type: enum
+    values: ["off", low, medium, high]
+    default: "off"
+    tier: essential
+    milestone: M1
+  picture.scanlines:
+    type: bool
+    default: false
+    tier: essential
+    milestone: M2
+  picture.scanlineStrength:
+    type: int
+    min: 1
+    max: 8
+    default: 4
+    tier: essential
+    milestone: M2
+  picture.deinterlace:
+    type: enum
+    values: [motionAdaptive, bob]
+    default: motionAdaptive
+    tier: advanced
+    milestone: M2
+
+  system.language:
+    type: enum
+    values: [en, ptBR]
+    default: en
+    tier: essential
+    milestone: M1
+  system.oledSaver:
+    type: enum
+    values: ["off", m1, m3, m5, m10]
+    default: m5
+    tier: advanced
+    milestone: M1
+  system.encoderReverse:
+    type: bool
+    default: false
+    tier: advanced
+    milestone: M1
+  system.revertSeconds:
+    type: enum
+    values: [s10, s20, s30]
+    default: s20
+    tier: advanced
+    milestone: M1
+  system.showAdvanced:
+    type: bool
+    default: false
+    tier: essential
+    milestone: M1
+  system.startupProfile:
+    type: int
+    min: -2
+    max: 15
+    default: -1
+    tier: essential
+    milestone: M2
+    special: {-2: autoByInput, -1: lastUsed}

@@ -1,0 +1,56 @@
+# Roadmap
+
+Milestones are delivered in order; each ends with a **bench gate** on the RetroScaler GBS-C (capture
+card verification, see the `bench-verify` skill) before the next one starts.
+
+## M0 — Foundations
+
+Research, documentation, repository structure, Claude Code configuration, CI.
+
+- [x] Market, technology and reference-project research (`docs/research/`)
+- [x] Register database and baseline programs as data, with provenance (`schema/`)
+- [x] Code generator with `--check` mode
+- [x] Chip access layer and Si5351 driver with host tests
+- [x] Architecture, video engine and UX design documents; ADRs 0001–0012
+- [x] CLAUDE.md files, rules, skills, agents, hooks
+- [x] CI: generator check, host tests, firmware build, web build, size report
+- [x] Bench: full flash backup of the board as it ships today, and a reference capture
+      ([bench log](bench/M0.md))
+
+## M1 — First picture, monitored everywhere
+
+- Boot sequence, Detector, Loader, Settler, Watcher, FrameLock (ratio) — `docs/design/video-engine.md`
+- Output modes from the baseline programs + HD/RGBHV bypass
+- Settings M1 subset, persisted; revert on risky changes; safe mode
+- Status model; web UI (Status, Picture, Output, Input, System), OLED home + menu, serial console
+- Wi-Fi: station + setup access point with captive portal, mDNS
+- **Gate:** 240p, 480i, 480p and PAL 576i sources each reach a verified picture at 960p/1024p, 1080p,
+  720p and 480p; 240p↔480i switch without a blank frame; settings survive a power cycle.
+
+## M2 — Profiles and processing
+
+- Profiles with auto-load by input signature, SVS/remote triggers, import/export
+- Scanlines, deinterlacer choice, sharpness levels, geometry (aspect, position, size)
+- Advanced sampling controls (phase, SOG threshold, gain, LPF) with live sync feedback
+- Force 60 Hz, blank on mode change
+- Experimental: custom output timings (ADR 0004)
+- **Gate:** each setting verified on the capture card to do what its help text says.
+
+## M3 — Distribution
+
+- Browser installer (ESP Web Tools) and OTA update from the web UI preserving settings and profiles
+- Signed release images, release automation, changelog
+- User guide in English and Brazilian Portuguese; troubleshooting by status headline
+- **Gate:** a blank board is installed from the browser, joins Wi-Fi and shows a picture following
+  only the user guide.
+
+## Open items that need the bench
+
+| Id | Question | Why it matters |
+|---|---|---|
+| B-01 | Which physical jacks land on ADC input sets 0, 1 and 2 | Input names in every interface |
+| B-02 | What the "Compatibility mode" switch, the RGBHV/RGBS switch, the sync buttons and the R/G/B knobs actually do | User guide troubleshooting |
+| B-03 | Free heap at idle with the web UI open, and during an OTA upload | OTA feasibility (the reference fork lost HTTP OTA below ~15 KB) |
+| B-04 | Whether the MS9288A accepts every output mode at the frame-locked rate | Which modes are offered on HDMI |
+| B-05 | Which of the 12 programs give a clean picture on this board for each source | Default output per standard |
+| B-06 | Whether GPIO15/GPIO16 are broken out on the GBS-C (IR receiver option) | Future remote control |

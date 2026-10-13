@@ -1,0 +1,35 @@
+{
+  "name": "gbs-reimagined-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web UI for GBS Reimagined, embedded into the firmware image (ADR 0008, 0009)",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@10.30.2",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/pack.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "@preact/signals": "2.11.3",
+    "preact": "11.0.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "happy-dom": "21.0.1",
+    "msw": "3.0.3",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vite-plugin-singlefile": "2.3.3",
+    "vitest": "5.0.4"
+  }
+}

@@ -1,0 +1,106 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}-${{ inputs.release_tag }}
+  cancel-in-progress: true
+
+jobs:
+  schema:
+    name: Generated files are fresh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - run: uv sync
+      - run: uv run tools/codegen/generate.py --check
+      - run: uv run ruff check tools
+
+  web:
+    name: Web UI
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm -C web install --frozen-lockfile
+      - run: pnpm -C web typecheck
+      - run: pnpm -C web lint
+      - run: pnpm -C web test
+      - run: pnpm -C web build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web-ui
+          path: web/dist/index.html.gz
+
+  firmware-tests:
+    name: Firmware host tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - uses: actions/cache@v6
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+      - run: uv tool install platformio==6.2.0
+      - name: clang-format
+        run: git ls-files -- 'firmware/*.cpp' 'firmware/*.h' | grep -v '\.gen\.' | xargs uvx clang-format@22.1.8 --dry-run -Werror
+      - run: pio test -e native
+        working-directory: firmware
+
+  firmware:
+    name: Firmware build and memory budget
+    needs: [web]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-ui
+          path: web/dist
+      - uses: astral-sh/setup-uv@v10
+      - uses: actions/cache@v6
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+      - run: uv tool install platformio==6.2.0
+      - run: pio run -e gbsc
+        working-directory: firmware
+      - name: Memory budget
+        run: >-
+          uv run tools/size/check_budget.py
+          --size firmware/.pio/build/gbsc/size.json
+          --web web/dist/index.html.gz
+          --summary "$GITHUB_STEP_SUMMARY"
+      - name: Name the artefacts
+        run: |
+          ver="${{ inputs.release_tag }}"; ver="${ver:-dev-${GITHUB_SHA::7}}"
+          cd firmware/.pio/build/gbsc
+          cp firmware.bin "gbs-reimagined-${ver}-gbsc.bin"
+          gzip -9 -k -c firmware.bin > "gbs-reimagined-${ver}-gbsc.ota.bin.gz"
+          sha256sum gbs-reimagined-* > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: firmware
+          path: |
+            firmware/.pio/build/gbsc/gbs-reimagined-*
+            firmware/.pio/build/gbsc/SHA256SUMS
+            firmware/.pio/build/gbsc/firmware.elf
+            firmware/.pio/build/gbsc/size.json

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits", "helpers:pinGitHubActionDigests"],
+  "schedule": ["before 6am on monday"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)platformio\\.ini$/"],
+      "matchStrings": [
+        "(?<owner>[A-Za-z0-9_-]+)/(?<name>[A-Za-z0-9._-]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "{{owner}}/{{name}}",
+      "packageNameTemplate": "{{owner}}/library/{{name}}",
+      "datasourceTemplate": "custom.platformio"
+    }
+  ],
+  "customDatasources": {
+    "platformio": {
+      "defaultRegistryUrlTemplate": "https://api.registry.platformio.org/v3/packages/{{packageName}}",
+      "transformTemplates": [
+        "{ \"releases\": versions.{ \"version\": name, \"releaseTimestamp\": released_at } }"
+      ]
+    }
+  },
+  "packageRules": [
+    { "matchDatasources": ["custom.platformio"], "groupName": "platformio libraries" },
+    { "matchManagers": ["npm"], "groupName": "web toolchain" },
+    { "matchManagers": ["github-actions"], "groupName": "github actions" }
+  ]
+}

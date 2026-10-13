@@ -1,0 +1,15 @@
+# Baseline register program for the TV5725. Factual chip configuration data;
+# see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.
+id: section-hd-bypass
+standard: any
+output: "HD bypass path, S1_30..S1_5F"
+source:
+  file: presetHdBypassSection.h
+  commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c
+bytes: 48
+segments: [1]
+# Runs of consecutive registers, at most 16 bytes, never crossing a 16-byte boundary.
+runs:
+  S1_30: "00 80 00 80 00 80 00 FF 03 16 04 88 0F D0 00 00"
+  S1_40: "00 7C 00 00 00 14 00 02 00 07 00 00 00 06 00 00"
+  S1_50: "00 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00"

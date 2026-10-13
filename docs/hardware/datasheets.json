@@ -1,0 +1,101 @@
+{
+  "comment": "Vendor documents for every chip on the RetroScaler GBS-C board. Fetched into docs/hardware/pdf/ (git-ignored) by `uv run tools/datasheets.py`.",
+  "documents": [
+    {
+      "file": "tv5725_registers_definition_v1.1.pdf",
+      "part": "Tvia TV5725",
+      "doc_id": "RD-5725-1.1 (Aug 2005), 235 pages",
+      "role": "Every register, bit by bit. The authority for schema/registers/tv5725.yaml.",
+      "url": "https://ataribits.weebly.com/uploads/5/8/8/6/58865739/tv5725_registers_definition_v1.1.pdf",
+      "sha256": "af5de99d6128cf996228c1624c4443aabad981aef25ef70d1fd28ca83f5ab36f"
+    },
+    {
+      "file": "tv5725_register_map.pdf",
+      "part": "Tvia TV5725",
+      "doc_id": "RD-5725-1.1 segment map, 1 page",
+      "role": "One-page segment map.",
+      "url": "https://ataribits.weebly.com/uploads/5/8/8/6/58865739/tv5725_register_map.pdf",
+      "sha256": "ba9ffe5365537e9f4a282a7ca3113adbd5e4c050a6b5472aafc1ed45c0ecd4a4"
+    },
+    {
+      "file": "tv5725_datasheet.pdf",
+      "part": "Tvia TV5725",
+      "doc_id": "DS-5725-3.2 (Apr 2013), 45 pages",
+      "role": "Pinout, block diagram, electrical limits (DAC 162 MHz, Table 19).",
+      "url": "http://file.yizimg.com/420856/2013041613555642.pdf",
+      "sha256": "ca4be6044bd82fa2ae699a479427b6d27c5207b3eb11f11635d4935b03a10ef6"
+    },
+    {
+      "file": "si5351_datasheet.pdf",
+      "part": "Skyworks Si5351A/B/C-B",
+      "doc_id": "Rev. 1.3 (Aug 2021), 48 pages",
+      "role": "Output pixel clock generator at I2C 0x60.",
+      "url": "https://www.skyworksinc.com/-/media/Skyworks/SL/documents/public/data-sheets/Si5351-B.pdf",
+      "sha256": "f3bc5285fccafa3fcd06e9a7fa6abb67fb43e8c23f6147b14caecc9a4851101f"
+    },
+    {
+      "file": "si5351_an619.pdf",
+      "part": "Skyworks Si5351",
+      "doc_id": "AN619, Manually generating an Si5351 register map",
+      "role": "PLL and MultiSynth register formulas used by firmware/src/hal/si5351.",
+      "url": "https://www.skyworksinc.com/-/media/Skyworks/SL/documents/public/application-notes/AN619.pdf",
+      "sha256": "0135b3a37195189e38cbd58ca504460814c691eeb1fdbe275806cfcd4783f36b"
+    },
+    {
+      "file": "ms9288a_datasheet_cn.pdf",
+      "part": "Macrosilicon MS9288A",
+      "doc_id": "HJ-BMJL-PD-002 rev B/0 (Jan 2024), Chinese only, 13 pages",
+      "role": "VGA-to-HDMI converter: 165 MHz ceiling, own MCU, not on the ESP bus. Read with PyMuPDF.",
+      "url": "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2411061444_Macrosilicon-MS9288A_C5295922.pdf",
+      "sha256": "7e450c71cdad445a7220b4b177a5641ca5a8a2217041b82d567873375afd7c5a"
+    },
+    {
+      "file": "ms9282_product_brief_en.pdf",
+      "part": "Macrosilicon MS9282",
+      "doc_id": "Product brief, English, 3 pages",
+      "role": "Sibling part; states the family's 1080p input limit.",
+      "url": "https://p.globalsources.com/IMAGES/PDT/SPEC/190/K1169976190.pdf",
+      "sha256": "4531f1d9228e3e249be6cf233ba85a550e28971bf4ee2e290bed9ef1755109e4"
+    },
+    {
+      "file": "ssd1306_datasheet.pdf",
+      "part": "Solomon Systech SSD1306",
+      "doc_id": "Rev 1.1 (Apr 2008), 65 pages",
+      "role": "128x64 OLED controller at I2C 0x3C.",
+      "url": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+      "sha256": "d55f875357de96d8c0e92153a389acc57e8bab4db7a0687f2e0bd3362f0036f6"
+    },
+    {
+      "file": "esp8266ex_datasheet.pdf",
+      "part": "Espressif ESP8266EX",
+      "doc_id": "Version 7.1, 31 pages",
+      "role": "The microcontroller.",
+      "url": "https://www.espressif.com/sites/default/files/documentation/0a-esp8266ex_datasheet_en.pdf",
+      "sha256": "3a038e2fd3040ad06d95d41b16afc8292090339e9f8e728ce46a83db439cecf1"
+    },
+    {
+      "file": "lm1881_datasheet.pdf",
+      "part": "TI LM1881",
+      "doc_id": "SNOSBH8G, Rev. G, 24 pages",
+      "role": "Sync separator on the RGBS jack; not programmable.",
+      "url": "https://www.ti.com/lit/ds/symlink/lm1881.pdf",
+      "sha256": "125197c8d4aec5b5fb2478ffba0a3986c9a83b807e8ec0d0e745a3f3bc91a8dd"
+    },
+    {
+      "file": "at24c02d_datasheet.pdf",
+      "part": "Microchip AT24C01D/02D",
+      "doc_id": "DS20006100A (2018), 46 pages",
+      "role": "The EEPROM-like part at I2C 0x50 (stock controller's memory); unused.",
+      "url": "https://ww1.microchip.com/downloads/en/DeviceDoc/AT24C01D-AT24C02D-I2C-Compatible-Two-Wire-Serial-EEPROM-1Kbit-2Kbit-20006100A.pdf",
+      "sha256": "faa30c91617d26513cec34f5555a3512b4110383c11e90db91235e187938a167"
+    },
+    {
+      "file": "ch340_datasheet.pdf",
+      "part": "WCH CH340",
+      "doc_id": "Version 1D, 6 pages",
+      "role": "USB-serial: console and USB flashing.",
+      "url": "https://cdn.sparkfun.com/datasheets/Dev/Arduino/Other/CH340DS1.PDF",
+      "sha256": "04c805e8242885fd1cf21f05dbfd9d16b9fa38f0439ce0d3c6d7f74ebe4cf4af"
+    }
+  ]
+}

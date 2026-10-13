@@ -1,0 +1,233 @@
+# Textos em português do Brasil. As chaves espelham schema/settings.yaml e schema/i18n/en.yaml.
+#   label  rótulo (até 20 caracteres, cabe no OLED)
+#   hint   linha de dica do OLED, no máximo 21 caracteres
+#   help   uma ou duas frases para a página web
+#   values nomes dos valores
+locale: pt-BR
+name: Português (Brasil)
+
+groups:
+  output: Saída
+  input: Entrada
+  picture: Imagem
+  system: Sistema
+
+settings:
+  output.resolution:
+    label: Resolução de saída
+    hint: O que a TV recebe
+    help: >-
+      O tamanho da imagem enviada à tela. Auto escolhe 1280x960 para fontes de 60 Hz (exatamente
+      4x o 240p) e 1280x1024 para fontes de 50 Hz. Passthrough envia fontes HD e de PC sem escalar.
+    values:
+      auto: Auto
+      r1080p: 1080p
+      r1024p: 1280x1024
+      r960p: 1280x960
+      r720p: 720p
+      r480p: 480p / 576p
+      r15khz: 15 kHz (CRT)
+      passthrough: Passthrough
+  output.frameLock:
+    label: Frame lock
+    hint: Igualar taxa da fonte
+    help: >-
+      Faz a taxa de atualização da saída seguir exatamente o console, eliminando trepidação e
+      cortes na imagem. Desligue apenas se a tela recusar a taxa levemente fora do padrão.
+  output.force60:
+    label: Forçar 60 Hz
+    hint: Jogos 50 Hz em 60 Hz
+    help: Envia fontes de 50 Hz (PAL) a 60 Hz, para telas que não aceitam 50 Hz.
+  output.blankOnChange:
+    label: Apagar na troca
+    hint: Oculta trocas de modo
+    help: Mostra preto em vez de um quadro distorcido enquanto a fonte troca de resolução.
+  output.aspect:
+    label: Proporção
+    hint: Formato da imagem
+    help: O formato da imagem na tela. A maioria dos consoles foi feita para 4:3.
+    values:
+      a4x3: "4:3"
+      a16x9: "16:9"
+      full: Tela cheia
+  output.hPosition:
+    label: Posição horizontal
+    hint: Mover esq. / dir.
+    help: Move a imagem para a esquerda ou para a direita.
+  output.vPosition:
+    label: Posição vertical
+    hint: Mover cima / baixo
+    help: Move a imagem para cima ou para baixo.
+  output.hSize:
+    label: Largura
+    hint: Mais estreita / larga
+    help: Deixa a imagem mais estreita ou mais larga.
+  output.vSize:
+    label: Altura
+    hint: Mais baixa / alta
+    help: Deixa a imagem mais baixa ou mais alta.
+
+  input.port:
+    label: Entrada
+    hint: Onde está o console
+    help: >-
+      Auto observa todas as entradas e muda para a que tiver sinal. RGB inclui SCART, os conectores
+      RGBS e VGA; Componente é YPbPr.
+    values:
+      auto: Auto
+      rgb: RGB (SCART/RGBS/VGA)
+      component: Componente (YPbPr)
+  input.syncThreshold:
+    label: Limiar de sync
+    hint: Nível do SOG
+    help: >-
+      O nível usado para separar o sincronismo do sync-on-green ou do sync composto. Auto procura um
+      valor estável; aumente se a imagem rolar, diminua se perder sincronismo em cenas escuras.
+    values:
+      auto: Auto
+  input.phase:
+    label: Fase de amostragem
+    hint: Nitidez dos pixels
+    help: >-
+      Em que momento de cada pixel a entrada é amostrada. Ajuste olhando detalhes finos até ficar
+      nítido e estável; Auto usa a melhor fase medida.
+    values:
+      auto: Auto
+  input.autoGain:
+    label: Ganho automático
+    hint: Ajusta níveis
+    help: >-
+      Reduz o ganho da entrada até o branco mais forte não saturar. Mostre uma tela branca por
+      alguns segundos depois de ligar.
+  input.videoLpf:
+    label: Filtro passa-baixa
+    hint: Filtro de entrada
+    help: >-
+      Filtra altas frequências antes da amostragem. Auto escolhe por padrão de vídeo; valores
+      menores suavizam a imagem e reduzem cintilação de fontes ruidosas.
+    values:
+      auto: Auto
+      f150: 150 MHz
+      f110: 110 MHz
+      f70: 70 MHz
+      f40: 40 MHz
+
+  picture.brightness:
+    label: Brilho
+    hint: Nível de preto
+    help: Clareia ou escurece a imagem inteira.
+  picture.contrast:
+    label: Contraste
+    hint: Nível de branco
+    help: Aumenta ou diminui a diferença entre áreas escuras e claras.
+  picture.saturation:
+    label: Saturação
+    hint: Intensidade das cores
+    help: Deixa as cores mais fortes ou mais fracas.
+  picture.sharpness:
+    label: Nitidez
+    hint: Realce de bordas
+    help: Realça as bordas. Desligado mostra a fonte como foi amostrada.
+    values:
+      "off": Desligado
+      low: Baixa
+      medium: Média
+      high: Alta
+  picture.scanlines:
+    label: Scanlines
+    hint: Linhas estilo CRT
+    help: Escurece linhas alternadas da saída para imitar um CRT. Funciona com fontes progressivas de 15 kHz.
+  picture.scanlineStrength:
+    label: Intensidade
+    hint: Escuridão das linhas
+    help: O quanto as scanlines são escuras.
+  picture.deinterlace:
+    label: Desentrelaçador
+    hint: Para 480i / 576i
+    help: >-
+      Como imagens entrelaçadas são reconstruídas. Adaptativo a movimento mantém detalhes parados
+      nítidos; Bob não tem artefatos de pente e é o mais simples.
+    values:
+      motionAdaptive: Adaptativo
+      bob: Bob
+
+  system.language:
+    label: Idioma
+    hint: Menus e página web
+    help: O idioma da página web e da tela. O console serial é sempre em inglês.
+    values:
+      en: English
+      ptBR: Português (Brasil)
+  system.oledSaver:
+    label: Proteção de tela
+    hint: Desliga o display
+    help: Desliga o display após um tempo sem uso, para proteger o OLED contra marcas.
+    values:
+      "off": Desligada
+      m1: 1 min
+      m3: 3 min
+      m5: 5 min
+      m10: 10 min
+  system.encoderReverse:
+    label: Inverter botão
+    hint: Inverte o giro
+    help: Inverte o sentido do botão giratório.
+  system.revertSeconds:
+    label: Confirmar em
+    hint: Tempo p/ confirmar
+    help: Quanto tempo você tem para confirmar uma mudança que pode deixar a tela preta antes de ela ser desfeita.
+    values:
+      s10: 10 s
+      s20: 20 s
+      s30: 30 s
+  system.showAdvanced:
+    label: Mostrar avançado
+    hint: Ajustes técnicos
+    help: Mostra os ajustes de amostragem, sincronismo e diagnóstico.
+  system.startupProfile:
+    label: Perfil inicial
+    hint: Carregado ao ligar
+    help: >-
+      O perfil carregado quando a placa liga: o último usado, um escolhido automaticamente pelo
+      sinal de entrada ou um perfil fixo.
+    values:
+      lastUsed: Último usado
+      autoByInput: Auto pela entrada
+
+# Mensagens da interface, compartilhadas pela web e pelo OLED. {nome} marca um parâmetro.
+messages:
+  app.title: GBS Reimagined
+  nav.status: Status
+  nav.picture: Imagem
+  nav.output: Saída
+  nav.input: Entrada
+  nav.profiles: Perfis
+  nav.system: Sistema
+  conn.live: Conectado
+  conn.reconnecting: Reconectando…
+  conn.mismatch: Firmware e página diferentes — recarregue
+  headline.scalerMissing: O chip do scaler não está respondendo
+  headline.noSignal: Sem sinal em {input}
+  headline.syncUnstable: O sincronismo chega, mas não está estável
+  headline.settling: Sinal encontrado, estabilizando
+  headline.locking: Sincronizando com a fonte
+  headline.scaling: Escalando {source} para {output}
+  headline.paused: Saída pausada
+  status.source: Fonte
+  status.output: Saída
+  status.board: Placa
+  status.hfreq: Frequência H
+  status.vfreq: Frequência V
+  status.lines: Linhas
+  status.pixelClock: Clock de pixel
+  status.frameLock: Frame lock
+  status.heap: Memória livre
+  status.uptime: Tempo ligado
+  status.version: Firmware
+  common.on: Ligado
+  common.off: Desligado
+  common.keep: Manter
+  common.revert: Desfazer
+  common.unknown: —
+  revert.countdown: Manter estes ajustes? Desfazendo em {seconds} s
+  settings.advanced: Mostrar ajustes avançados
