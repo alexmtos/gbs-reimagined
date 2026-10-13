@@ -35,7 +35,7 @@ const char kText_en[] PROGMEM =
     "Sampling phase\0"
     "Pixel sharpness\0"
     "Auto gain\0"
-    "Adjust input levels\0"
+    "Dims when it clips\0"
     "Video LPF\0"
     "Input low-pass filter\0"
     "Auto\037150 MHz\037110 MHz\03770 MHz\03740 MHz\0"
@@ -74,10 +74,10 @@ const char kText_en[] PROGMEM =
     "Output\0"
     "Picture\0"
     "System\0";
-const uint16_t kLabel_en[] PROGMEM = {0, 111, 140, 173, 208, 250, 288, 321, 354, 385, 456, 493, 524, 554, 621, 644, 665, 693, 740, 766, 798, 847, 903, 962, 995, 1046, 1076};
-const uint16_t kHint_en[] PROGMEM = {18, 122, 152, 189, 215, 270, 306, 337, 368, 391, 471, 508, 534, 564, 632, 653, 676, 703, 750, 784, 811, 856, 917, 975, 1010, 1060, 1092};
-const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 65535, 229, 65535, 65535, 65535, 65535, 412, 488, 488, 65535, 586, 65535, 65535, 65535, 720, 65535, 65535, 827, 875, 933, 65535, 1031, 65535, 1111};
-const uint16_t kGroup_en[] PROGMEM = {1135, 385, 1142, 1150};
+const uint16_t kLabel_en[] PROGMEM = {0, 111, 140, 173, 208, 250, 288, 321, 354, 385, 456, 493, 524, 553, 620, 643, 664, 692, 739, 765, 797, 846, 902, 961, 994, 1045, 1075};
+const uint16_t kHint_en[] PROGMEM = {18, 122, 152, 189, 215, 270, 306, 337, 368, 391, 471, 508, 534, 563, 631, 652, 675, 702, 749, 783, 810, 855, 916, 974, 1009, 1059, 1091};
+const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 65535, 229, 65535, 65535, 65535, 65535, 412, 488, 488, 65535, 585, 65535, 65535, 65535, 719, 65535, 65535, 826, 874, 932, 65535, 1030, 65535, 1110};
+const uint16_t kGroup_en[] PROGMEM = {1134, 385, 1141, 1149};
 
 const char kText_ptBR[] PROGMEM =
     "Resolução de saída\0"
@@ -109,7 +109,7 @@ const char kText_ptBR[] PROGMEM =
     "Fase de amostragem\0"
     "Nitidez dos pixels\0"
     "Ganho automático\0"
-    "Ajusta níveis\0"
+    "Escurece se estourar\0"
     "Filtro passa-baixa\0"
     "Filtro de entrada\0"
     "Auto\037150 MHz\037110 MHz\03770 MHz\03740 MHz\0"
@@ -148,10 +148,10 @@ const char kText_ptBR[] PROGMEM =
     "Saída\0"
     "Imagem\0"
     "Sistema\0";
-const uint16_t kLabel_ptBR[] PROGMEM = {0, 112, 145, 180, 218, 268, 307, 345, 375, 400, 474, 508, 546, 579, 651, 674, 701, 735, 788, 816, 850, 899, 954, 1026, 1057, 1104, 1140};
-const uint16_t kHint_ptBR[] PROGMEM = {22, 123, 159, 196, 230, 289, 326, 353, 382, 408, 489, 527, 564, 598, 658, 684, 713, 743, 798, 828, 867, 906, 973, 1042, 1070, 1122, 1155};
-const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 65535, 248, 65535, 65535, 65535, 65535, 429, 503, 503, 65535, 616, 65535, 65535, 65535, 760, 65535, 65535, 884, 926, 991, 65535, 1089, 65535, 1174};
-const uint16_t kGroup_ptBR[] PROGMEM = {1206, 400, 1213, 1220};
+const uint16_t kLabel_ptBR[] PROGMEM = {0, 112, 145, 180, 218, 268, 307, 345, 375, 400, 474, 508, 546, 585, 657, 680, 707, 741, 794, 822, 856, 905, 960, 1032, 1063, 1110, 1146};
+const uint16_t kHint_ptBR[] PROGMEM = {22, 123, 159, 196, 230, 289, 326, 353, 382, 408, 489, 527, 564, 604, 664, 690, 719, 749, 804, 834, 873, 912, 979, 1048, 1076, 1128, 1161};
+const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 65535, 248, 65535, 65535, 65535, 65535, 429, 503, 503, 65535, 622, 65535, 65535, 65535, 766, 65535, 65535, 890, 932, 997, 65535, 1095, 65535, 1180};
+const uint16_t kGroup_ptBR[] PROGMEM = {1212, 400, 1219, 1226};
 
 const LocaleTables kLocales[] PROGMEM = {
     {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en},

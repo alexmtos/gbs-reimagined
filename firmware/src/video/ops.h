@@ -16,7 +16,7 @@ struct LockState {
     uint8_t sogLevel = 5;  // sync-on-green slicer, 0..31
     uint8_t osr = 0;       // oversampling ratio in effect: 1, 2 or 4 (0 = not set)
     uint8_t adcOffset[3] = {0x40, 0x40, 0x40}; // R, G, B black levels; boot calibration
-    uint8_t adcGain = 0x7B; // all three channels; higher values dim the picture (it is a range)
+    uint8_t adcGain[3] = {0x7B, 0x7B, 0x7B};   // R, G, B; higher values dim the picture (a range)
 };
 
 // What the load-time patches need to know about the source.

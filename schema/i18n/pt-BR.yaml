@@ -95,10 +95,11 @@ settings:
       auto: Auto
   input.autoGain:
     label: Ganho automático
-    hint: Ajusta níveis
+    hint: Escurece se estourar
     help: >-
-      Reduz o ganho da entrada até o branco mais forte não saturar. Mostre uma tela branca por
-      alguns segundos depois de ligar.
+      Durante o jogo, reduz o ganho da entrada sempre que as partes mais claras da imagem estouram.
+      Só escurece, e recomeça a cada nova fonte. Para níveis exatos, use Calibrar níveis com uma
+      tela branca.
   input.videoLpf:
     label: Filtro passa-baixa
     hint: Filtro de entrada

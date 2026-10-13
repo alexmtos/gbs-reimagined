@@ -92,7 +92,9 @@ predicate; the command layer answers "busy" (HTTP 409) to anything that would in
    and mode-detect sections, default ADC gain/offset, sync-processor defaults, PLL resets, then
    release only the blocks detection needs (IF, VDS, DEC, MODE, SYNC, INT).
 5. Write the **sync-processor baseline** (§3.6) — a table of 28 segment-5 values.
-6. Optional ADC offset calibration on the unconnected input (§4.2), then the idle baseline again.
+6. ADC black-level calibration on the unconnected input (§4.2), as a machine of ~12 ms slices
+   (about two seconds; state `Starting`), then the sync-processor and idle baselines again. The
+   offsets are kept for every later program (see [Input levels](#input-levels)).
 7. Si5351: crystal load, outputs off, CLK0 parked at 81 MHz and disabled (§1.3).
 
 ### Detector
@@ -170,6 +172,8 @@ Ticks every 20 ms once a program is loaded (§5). Responsibilities, in pass orde
 7. **Interlace follow** (§5.5): `VPERIOD_IF` parity, 2 agreeing reads (8 for csync), toggles the
    motion-adaptive deinterlacer; scanlines only on progressive content.
 8. **RGBHV supervision** (§5.6) and the 3 s IRQ housekeeping (§5.7).
+9. **Input levels:** a running "calibrate levels" action, or else auto gain when it is on (see
+   [Input levels](#input-levels)).
 
 ### FrameLock
 
@@ -184,6 +188,24 @@ two-line VTOTAL phase controller (§7.2–7.3).
 Clock changes under 750 kHz are walked in 1 kHz steps; larger ones are written at once (§1.3). The
 pixel clock is clamped to the DAC's 162 MHz in every path (VP §3.6: an unclamped lock once drove it
 past 237 MHz).
+
+## Input levels
+
+The ADC's black level (offset) and range (gain, where a higher register value is *less* gain) are
+set per channel. All three mechanisms read the ADC through the decimator's test output; how that
+output behaves (flag bit, which selector is which channel, why blue needs the matrix bypassed, the
+measured gain response) is recorded in [docs/bench/M1.md](../bench/M1.md#reading-the-adc-levels).
+
+| Mechanism | When | What it does |
+|---|---|---|
+| Black-level calibration | every bring-up, before detection | raises each offset from 0x3D until the channel reads near zero on the unconnected input; falls back to 0x40 if any channel reaches 0x52 |
+| Calibrate levels (action) | on request, with a white screen | per channel, bisects the gain register for the most gain that keeps white at or under level 0x7C, then checks that the field really was white (≥ 35 % of reads near the top); refuses a picture without a large white area or one that clips even at the least gain; component sources calibrate Y and give Pb/Pr the same gain |
+| Auto gain (`input.autoGain`, off by default) | stable > 90, clamp set, line PLL locked, SOG clean | samples green and red (61 reads per tick for 30 s after a start or change, 8 after), and on two ceiling reads in a window of twenty raises all three gain registers by 2; only ever lowers the gain |
+
+A new source starts from its input's **base gain**: the last successful calibration for that input,
+or the preset 0x7B. Auto gain starts again from there for each source. While the action runs, auto
+gain is paused; a source loss, a format change or a reload aborts it and restores the previous
+gains. The calibrated gains live in RAM until the settings store persists them (M1).
 
 ## Output modes offered
 

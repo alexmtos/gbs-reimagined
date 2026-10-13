@@ -43,8 +43,10 @@ struct EngineStatus {
     uint16_t noSyncCounter = 0;
     uint8_t lockResult = 1;    // PixelClock::SyncResult of the last frame-lock attempt
     uint8_t adcOffset[3] = {}; // R, G, B
-    uint8_t adcGain = 0;
-    bool adcCalibrationFailed = false;
+    uint8_t adcGain[3] = {};   // R, G, B
+    bool offsetCalibrationFailed = false;
+    uint8_t levelCalibration = 0; // GainCalibrator::Outcome of the last "calibrate levels"
+    bool autoGain = false;
     uint32_t loads = 0; // programs loaded since boot
     uint32_t lastLoadMs = 0;
 };
@@ -66,6 +68,13 @@ public:
 
     // Re-run the program load for the current source (used after a risky setting change).
     void requestReload();
+
+    // "Calibrate levels": with a white screen showing, set each channel's gain so white sits just
+    // under the ADC ceiling; kept per input for every later source. False when there is no stable
+    // picture to measure.
+    bool calibrateLevels();
+    // input.autoGain: keep lowering the gain while the picture clips; restarts per source.
+    void setAutoGain(bool on);
 
     bool busy() const;
     const EngineStatus& status() const { return status_; }
@@ -128,6 +137,11 @@ private:
     SogOptimizer sogOpt_;
     PhaseOptimizer phaseOpt_;
     OffsetCalibrator adcCal_;
+    GainCalibrator gainCal_;
+    AutoGain autoGain_;
+    bool autoGainOn_ = false;
+    // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
+    uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     EngineStatus status_;
 
     OutputMode outputPref_ = OutputMode::Auto;

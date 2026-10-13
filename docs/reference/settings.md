@@ -2,7 +2,7 @@
 
 # Settings reference
 
-Schema hash `57f96039`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `f838c797`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
@@ -25,7 +25,7 @@ Schema hash `57f96039`. Every user-facing setting, as defined in `schema/setting
 | `input.port` | Input | Auto, RGB (SCART/RGBS/VGA), Component (YPbPr) | Auto | essential | M1 | Auto watches all inputs and switches to the one with a signal. RGB covers SCART, the RGBS jacks and VGA; Component is YPbPr. |
 | `input.syncThreshold` | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 | The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. |
 | `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase. |
-| `input.autoGain` | Auto gain | off, on | off | advanced | M2 | Lowers the input gain until the brightest white no longer clips. Show a white screen for a few seconds after turning it on. |
+| `input.autoGain` | Auto gain | off, on | off | advanced | M1 | While you play, lowers the input gain whenever the brightest parts of the picture clip. It only ever darkens, and starts again for each new source. For exact levels, use Calibrate levels with a white screen instead. |
 | `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
 
 ## Picture

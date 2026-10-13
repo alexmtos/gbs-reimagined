@@ -95,10 +95,11 @@ settings:
       auto: Auto
   input.autoGain:
     label: Auto gain
-    hint: Adjust input levels
+    hint: Dims when it clips
     help: >-
-      Lowers the input gain until the brightest white no longer clips. Show a white screen for a
-      few seconds after turning it on.
+      While you play, lowers the input gain whenever the brightest parts of the picture clip. It
+      only ever darkens, and starts again for each new source. For exact levels, use Calibrate
+      levels with a white screen instead.
   input.videoLpf:
     label: Video LPF
     hint: Input low-pass filter

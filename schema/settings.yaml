@@ -104,7 +104,7 @@ settings:
     type: bool
     default: false
     tier: advanced
-    milestone: M2
+    milestone: M1
   input.videoLpf:
     type: enum
     values: [auto, f150, f110, f70, f40]

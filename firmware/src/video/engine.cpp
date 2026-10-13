@@ -72,6 +72,22 @@ void Engine::requestReload() {
     reloadRequested_ = true;
 }
 
+bool Engine::calibrateLevels() {
+    if (phase_ != Phase::Running || loadedProgram_ == tv5725::ProgramId::Count ||
+        stableCounter_ < 10 || ctx_.noSyncCounter != 0 || gainCal_.busy()) {
+        return false;
+    }
+    gainCal_.start(ops_, ctx_.inputIsYpbpr);
+    return true;
+}
+
+void Engine::setAutoGain(bool on) {
+    if (on && !autoGainOn_) {
+        autoGain_.restart();
+    }
+    autoGainOn_ = on;
+}
+
 bool Engine::busy() const {
     return phase_ == Phase::Load || phase_ == Phase::LoadPrewait || phase_ == Phase::SettleSync ||
            phase_ == Phase::SettleMode || phase_ == Phase::SettleSog ||
@@ -102,6 +118,7 @@ void Engine::begin(bool clockGenPresent) {
 }
 
 void Engine::goLowPower() {
+    gainCal_.abort(ops_);
     ops_.chip().write(OUT_SYNC_CNTRL, 0);
     ops_.setDac(false);
     ops_.idleBaseline();
@@ -376,6 +393,11 @@ void Engine::startDetect() {
 void Engine::detectFound(bool ypbpr) {
     ctx_.inputIsYpbpr = ypbpr;
     sourceConnected_ = true;
+    // A new source starts from the base gain of its input; the first load applies it.
+    for (uint8_t c = 0; c < 3; ++c) {
+        lock_.adcGain[c] = baseGain_[ypbpr ? 0 : 1][c];
+    }
+    autoGain_.restart();
     ops_.resetDebugPort();
     if (ypbpr) {
         ops_.applyYuvPatches();
@@ -416,6 +438,7 @@ tv5725::ProgramId Engine::chooseProgram(Standard standard) const {
 }
 
 void Engine::beginLoad(Standard standard) {
+    gainCal_.abort(ops_);
     pendingStandard_ = standard;
     const bool fromNothing =
         ctx_.standard == Standard::None || ctx_.hdBypass || ctx_.standard == Standard::RgbhvBypass;
@@ -614,6 +637,7 @@ void Engine::watch() {
 }
 
 void Engine::watchSyncLoss(bool /*genuineLoss*/) {
+    gainCal_.abort(ops_);
     uint16_t& noSync = ctx_.noSyncCounter;
     ++noSync;
     stableCounter_ = 0;
@@ -935,6 +959,21 @@ void Engine::loopLevel() {
         doneStagePending_ = false;
         gNotAdoptedSinceMs = nowMs();
     }
+    if (gainCal_.busy()) {
+        if (!gainCal_.step(ops_) && gainCal_.outcome() == GainCalibrator::Outcome::Done) {
+            for (uint8_t c = 0; c < 3; ++c) {
+                baseGain_[ctx_.inputIsYpbpr ? 0 : 1][c] = lock_.adcGain[c];
+            }
+        }
+    } else if (autoGainOn_ && stableCounter_ > 90 && ctx_.clampSet && ctx_.noSyncCounter == 0 &&
+               !phaseOpt_.busy() && !sogOpt_.busy()) {
+        // Only with the line PLL locked to the source and the slicer content (mechanics §4.2).
+        const uint32_t htotal = chip_.get(STATUS_SYNC_PROC_HTOTAL);
+        const uint32_t pllad = chip_.get(PLLAD_MD);
+        if (htotal + 3 > pllad && htotal < pllad + 3 && chip_.get(STATUS_INT_SOG_BAD) == 0) {
+            autoGain_.step(ops_);
+        }
+    }
     // Watchdog: a missed adoption leaves the output free-running ~17 % fast with nothing on
     // screen to show it (video-path lessons §3.6).
     if (!doneStagePending_ && clock_.present() && stableCounter_ > 45) {
@@ -1034,8 +1073,12 @@ void Engine::refreshStatus() {
     for (uint8_t i = 0; i < 3; ++i) {
         st.adcOffset[i] = lock_.adcOffset[i];
     }
-    st.adcGain = lock_.adcGain;
-    st.adcCalibrationFailed = adcCal_.failed();
+    for (uint8_t i = 0; i < 3; ++i) {
+        st.adcGain[i] = lock_.adcGain[i];
+    }
+    st.offsetCalibrationFailed = adcCal_.failed();
+    st.levelCalibration = static_cast<uint8_t>(gainCal_.outcome());
+    st.autoGain = autoGainOn_;
     if (now - gStatusRefreshedMs < kStatusRefreshMs) {
         return;
     }

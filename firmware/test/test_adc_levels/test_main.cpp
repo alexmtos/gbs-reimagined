@@ -75,7 +75,7 @@ TEST_CASE("the offset calibration finds each channel's black level") {
     CHECK(r.dev.at(5, 0x06) == 0x3F);
     CHECK(r.dev.at(5, 0x07) == 0x3E);
     CHECK(r.dev.at(5, 0x08) == 0x41);
-    CHECK(r.dev.at(5, 0x09) == r.lock.adcGain);
+    CHECK(r.dev.at(5, 0x09) == r.lock.adcGain[0]);
     // Measured on the unconnected input.
     bool isolated = false;
     for (const auto& w : r.dev.writes) {
@@ -125,4 +125,163 @@ TEST_CASE("an isolated miss does not raise the offset") {
     CHECK(lock.adcOffset[0] == 0x3D);
     CHECK(lock.adcOffset[1] == 0x3D);
     CHECK(lock.adcOffset[2] == 0x3D);
+}
+
+namespace {
+
+// A source showing a field of uniform colour, as the decimator test output reports it: per read,
+// either a blanking sample (level 0) or the field, in a fixed pattern of twenty reads. The field's
+// level per channel follows the gain response measured on the bench, level ∝ 1 / (199 + register)
+// (docs/bench/M1.md), and clips at 0x7F; bit 7 of the high byte toggles on every read. Blue reads
+// as a colour difference (0x40) unless the matrix is bypassed.
+class FieldTv5725 : public test::FakeTv5725 {
+public:
+    // Level each channel would reach at the preset gain 0x7B if the ADC did not clip (R, G, B).
+    uint16_t levelAtPreset[3] = {0x90, 0x88, 0x84};
+    uint8_t fieldReadsOfTwenty = 13; // the rest is blanking
+    int reads = 0;
+
+    uint8_t level(uint8_t channel) const {
+        const uint32_t range = 199u + regs[5][0x09 + channel];
+        const uint32_t v = static_cast<uint32_t>(levelAtPreset[channel]) * (199u + 0x7B) / range;
+        return static_cast<uint8_t>(v > 0x7F ? 0x7F : v);
+    }
+
+    bool read(uint8_t reg, uint8_t* out, size_t len) override {
+        if (segment == 0 && reg <= 0x2F && reg + len > 0x2F) {
+            const uint8_t sel = (regs[5][0x1F] >> 4) & 0x07;
+            const bool matrixBypassed = (regs[5][0x1F] >> 2) & 1;
+            static constexpr int8_t kChannel[8] = {-1, 1, 0, 2, -1, -1, -1, -1};
+            uint8_t v = 0;
+            const int8_t c = kChannel[sel];
+            if (c >= 0 && reads % 20 < fieldReadsOfTwenty) {
+                v = (c == 2 && !matrixBypassed) ? 0x40 : level(static_cast<uint8_t>(c));
+            }
+            regs[0][0x2F] = static_cast<uint8_t>(v | ((reads & 1) << 7));
+            ++reads;
+        }
+        return FakeTv5725::read(reg, out, len);
+    }
+};
+
+struct GainRig {
+    test::FakeI2cBus bus;
+    FieldTv5725 dev;
+    tv5725::Chip chip{bus};
+    video::LockState lock;
+    video::Ops ops{chip, lock};
+    video::GainCalibrator cal;
+
+    GainRig() {
+        bus.attach(tv5725::Chip::kAddress, dev);
+        ops.applyAdcLevels();
+        dev.at(5, 0x1F) = 0x90; // as a running RGB program leaves it: matrix on, test output off
+        dev.at(0, 0x4D) = 0x0A; // test bus on the sync processor, as the SOG search leaves it
+    }
+
+    void calibrate(bool ypbpr) {
+        cal.start(ops, ypbpr);
+        for (int i = 0; i < 5000 && cal.step(ops); ++i) {
+            platform::advanceMs(8);
+        }
+    }
+};
+
+constexpr uint8_t kTarget = video::GainCalibrator::kWhiteTarget;
+
+} // namespace
+
+TEST_CASE("calibrating on a white field puts each channel's white just under the target") {
+    GainRig r;
+    r.calibrate(false);
+    REQUIRE(r.cal.outcome() == video::GainCalibrator::Outcome::Done);
+    for (uint8_t c = 0; c < 3; ++c) {
+        const uint8_t gain = r.lock.adcGain[c];
+        CHECK(r.dev.at(5, static_cast<uint8_t>(0x09 + c)) == gain);
+        CHECK(r.dev.level(c) <= kTarget);
+        r.dev.at(5, static_cast<uint8_t>(0x09 + c)) = static_cast<uint8_t>(gain - 1);
+        CHECK(r.dev.level(c) > kTarget); // one step more gain would pass the target
+        r.dev.at(5, static_cast<uint8_t>(0x09 + c)) = gain;
+    }
+    CHECK(r.lock.adcGain[0] > r.lock.adcGain[2]); // the hottest channel gets the least gain
+    // Everything the taps borrowed is back.
+    CHECK(r.dev.at(5, 0x1F) == 0x90);
+    CHECK((r.dev.at(0, 0x4D) & 0x1F) == 0x0A);
+}
+
+TEST_CASE("a picture without a large bright area is refused and the gains stay") {
+    GainRig r;
+    r.dev.fieldReadsOfTwenty = 2; // a small white logo on black
+    r.calibrate(false);
+    CHECK(r.cal.outcome() == video::GainCalibrator::Outcome::NotWhite);
+    for (uint8_t c = 0; c < 3; ++c) {
+        CHECK(r.lock.adcGain[c] == 0x7B);
+        CHECK(r.dev.at(5, static_cast<uint8_t>(0x09 + c)) == 0x7B);
+    }
+}
+
+TEST_CASE("a dark field is refused rather than amplified") {
+    GainRig r;
+    for (uint16_t& l : r.dev.levelAtPreset) {
+        l = 0x30; // a grey field: even the most gain cannot bring it to the target
+    }
+    r.calibrate(false);
+    CHECK(r.cal.outcome() == video::GainCalibrator::Outcome::NotWhite);
+    CHECK(r.lock.adcGain[1] == 0x7B);
+}
+
+TEST_CASE("a signal that clips even at the least gain is refused") {
+    GainRig r;
+    r.dev.levelAtPreset[1] = 0x200;
+    r.calibrate(false);
+    CHECK(r.cal.outcome() == video::GainCalibrator::Outcome::TooHot);
+    CHECK(r.lock.adcGain[1] == 0x7B);
+}
+
+TEST_CASE("component sources calibrate Y and give Pb and Pr the same gain") {
+    GainRig r;
+    r.calibrate(true);
+    REQUIRE(r.cal.outcome() == video::GainCalibrator::Outcome::Done);
+    CHECK(r.dev.level(1) <= kTarget);
+    CHECK(r.lock.adcGain[0] == r.lock.adcGain[1]);
+    CHECK(r.lock.adcGain[2] == r.lock.adcGain[1]);
+}
+
+TEST_CASE("an abort puts back the gains in effect before the calibration") {
+    GainRig r;
+    r.lock.adcGain[1] = 0x90;
+    r.ops.applyAdcLevels();
+    r.cal.start(r.ops, false);
+    for (int i = 0; i < 30; ++i) {
+        r.cal.step(r.ops);
+        platform::advanceMs(8);
+    }
+    REQUIRE(r.cal.busy());
+    r.cal.abort(r.ops);
+    CHECK(r.cal.outcome() == video::GainCalibrator::Outcome::Aborted);
+    CHECK(r.lock.adcGain[1] == 0x90);
+    CHECK(r.dev.at(5, 0x0A) == 0x90);
+}
+
+TEST_CASE("auto gain lowers all three gains while green clips, and leaves a clean picture alone") {
+    GainRig r;
+    video::AutoGain ag;
+    ag.restart();
+    // Green reaches 0x88 at the preset gain: clipped.
+    CHECK(ag.step(r.ops));
+    CHECK(r.lock.adcGain[0] == 0x7D);
+    CHECK(r.lock.adcGain[1] == 0x7D);
+    CHECK(r.lock.adcGain[2] == 0x7D);
+    for (int i = 0; i < 200; ++i) {
+        ag.step(r.ops);
+        platform::advanceMs(20);
+    }
+    CHECK(r.dev.level(0) < 0x7F); // red and green no longer clip
+    CHECK(r.dev.level(1) < 0x7F);
+    const uint8_t settled = r.lock.adcGain[1];
+    for (int i = 0; i < 50; ++i) {
+        CHECK_FALSE(ag.step(r.ops));
+        platform::advanceMs(20);
+    }
+    CHECK(r.lock.adcGain[1] == settled);
 }

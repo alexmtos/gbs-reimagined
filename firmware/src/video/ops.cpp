@@ -477,9 +477,9 @@ void Ops::applyAdcLevels() {
     chip_.write(ADC_ROFCTRL, lock_.adcOffset[0]);
     chip_.write(ADC_GOFCTRL, lock_.adcOffset[1]);
     chip_.write(ADC_BOFCTRL, lock_.adcOffset[2]);
-    chip_.write(ADC_RGCTRL, lock_.adcGain);
-    chip_.write(ADC_GGCTRL, lock_.adcGain);
-    chip_.write(ADC_BGCTRL, lock_.adcGain);
+    chip_.write(ADC_RGCTRL, lock_.adcGain[0]);
+    chip_.write(ADC_GGCTRL, lock_.adcGain[1]);
+    chip_.write(ADC_BGCTRL, lock_.adcGain[2]);
 }
 
 void Ops::applyRgbPatches() {

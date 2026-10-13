@@ -100,9 +100,14 @@ void printStatus() {
                     st.clockAdopted ? "(external)" : "(internal)", st.frameLocked ? " locked" : "",
                     static_cast<unsigned long>(st.sourceMilliHz),
                     static_cast<unsigned long>(st.outputMilliHz));
-    Serial.printf_P(PSTR("ADC offset R %02X G %02X B %02X%s, gain %02X\r\n"), st.adcOffset[0],
-                    st.adcOffset[1], st.adcOffset[2],
-                    st.adcCalibrationFailed ? " (calibration failed, defaults)" : "", st.adcGain);
+    static const char* const kLevelOutcome[] = {"not run",   "running", "done",
+                                                "not white", "too hot", "aborted"};
+    Serial.printf_P(PSTR("ADC offset R %02X G %02X B %02X%s | gain R %02X G %02X B %02X, auto gain "
+                         "%s, levels %s\r\n"),
+                    st.adcOffset[0], st.adcOffset[1], st.adcOffset[2],
+                    st.offsetCalibrationFailed ? " (calibration failed)" : "", st.adcGain[0],
+                    st.adcGain[1], st.adcGain[2], st.autoGain ? "on" : "off",
+                    st.levelCalibration < 6 ? kLevelOutcome[st.levelCalibration] : "?");
     Serial.printf_P(PSTR("SOG %u, phase SP %u ADC %u | heap %u, longest tick %lu ms\r\n"),
                     st.sogLevel, st.phaseSp, st.phaseAdc, ESP.getFreeHeap(),
                     static_cast<unsigned long>(longestTickMs));
@@ -179,6 +184,41 @@ void cmdInput(const char* arg) {
     Serial.println(F("ok"));
 }
 
+void cmdLevels(char* args) {
+    char* which = strtok(args, " ");
+    char* count = strtok(nullptr, " ");
+    video::AdcChannel ch = video::AdcChannel::G;
+    if (which != nullptr && strcasecmp(which, "r") == 0) {
+        ch = video::AdcChannel::R;
+    } else if (which != nullptr && strcasecmp(which, "b") == 0) {
+        ch = video::AdcChannel::B;
+    } else if (which == nullptr || strcasecmp(which, "g") != 0) {
+        Serial.println(F("usage: levels r|g|b [samples]"));
+        return;
+    }
+    unsigned long n = count != nullptr ? strtoul(count, nullptr, 0) : 512;
+    n = n > 4000 ? 4000 : n;
+    video::LevelStats stats; // 258 bytes of stack, only while the command runs
+    video::sampleLevels(engine.ops(), ch, static_cast<uint16_t>(n), stats);
+    Serial.printf_P(PSTR("top %02X, at ceiling %u permille | level:count"), stats.top(20),
+                    stats.share(video::kLevelCeiling, video::kLevelCeiling));
+    for (uint8_t v = 0; v <= video::kLevelCeiling; ++v) {
+        if (stats.hist[v] != 0) {
+            Serial.printf_P(PSTR(" %02X:%u"), v, stats.hist[v]);
+        }
+    }
+    Serial.println();
+}
+
+void cmdAutoGain(const char* arg) {
+    if (strcasecmp(arg, "on") == 0 || strcasecmp(arg, "off") == 0) {
+        engine.setAutoGain(strcasecmp(arg, "on") == 0);
+        Serial.println(F("ok"));
+    } else {
+        Serial.println(F("usage: autogain on|off"));
+    }
+}
+
 void handleLine(char* line) {
     char* rest = strchr(line, ' ');
     if (rest != nullptr) {
@@ -198,11 +238,22 @@ void handleLine(char* line) {
         cmdReg(rest);
     } else if (strcasecmp(line, "dump") == 0) {
         cmdDump(rest);
+    } else if (strcasecmp(line, "levels") == 0) {
+        cmdLevels(rest);
+    } else if (strcasecmp(line, "calibrate") == 0) {
+        if (engine.calibrateLevels()) {
+            Serial.println(F("calibrating levels: keep a white screen showing for a few seconds"));
+        } else {
+            Serial.println(F("no stable picture to calibrate against"));
+        }
+    } else if (strcasecmp(line, "autogain") == 0) {
+        cmdAutoGain(rest);
     } else if (strcasecmp(line, "reboot") == 0) {
         ESP.restart();
     } else if (line[0] != '\0') {
-        Serial.println(F("commands: status, output <mode>, input <port>, reload, reg <FIELD> "
-                         "[value], dump <seg>, reboot"));
+        Serial.println(
+            F("commands: status, output <mode>, input <port>, reload, reg <FIELD> "
+              "[value], dump <seg>, levels r|g|b [n], calibrate, autogain on|off, reboot"));
     }
 }
 
