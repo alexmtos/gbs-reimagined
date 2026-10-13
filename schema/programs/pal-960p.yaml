@@ -1,8 +1,10 @@
 # Baseline register program for the TV5725. Factual chip configuration data;
 # see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.
-id: pal-288p
+id: pal-960p
 standard: pal
-output: "768x288 progressive, 15 kHz"
+output: "1280x960"
+preset_id: 0x11
+display_clock: 0x85
 source:
   file: pal_240p.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

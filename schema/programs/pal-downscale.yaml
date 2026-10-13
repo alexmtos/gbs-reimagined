@@ -3,6 +3,8 @@
 id: pal-downscale
 standard: pal
 output: "downscale to 15 kHz"
+preset_id: 0x16
+display_clock: 0x25
 source:
   file: pal_downscale.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

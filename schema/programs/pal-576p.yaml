@@ -3,6 +3,8 @@
 id: pal-576p
 standard: pal
 output: "768x576 progressive, 31 kHz"
+preset_id: 0x14
+display_clock: 0x65
 source:
   file: pal_768x576.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

@@ -3,6 +3,8 @@
 id: factory-rgbs
 standard: any
 output: "factory firmware dump, RGBS input"
+preset_id: 0x00
+display_clock: 0x45
 source:
   file: ofw_RGBS.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

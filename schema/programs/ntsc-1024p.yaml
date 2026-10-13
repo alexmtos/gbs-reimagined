@@ -3,6 +3,8 @@
 id: ntsc-1024p
 standard: ntsc
 output: "1280x1024"
+preset_id: 0x02
+display_clock: 0xA5
 source:
   file: ntsc_1280x1024.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

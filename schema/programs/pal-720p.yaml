@@ -3,6 +3,8 @@
 id: pal-720p
 standard: pal
 output: "1280x720"
+preset_id: 0x13
+display_clock: 0x65
 source:
   file: pal_1280x720.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

@@ -3,6 +3,8 @@
 id: ntsc-480p
 standard: ntsc
 output: "720x480 progressive, 31 kHz"
+preset_id: 0x04
+display_clock: 0x65
 source:
   file: ntsc_720x480.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

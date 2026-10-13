@@ -15,7 +15,9 @@ enum class Standard : uint8_t { Any, Ntsc, Pal };
 struct ProgramInfo {
     ProgramId id;
     Standard standard;
-    const char* name;       // PROGMEM
+    uint8_t presetId;     // upstream output id stored in S1_2B (0x01 960p … 0x06 15 kHz, +0x10 PAL)
+    uint8_t displayClock; // internal display-clock code the program was tuned with (S0_41)
+    const char* name;     // PROGMEM
     const uint8_t* records; // PROGMEM
     uint16_t recordsSize;
     uint16_t valueCount;

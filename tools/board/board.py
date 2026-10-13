@@ -118,12 +118,16 @@ def cmd_restore(args: argparse.Namespace) -> int:
 def cmd_console(args: argparse.Namespace) -> int:
     import serial
 
+    # Opening the port toggles DTR/RTS, which resets the board through the CH340's auto-reset
+    # circuit: commands are sent `--wait` seconds after opening, once the firmware is up.
     with serial.Serial(args.port, 115200, timeout=0.2) as ser:
-        if args.send:
-            time.sleep(0.3)
-            ser.write((args.send + "\r\n").encode("ascii"))
-        deadline = time.monotonic() + args.seconds
+        start = time.monotonic()
+        pending = list(args.send or [])
+        deadline = start + args.seconds
         while time.monotonic() < deadline:
+            if pending and time.monotonic() - start >= args.wait:
+                ser.write((pending.pop(0) + "\r\n").encode("ascii"))
+                start = time.monotonic() - args.wait + args.gap
             chunk = ser.read(512)
             if chunk:
                 sys.stdout.write(chunk.decode("utf-8", errors="replace"))
@@ -150,7 +154,9 @@ def main() -> int:
     p.set_defaults(fn=cmd_restore)
     p = sub.add_parser("console")
     p.add_argument("--port", required=True)
-    p.add_argument("--send")
+    p.add_argument("--send", action="append", help="a line to send; repeat for several")
+    p.add_argument("--wait", type=float, default=1.0, help="seconds after opening before sending")
+    p.add_argument("--gap", type=float, default=1.0, help="seconds between sent lines")
     p.add_argument("--seconds", type=float, default=4.0)
     p.set_defaults(fn=cmd_console)
     args = ap.parse_args()
