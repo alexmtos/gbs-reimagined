@@ -488,12 +488,7 @@ void Ops::applyRgbPatches() {
     chip_.write(ADC_RYSEL_G, 0);
     chip_.write(DEC_MATRIX_BYPS, 0); // the decimator converts RGB to YUV
     chip_.write(IF_MATRIX_BYPS, 1);
-    chip_.write(VDS_Y_GAIN, 0x80);
-    chip_.write(VDS_UCOS_GAIN, 0x1C);
-    chip_.write(VDS_VCOS_GAIN, 0x29); // 0x29 with the decimator matrix (0x27 with the IF one)
-    chip_.write(VDS_Y_OFST, 0x00);
-    chip_.write(VDS_U_OFST, 0x00);
-    chip_.write(VDS_V_OFST, 0x00);
+    // The output colour space follows in applyPicture (video/picture.cpp), which owns it.
 }
 
 void Ops::applyYuvPatches() {
@@ -502,12 +497,6 @@ void Ops::applyYuvPatches() {
     chip_.write(ADC_RYSEL_G, 0);
     chip_.write(DEC_MATRIX_BYPS, 1);
     chip_.write(IF_MATRIX_BYPS, 1);
-    chip_.write(VDS_Y_GAIN, 0x80);
-    chip_.write(VDS_UCOS_GAIN, 0x1C);
-    chip_.write(VDS_VCOS_GAIN, 0x29);
-    chip_.write(VDS_Y_OFST, 0xFE);
-    chip_.write(VDS_U_OFST, 0x03);
-    chip_.write(VDS_V_OFST, 0x03);
 }
 
 // ------------------------------------------------------------------------------------------------

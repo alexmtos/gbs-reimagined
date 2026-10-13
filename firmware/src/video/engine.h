@@ -7,15 +7,15 @@
 #include "hal/pulse_timer.h"
 #include "hal/si5351.h"
 #include "video/adc_levels.h"
+#include "video/control.h"
 #include "video/ops.h"
+#include "video/picture.h"
 #include "video/pixel_clock.h"
 #include "video/sense.h"
 #include "video/tuning.h"
 #include "video/types.h"
 
 namespace gbsr::video {
-
-enum class InputPreference : uint8_t { Auto, Rgb, Component };
 
 // Snapshot of what the engine is doing, refreshed every tick, read by the front ends.
 struct EngineStatus {
@@ -53,7 +53,7 @@ struct EngineStatus {
 
 // The video path's state machine (docs/design/video-engine.md). Call tick() every 20 ms from the
 // main loop; requests from the front ends take effect on the next tick.
-class Engine {
+class Engine : public VideoControl {
 public:
     Engine(tv5725::Chip& chip, hal::Si5351* clockGen, hal::PulseTimer* timer);
 
@@ -61,8 +61,8 @@ public:
     void begin(bool clockGenPresent);
     void tick();
 
-    void setOutputPreference(OutputMode mode);
-    void setInputPreference(InputPreference pref);
+    void setOutputPreference(OutputMode mode) override;
+    void setInputPreference(InputPreference pref) override;
     OutputMode outputPreference() const { return outputPref_; }
     InputPreference inputPreference() const { return inputPref_; }
 
@@ -72,9 +72,20 @@ public:
     // "Calibrate levels": with a white screen showing, set each channel's gain so white sits just
     // under the ADC ceiling; kept per input for every later source. False when there is no stable
     // picture to measure.
-    bool calibrateLevels();
+    bool calibrateLevels() override;
     // input.autoGain: keep lowering the gain while the picture clips; restarts per source.
-    void setAutoGain(bool on);
+    void setAutoGain(bool on) override;
+    // output.frameLock: with it off the display runs on the chip's own clock at the program's rate.
+    void setFrameLock(bool on) override;
+    // picture.*: applied now and after every program load.
+    void setPicture(const PictureAdjust& adj) override;
+
+    // Base gains per input (0 component, 1 RGB), the gains a new source starts with: restored from
+    // storage at boot, replaced by each successful "calibrate levels". levelsSequence() moves on
+    // every replacement so the owner knows when to save.
+    void setBaseGains(uint8_t port, const uint8_t (&gains)[3]) override;
+    void baseGains(uint8_t port, uint8_t (&gains)[3]) const override;
+    uint16_t levelsSequence() const override { return levelsSequence_; }
 
     bool busy() const;
     const EngineStatus& status() const { return status_; }
@@ -140,8 +151,11 @@ private:
     GainCalibrator gainCal_;
     AutoGain autoGain_;
     bool autoGainOn_ = false;
+    bool frameLockOn_ = true;
+    PictureAdjust picture_;
     // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
+    uint16_t levelsSequence_ = 0;
     EngineStatus status_;
 
     OutputMode outputPref_ = OutputMode::Auto;

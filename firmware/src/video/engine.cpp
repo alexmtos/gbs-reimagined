@@ -81,6 +81,43 @@ bool Engine::calibrateLevels() {
     return true;
 }
 
+void Engine::setFrameLock(bool on) {
+    if (on == frameLockOn_) {
+        return;
+    }
+    frameLockOn_ = on;
+    if (loadedProgram_ == tv5725::ProgramId::Count) {
+        return;
+    }
+    if (!on) {
+        clock_.release(tv5725::programInfo(loadedProgram_).displayClock);
+    } else if (phase_ == Phase::Running && clock_.present()) {
+        doneStagePending_ = true; // adopt and lock at the next settled moment
+    }
+}
+
+void Engine::setPicture(const PictureAdjust& adj) {
+    if (adj == picture_) {
+        return;
+    }
+    picture_ = adj;
+    if (loadedProgram_ != tv5725::ProgramId::Count) {
+        applyPicture(ops_, ctx_.inputIsYpbpr, picture_);
+    }
+}
+
+void Engine::setBaseGains(uint8_t port, const uint8_t (&gains)[3]) {
+    for (uint8_t c = 0; c < 3; ++c) {
+        baseGain_[port ? 1 : 0][c] = gains[c];
+    }
+}
+
+void Engine::baseGains(uint8_t port, uint8_t (&gains)[3]) const {
+    for (uint8_t c = 0; c < 3; ++c) {
+        gains[c] = baseGain_[port ? 1 : 0][c];
+    }
+}
+
 void Engine::setAutoGain(bool on) {
     if (on && !autoGainOn_) {
         autoGain_.restart();
@@ -463,6 +500,7 @@ void Engine::runLoad() {
         enterPhase(Phase::Running);
         return;
     }
+    reloadRequested_ = false; // this load uses the preferences in effect
     const tv5725::ProgramId program = chooseProgram(standard);
     const tv5725::ProgramInfo info = tv5725::programInfo(program);
     ctx_.standard = standard;
@@ -481,6 +519,7 @@ void Engine::runLoad() {
     ops_.writeProgram(program, lc);
     sense_.forgetVgaTargets();
     const bool wantSog = postLoadTuning(ops_, sense_, ctx_);
+    applyPicture(ops_, ctx_.inputIsYpbpr, picture_);
     clock_.resetForProgram(info.displayClock);
     hdmiSyncFix_ = false;
     loadedProgram_ = program;
@@ -952,7 +991,7 @@ void Engine::loopLevel() {
     if (doneStagePending_ && stableCounter_ > 35) {
         ops_.setDac(true);
         ops_.setSyncOut(true);
-        if (clock_.present() && ctx_.standard != Standard::RgbhvScaled) {
+        if (clock_.present() && frameLockOn_ && ctx_.standard != Standard::RgbhvScaled) {
             clock_.adopt();
             lockFrameRate();
         }
@@ -964,6 +1003,7 @@ void Engine::loopLevel() {
             for (uint8_t c = 0; c < 3; ++c) {
                 baseGain_[ctx_.inputIsYpbpr ? 0 : 1][c] = lock_.adcGain[c];
             }
+            ++levelsSequence_;
         }
     } else if (autoGainOn_ && stableCounter_ > 90 && ctx_.clampSet && ctx_.noSyncCounter == 0 &&
                !phaseOpt_.busy() && !sogOpt_.busy()) {
@@ -976,7 +1016,7 @@ void Engine::loopLevel() {
     }
     // Watchdog: a missed adoption leaves the output free-running ~17 % fast with nothing on
     // screen to show it (video-path lessons §3.6).
-    if (!doneStagePending_ && clock_.present() && stableCounter_ > 45) {
+    if (!doneStagePending_ && clock_.present() && frameLockOn_ && stableCounter_ > 45) {
         if (clock_.adopted()) {
             gNotAdoptedSinceMs = nowMs();
         } else if (nowMs() - gNotAdoptedSinceMs > kAdoptWatchdogMs) {

@@ -45,7 +45,8 @@ help in every language, and the milestone that delivers it. Identifiers below ar
 | `input.port` | Input | **Auto**, RGB (SCART / RGBS / VGA), Component (YPbPr) | Essential | M1 |
 | `input.syncThreshold` | Sync threshold (SOG) | **Auto**, 0–31 | Advanced | M2 |
 | `input.phase` | Sampling phase | **Auto**, 0–31 (shown in degrees, 11.25° steps) | Advanced | M2 |
-| `input.autoGain` | Auto gain | **Off**, On | Advanced | M2 |
+| `input.autoGain` | Auto gain | **Off**, On (lowers the gain while the picture clips; restarts per source) | Advanced | M1 |
+| *Calibrate levels* (action) | Calibrate levels | with a white screen: per-channel gain so white sits just under clipping, kept per input | Advanced | M1 |
 | `input.gain` | Gain (R, G, B) | 0–255 each (**preset value**) | Advanced | M2 |
 | `input.videoLpf` | Video LPF | **Auto**, 150, 110, 70, 40 MHz | Advanced | M2 |
 
@@ -158,10 +159,11 @@ input <auto|rgb|component>
 profile list|load <n>|save <n> [name]
 wifi <ssid> <password>       join a network
 keep | revert                answer a pending revert
-reboot | factory-reset
+calibrate                    calibrate levels against a white screen
+reboot | factory-reset       factory-reset asks to be typed twice
 SVS NEW INPUT=<n>            switcher compatibility (also SVS CURRENT INPUT=<n>)
 remote prof<n>               RetroTINK-style profile trigger
-reg get|set <FIELD> [value]  expert: raw chip field (needs `expert on`)
+expert on|off                raw chip tools: reg <FIELD> [value], dump <seg>, levels r|g|b [n]
 json on|off                  machine-readable replies for tools
 ```
 

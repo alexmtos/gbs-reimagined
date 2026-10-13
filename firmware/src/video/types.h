@@ -27,6 +27,9 @@ enum class InputPort : uint8_t { Component = 0, Rgb = 1, Unconnected = 2 };
 
 enum class SyncType : uint8_t { None, Hv, Csync };
 
+// Input choice offered to the user; values match schema/settings.yaml input.port.
+enum class InputPreference : uint8_t { Auto, Rgb, Component };
+
 // Output modes offered to the user; values match schema/settings.yaml output.resolution.
 enum class OutputMode : uint8_t { Auto, R1080p, R1024p, R960p, R720p, R480p, R15kHz, Passthrough };
 

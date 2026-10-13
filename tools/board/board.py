@@ -118,8 +118,9 @@ def cmd_restore(args: argparse.Namespace) -> int:
 def cmd_console(args: argparse.Namespace) -> int:
     import serial
 
-    # Opening the port toggles DTR/RTS, which resets the board through the CH340's auto-reset
-    # circuit: commands are sent `--wait` seconds after opening, once the firmware is up.
+    # Opening the port does not reset this board (bench, 2026-10-13); a flash does. `--wait` gives
+    # a freshly flashed or rebooted firmware time to come up before the first line is sent, and
+    # every line after it waits `--gap` seconds (one value for all lines).
     with serial.Serial(args.port, 115200, timeout=0.2) as ser:
         start = time.monotonic()
         pending = list(args.send or [])

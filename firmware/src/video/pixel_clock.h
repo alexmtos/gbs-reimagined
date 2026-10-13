@@ -35,6 +35,9 @@ public:
     // Whether the display currently runs from the generator.
     bool adopted();
 
+    // Back onto the chip's internal display clock at the program's own rate (frame lock off).
+    void release(uint8_t displayClockCode);
+
     enum class SyncResult : uint8_t {
         Locked,           // retuned: output rate = source rate
         NotReady,         // not adopted, no generator, or a rate could not be measured

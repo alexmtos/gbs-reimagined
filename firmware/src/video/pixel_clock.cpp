@@ -94,6 +94,18 @@ void PixelClock::adopt() {
     chip.write(PLL648_CONTROL_01, kExternalClockCode);
 }
 
+void PixelClock::release(uint8_t displayClockCode) {
+    locked_ = false;
+    if (!present()) {
+        return;
+    }
+    if (adopted()) {
+        ops_.chip().write(PLL648_CONTROL_01, displayClockCode);
+    }
+    si_->setOutputEnabled(false);
+    setFrequency(frequencyForCode(displayClockCode));
+}
+
 bool PixelClock::adopted() {
     return ops_.chip().get(PLL648_CONTROL_01) == kExternalClockCode;
 }

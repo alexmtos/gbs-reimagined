@@ -245,8 +245,6 @@ bool postLoadTuning(Ops& ops, Sense& sense, PathContext& ctx) {
     chip.write(VDS_PK_LH_CORE, 0);
     chip.write(VDS_PK_LB_CMP, 31); // 0 would cancel peaking entirely
     chip.write(VDS_PK_LH_CMP, 31);
-    chip.write(VDS_PK_LB_GAIN, 0x14);
-    chip.write(VDS_PK_LH_GAIN, 0x14);
     chip.write(VDS_PK_VL_HL_SEL, 0);
     chip.write(VDS_PK_VL_HH_SEL, 0);
     chip.write(VDS_STEP_GAIN, 1);
