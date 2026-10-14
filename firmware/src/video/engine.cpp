@@ -156,6 +156,55 @@ void Engine::setLines(const LineAdjust& adj) {
     }
 }
 
+void Engine::setSampling(const SamplingAdjust& adj) {
+    const SamplingAdjust before = sampling_;
+    sampling_ = adj;
+    lock_.sogManual = adj.sog;
+    lock_.phaseAdcManual = adj.phase;
+    // Live only on a running path; detection and loads pick the values up as they write.
+    if (phase_ != Phase::Running && phase_ != Phase::Watching) {
+        return;
+    }
+    if (adj.sog != before.sog || adj.phase != before.phase) {
+        ops_.setSogLevel(lock_.sogLevel); // the threshold in effect; re-latches the phases
+    }
+    if (adj.lpf != before.lpf) {
+        applyLpf();
+    }
+    syncBits_ = 0;
+    syncSamples_ = 0; // the meter starts over with the new values
+}
+
+void Engine::applyLpf() {
+    if (sampling_.lpf >= 1 && sampling_.lpf <= 4) {
+        chip_.write(ADC_FLTR, static_cast<uint32_t>(sampling_.lpf - 1)); // 0 = 150 MHz … 3 = 40
+    } else if (lpfAuto_ <= 3) {
+        chip_.write(ADC_FLTR, lpfAuto_);
+    }
+}
+
+void Engine::sampleSync() {
+    // Good when the measured line length equals the line PLL's divider (the test auto gain uses)
+    // and the sync processor's line count per field holds still. With SOG at 0 on a component Wii
+    // the line length still matched while the field count jumped between 100 and 244 and the
+    // picture rolled (docs/bench/M2.md); neither reading is latched.
+    if (plladMd_ == 0) {
+        return;
+    }
+    const uint32_t md = chip_.get(PLLAD_MD);
+    const uint32_t htotal = chip_.get(STATUS_SYNC_PROC_HTOTAL);
+    const uint16_t vtotal = static_cast<uint16_t>(chip_.get(STATUS_SYNC_PROC_VTOTAL));
+    const bool lineOk = htotal + 3 > md && htotal < md + 3u;
+    const bool fieldOk =
+        syncSamples_ == 0 || (vtotal + 2 >= lastVtotal_ && vtotal <= lastVtotal_ + 2);
+    lastVtotal_ = vtotal;
+    const bool good = lineOk && fieldOk;
+    syncBits_ = (syncBits_ << 1) | (good ? 1u : 0u);
+    if (syncSamples_ < 64) {
+        ++syncSamples_;
+    }
+}
+
 void Engine::scanlinesOff() {
     if (scanlinesOn_) {
         disableScanlines(chip_, scanlineBase_);
@@ -296,10 +345,13 @@ void Engine::tick() {
                 enterPhase(Phase::NoPower);
                 break;
             }
-            // Walk the SOG slicer 6..2 between attempts so a marginal sync gets several chances.
-            const uint8_t sog = static_cast<uint8_t>(chip_.get(ADC_SOGCTRL));
-            lock_.sogLevel = sog >= 3 ? sog - 1 : 6;
-            chip_.write(ADC_SOGCTRL, lock_.sogLevel);
+            // Walk the SOG slicer 6..2 between attempts so a marginal sync gets several chances
+            // (unless the user fixed it).
+            if (lock_.sogManual < 0) {
+                const uint8_t sog = static_cast<uint8_t>(chip_.get(ADC_SOGCTRL));
+                lock_.sogLevel = sog >= 3 ? sog - 1 : 6;
+                chip_.write(ADC_SOGCTRL, lock_.sogLevel);
+            }
             startDetect();
         }
         break;
@@ -382,7 +434,7 @@ void Engine::tick() {
                 return;
             }
             ++pollCount_;
-            if (pollCount_ % (rgb ? 150 : 180) == 0) {
+            if (pollCount_ % (rgb ? 150 : 180) == 0 && lock_.sogManual < 0) {
                 uint8_t sog = lock_.sogLevel == 1 ? 2 : lock_.sogLevel + 2;
                 if (sog >= (rgb ? 15 : 16))
                     sog = 1;
@@ -429,6 +481,9 @@ void Engine::tick() {
             break;
         }
         watch();
+        if (phase_ == Phase::Running && loadedProgram_ != tv5725::ProgramId::Count && !bypass_) {
+            sampleSync(); // every tick, settled or not: an unstable line is what it shows
+        }
         if (phase_ == Phase::Running || phase_ == Phase::Watching) {
             loopLevel();
         }
@@ -458,7 +513,7 @@ void Engine::tick() {
         updateSpDynamic(ops_, sense_, ctx_, false);
         const bool named = sense_.videoMode(ctx_.standard, ctx_.inputIsYpbpr) != Standard::None;
         if (named || inPhaseMs() >= kSettleModeMs) {
-            if (inPhaseMs() >= 1500 && lock_.sogLevel >= 7) {
+            if (inPhaseMs() >= 1500 && lock_.sogLevel >= 7 && lock_.sogManual < 0) {
                 sogOpt_.start(ops_, ctx_);
                 enterPhase(Phase::SettleSogWait);
             } else {
@@ -629,6 +684,11 @@ void Engine::runLoad() {
     scanlineBase_ = readScanlineBase(chip_);
     scanlinesOn_ = false;
     progressiveStable_ = false;
+    lpfAuto_ = static_cast<uint8_t>(chip_.get(ADC_FLTR));
+    applyLpf();
+    plladMd_ = static_cast<uint16_t>(chip_.get(PLLAD_MD));
+    syncBits_ = 0;
+    syncSamples_ = 0;
     status_.loads++;
     status_.lastLoadMs = nowMs();
     status_.outputMode = effectiveMode(standard);
@@ -652,6 +712,9 @@ void Engine::startHdBypass(Standard standard) {
     maPending_ = 0;
     clock_.resetForProgram(0x35); // the display clock is not used in bypass
     enterHdBypass(ops_, sense_, ctx_);
+    lpfAuto_ = static_cast<uint8_t>(chip_.get(ADC_FLTR));
+    applyLpf();
+    plladMd_ = 0;
     loadedProgram_ = tv5725::ProgramId::Count;
     bypass_ = true;
     geometryBase_ = GeometryBase{};
@@ -677,6 +740,9 @@ void Engine::startRgbhvBypass() {
     maPending_ = 0;
     clock_.resetForProgram(0x35);
     enterRgbhvBypass(ops_, ctx_);
+    lpfAuto_ = static_cast<uint8_t>(chip_.get(ADC_FLTR));
+    applyLpf();
+    plladMd_ = 0;
     loadedProgram_ = tv5725::ProgramId::Count;
     bypass_ = true;
     geometryBase_ = GeometryBase{};
@@ -754,7 +820,7 @@ void Engine::watch() {
 
     // SOG guard for csync RGB: count "bad HS" events while the source is demonstrably alive and
     // lower the slicer when they pile up (mechanics §5.2).
-    if (ctx_.syncCsync && !ctx_.inputIsYpbpr && newModeCounter_ == 0) {
+    if (ctx_.syncCsync && !ctx_.inputIsYpbpr && newModeCounter_ == 0 && lock_.sogManual < 0) {
         if (chip_.get(STATUS_INT_SOG_BAD) == 1 || chip_.get(STATUS_INT_SOG_SW) == 1) {
             ops_.resetSogSwitchIrq();
             if (nowMs() - sogWindowStartMs_ > 3000) {
@@ -875,7 +941,8 @@ void Engine::watchSyncLoss(bool /*genuineLoss*/) {
     if (noSync <= 3 || chip_.get(STATUS_SYNC_PROC_HSACT) == 0) {
         ops_.freeze();
     }
-    if (newModeCounter_ == 0 && noSync == 2 && lock_.sogLevel <= 1 && isSd(ctx_.standard)) {
+    if (newModeCounter_ == 0 && noSync == 2 && lock_.sogLevel <= 1 && isSd(ctx_.standard) &&
+        lock_.sogManual < 0) {
         ops_.setSogLevel(lock_.sogLevel + 1);
     }
     if (noSync == 8) {
@@ -1303,9 +1370,20 @@ void Engine::refreshStatus() {
     st.sync =
         !sourceConnected_ ? SyncType::None : (ctx_.syncCsync ? SyncType::Csync : SyncType::Hv);
     st.program = loadedProgram_;
-    st.sogLevel = lock_.sogLevel;
+    st.sogLevel = ops_.sogLevelInEffect();
+    if (syncSamples_ >= 8 && plladMd_ != 0) {
+        const uint64_t mask = syncSamples_ >= 64 ? ~0ull : ((1ull << syncSamples_) - 1);
+        // 100 only when every sample was good, else 5 % steps: the status (and every front end
+        // that follows it) does not change on each tick of a marginal source.
+        const uint32_t good = static_cast<uint32_t>(__builtin_popcountll(syncBits_ & mask));
+        const uint32_t pct = good * 100u / syncSamples_;
+        st.syncQuality =
+            good == syncSamples_ ? 100 : static_cast<uint8_t>(pct >= 95 ? 95 : pct / 5 * 5);
+    } else {
+        st.syncQuality = 0xFF;
+    }
     st.phaseSp = lock_.phaseSp;
-    st.phaseAdc = lock_.phaseAdc;
+    st.phaseAdc = ops_.phaseAdcInEffect();
     st.stableCounter = stableCounter_;
     st.noSyncCounter = ctx_.noSyncCounter;
     st.deinterlacing = motionAdaptiveActive_;

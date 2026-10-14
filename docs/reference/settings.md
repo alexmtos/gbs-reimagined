@@ -2,7 +2,7 @@
 
 # Settings reference
 
-Schema hash `c0e35e01`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `5898d1b8`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
@@ -23,10 +23,10 @@ Schema hash `c0e35e01`. Every user-facing setting, as defined in `schema/setting
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
 | `input.port` | Input | Auto, RGB (SCART/RGBS/VGA), Component (YPbPr) | Auto | essential | M1 | Auto watches all inputs and switches to the one with a signal. RGB covers SCART, the RGBS jacks and VGA; Component is YPbPr. |
-| `input.syncThreshold` | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 (pending) | The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. |
-| `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 (pending) | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase. |
+| `input.syncThreshold` ⚠ | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 | The level used to separate sync from sync-on-green or composite sync (it does nothing with separate H/V sync). Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. Watch the sync quality while you change it. |
+| `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; it matters most for 480p and computer sources. Auto uses the output program's phase. |
 | `input.autoGain` | Auto gain | off, on | off | advanced | M1 | While you play, lowers the input gain whenever the brightest parts of the picture clip. It only ever darkens, and starts again for each new source. For exact levels, use Calibrate levels with a white screen instead. |
-| `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 (pending) | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
+| `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
 
 ## Picture
 

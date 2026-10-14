@@ -145,6 +145,11 @@ void Controller::apply(Id id) {
     case Id::OutputVSize:
         applyGeometry();
         break;
+    case Id::InputSyncThreshold:
+    case Id::InputPhase:
+    case Id::InputVideoLpf:
+        applySampling();
+        break;
     case Id::PictureScanlines:
     case Id::PictureScanlineStrength:
     case Id::PictureDeinterlace:
@@ -186,6 +191,14 @@ void Controller::applyLines() {
     adj.strength = static_cast<uint8_t>(store_.get(Id::PictureScanlineStrength));
     adj.bob = store_.get(Id::PictureDeinterlace) == 1;
     video_.setLines(adj);
+}
+
+void Controller::applySampling() {
+    video::SamplingAdjust adj;
+    adj.sog = static_cast<int8_t>(store_.get(Id::InputSyncThreshold));
+    adj.phase = static_cast<int8_t>(store_.get(Id::InputPhase));
+    adj.lpf = static_cast<uint8_t>(store_.get(Id::InputVideoLpf));
+    video_.setSampling(adj);
 }
 
 // /levels.bin: the base gains of both inputs (component, then RGB), three bytes each.

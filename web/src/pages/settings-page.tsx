@@ -6,6 +6,7 @@ import { SETTINGS } from "../gen/settings.gen";
 import type { MessageKey } from "../i18n";
 import { settingText, t, valueLabel } from "../i18n";
 import { changeSetting, fieldState, loaded, values } from "../state/settings";
+import { status } from "../state/status";
 
 export const showAdvanced = signal(false);
 
@@ -87,6 +88,29 @@ function ActionButton({ label, run }: { label: string; run: () => Promise<Messag
   );
 }
 
+/** Live feedback for the sampling settings: how much of the last second the line PLL held. */
+function SyncQuality() {
+  const q = status.value?.source.syncQuality;
+  const known = typeof q === "number";
+  const tone = !known ? "" : q >= 98 ? "good" : q >= 80 ? "warn" : "bad";
+  return (
+    <li class="setting">
+      <div class="setting-head">
+        <span class="setting-label">{t("input.syncQuality")}</span>
+        {known ? (
+          <span class={`sync-quality ${tone}`}>
+            <meter min={0} max={100} low={80} high={98} optimum={100} value={q} />
+            {` ${q} %`}
+          </span>
+        ) : (
+          <span class="muted">{t("input.syncQuality.none")}</span>
+        )}
+      </div>
+      <p class="setting-help">{t("input.syncQuality.help")}</p>
+    </li>
+  );
+}
+
 function InputActions() {
   return (
     <li class="setting">
@@ -141,6 +165,7 @@ export function SettingsPage({ group }: { group: SettingGroup }) {
   return (
     <section>
       <ul class="settings">
+        {group === "input" && showAdvanced.value && <SyncQuality />}
         {visible.map((meta) => {
           const text = settingText(meta.id);
           const state = fieldState.value[meta.id] ?? "saved";

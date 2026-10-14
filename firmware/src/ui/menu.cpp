@@ -564,6 +564,18 @@ void Menu::renderEdit(Frame& f) const {
     valueText(editId_, editValue_, value, sizeof value);
     snprintf(text, sizeof text, "< %s >", value);
     centered(f, 2, text);
+    if (editId_ == Id::InputSyncThreshold || editId_ == Id::InputPhase ||
+        editId_ == Id::InputVideoLpf) {
+        // Live feedback while sampling settings change (docs/design/ux.md).
+        char label[24];
+        msg(i18n::Msg::EditSync, label, sizeof label);
+        if (status_.syncQuality <= 100) {
+            snprintf(text, sizeof text, "%s %u%%", label, status_.syncQuality);
+        } else {
+            snprintf(text, sizeof text, "%s --", label);
+        }
+        centered(f, 4, text);
+    }
     copyText(t.text, pgm_read_word(&t.hint[static_cast<uint8_t>(editId_)]), text, sizeof text);
     setLine(f, 5, text);
 }

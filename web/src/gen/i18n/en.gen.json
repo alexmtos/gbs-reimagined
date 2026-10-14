@@ -81,7 +81,7 @@
     "input.syncThreshold": {
       "label": "Sync threshold",
       "hint": "SOG slicer level",
-      "help": "The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes.",
+      "help": "The level used to separate sync from sync-on-green or composite sync (it does nothing with separate H/V sync). Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. Watch the sync quality while you change it.",
       "values": {
         "auto": "Auto"
       }
@@ -89,7 +89,7 @@
     "input.phase": {
       "label": "Sampling phase",
       "hint": "Pixel sharpness",
-      "help": "When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase.",
+      "help": "When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; it matters most for 480p and computer sources. Auto uses the output program's phase.",
       "values": {
         "auto": "Auto"
       }
@@ -243,6 +243,9 @@
     "common.unknown": "—",
     "revert.countdown": "Keep these settings? Reverting in {seconds} s",
     "settings.advanced": "Show advanced settings",
+    "input.syncQuality": "Sync quality",
+    "input.syncQuality.help": "How much of the last second the board stayed locked to the source's lines. Keep it at 100 % while you adjust the sync threshold and the sampling phase.",
+    "input.syncQuality.none": "No source",
     "nav.network": "Network",
     "status.safeMode": "Safe mode: the saved settings are not in use, and changes are not saved.",
     "settings.saving": "Saving…",
@@ -304,6 +307,7 @@
     "oled.factoryReset": "Factory reset",
     "oled.confirm": "Press again: confirm",
     "oled.done": "Done",
+    "oled.edit.sync": "Sync",
     "oled.status.version": "Firmware",
     "oled.status.heap": "Free RAM",
     "oled.status.lockOn": "frame lock",

@@ -42,6 +42,7 @@ struct EngineStatus {
     uint32_t sourceMilliHz = 0;
     uint32_t outputMilliHz = 0;
     uint8_t sogLevel = 0;
+    uint8_t syncQuality = 0xFF; // % of the last ~1.3 s with a clean line; 0xFF unknown
     uint8_t phaseSp = 0;
     uint8_t phaseAdc = 0;
     uint8_t stableCounter = 0;
@@ -91,6 +92,9 @@ public:
     void setGeometry(const GeometryAdjust& adj) override;
     // picture.scanlines / scanlineStrength / deinterlace: followed every settled tick.
     void setLines(const LineAdjust& adj) override;
+    // input.syncThreshold / phase / videoLpf: fixed values the automatic code cannot move, applied
+    // now and after every load.
+    void setSampling(const SamplingAdjust& adj) override;
 
     // Base gains per input (0 component, 1 RGB), the gains a new source starts with: restored from
     // storage at boot, replaced by each successful "calibrate levels". levelsSequence() moves on
@@ -154,6 +158,8 @@ private:
     void applyGeometry();
     void followScanlines();
     void scanlinesOff();
+    void applyLpf();
+    void sampleSync();
 
     void enterPhase(Phase p);
     uint32_t inPhaseMs() const;
@@ -181,7 +187,14 @@ private:
     bool scanlinesOn_ = false;
     uint8_t scanlineLevel_ = 0;      // as written while on
     bool progressiveStable_ = false; // followInterlace has confirmed a progressive source
-    uint8_t scanlineHold_ = 0;       // ticks to wait after the deinterlacer disengages
+    SamplingAdjust sampling_;
+    uint8_t lpfAuto_ = 0xFF; // ADC_FLTR as the load left it (0xFF: none yet)
+    // Sync quality: one bit per settled tick, set when the line length matched the PLL divider.
+    uint64_t syncBits_ = 0;
+    uint8_t syncSamples_ = 0;
+    uint16_t plladMd_ = 0;     // non-zero while a scaled program is loaded (the meter runs)
+    uint16_t lastVtotal_ = 0;  // the previous sample's line count per field
+    uint8_t scanlineHold_ = 0; // ticks to wait after the deinterlacer disengages
     // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSequence_ = 0;

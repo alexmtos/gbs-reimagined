@@ -62,6 +62,19 @@ TEST_CASE("a locked 240p source reads as the web client expects it") {
     CHECK(depth == 0);
 }
 
+TEST_CASE("the sampling values and the sync quality travel with the source") {
+    core::StatusModel m;
+    video::EngineStatus e = scaling240p();
+    e.sogLevel = 13;
+    e.phaseAdc = 16;
+    e.syncQuality = 97;
+    core::buildStatus(m, e, true, 0, false, core::BoardInfo{});
+    CHECK(has(json(m), "\"sog\":13,\"phase\":16,\"syncQuality\":97}"));
+    e.syncQuality = 0xFF; // not measured yet
+    core::buildStatus(m, e, true, 0, false, core::BoardInfo{});
+    CHECK(has(json(m), "\"syncQuality\":null}"));
+}
+
 TEST_CASE("no signal reads as no source, and frame lock follows the setting") {
     core::StatusModel m;
     video::EngineStatus e;

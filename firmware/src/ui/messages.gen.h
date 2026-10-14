@@ -43,6 +43,7 @@ enum class Msg : uint8_t {
     FactoryReset, // oled.factoryReset
     Confirm, // oled.confirm
     Done, // oled.done
+    EditSync, // oled.edit.sync
     StatusVersion, // oled.status.version
     StatusHeap, // oled.status.heap
     StatusLockOn, // oled.status.lockOn

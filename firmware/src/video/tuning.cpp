@@ -596,6 +596,9 @@ void updateClampPosition(Ops& ops, Sense& sense, PathContext& ctx) {
 void SogOptimizer::start(Ops& ops, PathContext& ctx) {
     tv5725::Chip& chip = ops.chip();
     running_ = false;
+    if (ops.lock().sogManual >= 0) {
+        return; // the user's threshold stands
+    }
     if (ctx.standard == Standard::RgbhvBypass || chip.get(SP_SOG_MODE) != 1 || !ctx.syncCsync) {
         ctx.maxSogLevel = 13;
         ops.setSogLevel(13);
@@ -670,7 +673,7 @@ void PhaseOptimizer::start(Ops& ops, PathContext& ctx) {
         ctx.phaseSet = false; // H-PLL not locked: nothing to measure
         return;
     }
-    if (ops.lock().sogLevel <= 2) {
+    if (ops.sogLevelInEffect() <= 2) {
         finish(ops, ctx, false); // too unstable to measure: fixed phases
         return;
     }

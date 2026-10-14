@@ -79,6 +79,9 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
     next.lines = source && e.sourceLines != 0 ? static_cast<uint16_t>(e.sourceLines + 1) : 0;
     next.vMilliHz = source ? e.sourceMilliHz : 0;
     next.hHz = static_cast<uint32_t>(static_cast<uint64_t>(next.lines) * next.vMilliHz / 1000);
+    next.sogLevel = source ? e.sogLevel : 0;
+    next.phase = source ? e.phaseAdc : 0;
+    next.syncQuality = source ? e.syncQuality : 0xFF;
     next.mode = e.program == tv5725::ProgramId::Count ? video::OutputMode::Auto : e.outputMode;
     next.pixelClockHz = e.program == tv5725::ProgramId::Count ? 0 : e.pixelClockHz;
     next.rateMilliHz = e.frameLocked ? e.sourceMilliHz : e.outputMilliHz;
@@ -95,6 +98,7 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
         next.headline != m.headline || next.scaler != m.scaler || next.port != m.port ||
         next.sync != m.sync || next.standard != m.standard || next.interlaced != m.interlaced ||
         next.lines != m.lines || next.vMilliHz != m.vMilliHz || next.mode != m.mode ||
+        next.sogLevel != m.sogLevel || next.phase != m.phase || next.syncQuality != m.syncQuality ||
         next.pixelClockHz != m.pixelClockHz || next.rateMilliHz != m.rateMilliHz ||
         next.frameLock != m.frameLock || next.board.ip != m.board.ip ||
         next.board.clockGen != m.board.clockGen || next.revertSecondsLeft != m.revertSecondsLeft ||
@@ -109,6 +113,10 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
     static const char* const kSync[] = {"none", "hv", "csync"};
     static const char* const kLock[] = {"locked", "inactive", "off"};
     const bool source = m.sync != video::SyncType::None;
+    char quality[8] = "null";
+    if (m.syncQuality <= 100) {
+        snprintf(quality, sizeof quality, "%u", m.syncQuality);
+    }
     char revert[40] = "";
     if (m.revertSecondsLeft != 0) {
         snprintf(revert, sizeof revert, ",\"revert\":{\"secondsLeft\":%u}", m.revertSecondsLeft);
@@ -117,7 +125,8 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
         buf, cap,
         "{\"seq\":%lu,\"headline\":\"%s\",\"safeMode\":%s,"
         "\"source\":{\"port\":\"%s\",\"sync\":\"%s\",\"standard\":\"%s\",\"lines\":%u,"
-        "\"interlaced\":%s,\"hFreqKHz\":%lu.%03lu,\"vFreqHz\":%lu.%03lu},"
+        "\"interlaced\":%s,\"hFreqKHz\":%lu.%03lu,\"vFreqHz\":%lu.%03lu,"
+        "\"sog\":%u,\"phase\":%u,\"syncQuality\":%s},"
         "\"output\":{\"mode\":\"%s\",\"pixelClockMHz\":%lu.%03lu,\"rateHz\":%lu.%03lu,"
         "\"frameLock\":\"%s\"},"
         "\"board\":{\"version\":\"%s\",\"schema\":\"%s\",\"uptimeS\":%lu,\"heapFree\":%lu,"
@@ -127,8 +136,8 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
         kSync[static_cast<uint8_t>(m.sync) % 3], standardText(m.standard, m.interlaced), m.lines,
         m.interlaced ? "true" : "false", static_cast<unsigned long>(m.hHz / 1000),
         static_cast<unsigned long>(m.hHz % 1000), static_cast<unsigned long>(m.vMilliHz / 1000),
-        static_cast<unsigned long>(m.vMilliHz % 1000), outputModeId(m.mode),
-        static_cast<unsigned long>(m.pixelClockHz / 1'000'000),
+        static_cast<unsigned long>(m.vMilliHz % 1000), m.sogLevel, m.phase, quality,
+        outputModeId(m.mode), static_cast<unsigned long>(m.pixelClockHz / 1'000'000),
         static_cast<unsigned long>(m.pixelClockHz / 1000 % 1000),
         static_cast<unsigned long>(m.rateMilliHz / 1000),
         static_cast<unsigned long>(m.rateMilliHz % 1000),
