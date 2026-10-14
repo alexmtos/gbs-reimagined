@@ -116,6 +116,22 @@ Some combinations have no effect, because the scaler cannot do them cleanly:
 At 1080p, PAL consoles look about 10 % wider than 4:3, for the same reason; choose 720p or
 1280x1024 for an exact 4:3 picture.
 
+## Scanlines and the deinterlacer
+
+On the **Picture** page:
+
+- **Scanlines** darken the gaps between the console's lines, as a CRT shows them. They work on
+  240p and 288p games and pause by themselves while the console sends 480i or 576i (menus, some
+  games), coming back when it returns to 240p. **Scanline strength** goes from 1 (faint) to 8
+  (black gaps); stronger lines make the picture darker — about a sixth darker at 4, the default,
+  and about two fifths at 8.
+- The lines are perfectly even when the output is a whole multiple of the console's picture:
+  **1280x960**, **720p** or **480p** for 240p games. At **1080p** the gaps alternate slightly in
+  thickness, which some people notice on large screens.
+- **Deinterlacer** (advanced settings) chooses how 480i and 576i pictures are rebuilt. **Motion
+  adaptive**, the default, keeps still detail such as text sharp and steady. **Bob** never shows
+  combing on fast motion but makes thin lines shimmer on still pictures.
+
 ## Input levels
 
 Some consoles send a brighter signal than the board expects, which makes whites look flat and

@@ -171,7 +171,8 @@ Ticks every 20 ms once a program is loaded (§5). Responsibilities, in pass orde
    present, adopt again and re-present the output (VP §3.6 — a missed adoption free-runs the output
    17 % fast and nothing on screen shows it).
 7. **Interlace follow** (§5.5): `VPERIOD_IF` parity, 2 agreeing reads (8 for csync), toggles the
-   motion-adaptive deinterlacer; scanlines only on progressive content.
+   motion-adaptive deinterlacer; scanlines only on progressive content
+   ([Scanlines and deinterlacer](#scanlines-and-deinterlacer)).
 8. **RGBHV supervision** (§5.6) and the 3 s IRQ housekeeping (§5.7).
 9. **Input levels:** a running "calibrate levels" action, or else auto gain when it is on (see
    [Input levels](#input-levels)).
@@ -272,6 +273,36 @@ axis.
   ([M2](../bench/M2.md#2026-10-14--geometry-on-the-board)).
 - 480p and 576p already show the source 1:1 vertically, so they cannot letterbox: there, 16:9
   equals 4:3, and vertical size below 0 does nothing.
+
+## Scanlines and deinterlacer
+
+`picture.scanlines`, `scanlineStrength` and `deinterlace`, in `video/scanlines.cpp` and the
+engine's interlace follow. Both effects use the same block of the chip, the motion-adaptive line
+mixer, so they never run together (gbs-control-lessons-videopath §5.1; the datasheet documents no
+scanline feature).
+
+- **Deinterlacer.** On interlaced content the watcher engages the motion-adaptive deinterlacer
+  (`Ops::enableMotionAdaptive`) and, about 60 ms later, selects its path (`MAPDT_VT_SEL_PRGV` = 0).
+  **Bob** is the same engagement with the path select left at 1: the chip then doubles each field's
+  lines instead of weaving still areas. On a still PS2 menu at 576i, bob gave 17 % less vertical
+  detail and 4.2× the frame-to-frame change (line twitter) against motion adaptive
+  ([M2](../bench/M2.md#2026-10-14--scanlines-and-deinterlacer)). Switching the setting while the
+  deinterlacer runs rewrites the path select alone.
+- **Scanlines.** With the motion index forced (`MADPT_Y_MI_DET_BYPS`/`UV` = 1) the mixer darkens one
+  of the two lines the line doubler makes from each source line, before the scaler. Strength level
+  n (1..8) forces the index to `0x80 − 16·n`: level 5 is the reference's default, 8 the darkest. The
+  sequence and its constants (white-level gain 8, vertical IIR 8, `RFF_LINE_FLIP` 1) are the
+  reference's; `VDS_Y_GAIN`/`OFST` stay with the picture adjustments.
+- **Ownership and order.** Right after each load the engine captures the 17 mixer fields the
+  scanlines touch; while scanlines are on, `video/scanlines` owns them, and turning them off writes
+  the captured values back in reverse order. Every settled tick the engine decides: scanlines run on
+  progressive 15 kHz sources (`VPERIOD_IF` odd), never while the deinterlacer is engaged, never on
+  the 15 kHz output programs (their vertical downscale uses the same line buffer). Before engaging
+  the deinterlacer the engine takes the scanlines off; once it disengages, they come back on the
+  next tick (the reference's order, `watch.cpp`).
+- **Vertical scale.** The dark lines are drawn before the scaler, so they are even only where the
+  output is a whole multiple of the source (960p, 720p and 480p for 240p): at 1080p (4.5×) they
+  alternate between 2 and 3 output lines (user decision 2026-10-14: allowed everywhere).
 
 ## Pass-through (experimental)
 

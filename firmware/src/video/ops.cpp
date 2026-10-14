@@ -549,7 +549,8 @@ void Ops::enableMotionAdaptive(Standard standard) {
     chip_.write(RFF_ENABLE, 1);
     unfreeze();
     // The caller selects the motion-adaptive path (MAPDT_VT_SEL_PRGV = 0) one tick later, once the
-    // FIFOs run (the reference waits 60 ms).
+    // FIFOs run (the reference waits 60 ms); bob is this engagement with the path select left at 1,
+    // so nothing here may write it.
 }
 
 void Ops::disableMotionAdaptive() {

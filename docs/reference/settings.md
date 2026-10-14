@@ -2,7 +2,7 @@
 
 # Settings reference
 
-Schema hash `1c3954ca`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `c0e35e01`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
@@ -36,9 +36,9 @@ Schema hash `1c3954ca`. Every user-facing setting, as defined in `schema/setting
 | `picture.contrast` | Contrast | -32…32 | 0 | essential | M1 | Increases or decreases the difference between dark and bright areas. |
 | `picture.saturation` | Saturation | -32…32 | 0 | essential | M1 | Makes colours stronger or weaker. |
 | `picture.sharpness` | Sharpness | Off, Low, Medium, High | Off | essential | M1 | Emphasises edges. Off shows the source as sampled. |
-| `picture.scanlines` | Scanlines | off, on | off | essential | M2 (pending) | Darkens every other output line pair to imitate a CRT. Works on progressive 15 kHz sources. |
-| `picture.scanlineStrength` | Scanline strength | 1…8 | 4 | essential | M2 (pending) | How dark the scanlines are. |
-| `picture.deinterlace` | Deinterlacer | Motion adaptive, Bob | Motion adaptive | advanced | M2 (pending) | How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing. |
+| `picture.scanlines` | Scanlines | off, on | off | essential | M2 | Darkens the gaps between the console's lines to imitate a CRT. Works on 240p and 288p sources and pauses by itself on 480i and 576i. Even lines need an output that is a whole multiple of the source: 960p, 720p or 480p for 240p. |
+| `picture.scanlineStrength` | Scanline strength | 1…8 | 4 | essential | M2 | How dark the scanlines are. |
+| `picture.deinterlace` | Deinterlacer | Motion adaptive, Bob | Motion adaptive | advanced | M2 | How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing. |
 
 ## System
 

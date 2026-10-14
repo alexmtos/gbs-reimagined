@@ -140,7 +140,7 @@
     "picture.scanlines": {
       "label": "Scanlines",
       "hint": "Linhas estilo CRT",
-      "help": "Escurece linhas alternadas da saída para imitar um CRT. Funciona com fontes progressivas de 15 kHz."
+      "help": "Escurece o espaço entre as linhas do console para imitar um CRT. Funciona com fontes 240p e 288p e pausa sozinho em 480i e 576i. Linhas uniformes pedem uma saída que seja múltiplo inteiro da fonte: 960p, 720p ou 480p para 240p."
     },
     "picture.scanlineStrength": {
       "label": "Intensidade",

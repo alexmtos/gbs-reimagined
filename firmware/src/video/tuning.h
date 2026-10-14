@@ -23,6 +23,9 @@ struct PathContext {
     uint8_t medResLineCount = 0x33;
 };
 
+// The 15 kHz output programs, whose vertical downscale has its own line-buffer setup.
+bool isDownscale(uint8_t presetId);
+
 // The synchronous part of the post-load sequence (mechanics §4.1 steps 1–30, minus the auto best
 // HTotal the external clock makes unnecessary): sync processor, clamp held off, colour patches,
 // phase and SOG, per-standard input-formatter / ADC / PLLAD tuning, line-count shifts, mirrored

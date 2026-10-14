@@ -140,7 +140,7 @@
     "picture.scanlines": {
       "label": "Scanlines",
       "hint": "CRT-style lines",
-      "help": "Darkens every other output line pair to imitate a CRT. Works on progressive 15 kHz sources."
+      "help": "Darkens the gaps between the console's lines to imitate a CRT. Works on 240p and 288p sources and pauses by itself on 480i and 576i. Even lines need an output that is a whole multiple of the source: 960p, 720p or 480p for 240p."
     },
     "picture.scanlineStrength": {
       "label": "Scanline strength",

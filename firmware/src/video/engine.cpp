@@ -143,6 +143,48 @@ void Engine::applyGeometry() {
     writeGeometry(chip_, status_.geometry);
 }
 
+void Engine::setLines(const LineAdjust& adj) {
+    const bool bobChanged = adj.bob != lines_.bob;
+    lines_ = adj;
+    if (!lines_.scanlines) {
+        scanlinesOff(); // at once, even while the source is not settled
+    }
+    // Switching the deinterlacer while it runs is the path select alone; the scanlines follow at
+    // the next settled tick.
+    if (bobChanged && motionAdaptiveActive_ && maPending_ == 0) {
+        chip_.write(MAPDT_VT_SEL_PRGV, lines_.bob ? 1 : 0);
+    }
+}
+
+void Engine::scanlinesOff() {
+    if (scanlinesOn_) {
+        disableScanlines(chip_, scanlineBase_);
+        scanlinesOn_ = false;
+    }
+}
+
+void Engine::followScanlines() {
+    // Progressive SD only, as followInterlace has confirmed it, and never on the 15 kHz programs,
+    // whose vertical downscale uses the same line buffer (tuning.cpp, downscale).
+    if (scanlineHold_ > 0) {
+        --scanlineHold_;
+        return;
+    }
+    const bool want = lines_.scanlines && scanlineBase_.valid && !bypass_ &&
+                      !isDownscale(ctx_.presetId) && isSd(ctx_.standard) &&
+                      !motionAdaptiveActive_ && progressiveStable_;
+    if (want && !scanlinesOn_) {
+        enableScanlines(chip_, lines_.strength);
+        scanlinesOn_ = true;
+        scanlineLevel_ = lines_.strength;
+    } else if (want && scanlineLevel_ != lines_.strength) {
+        setScanlineStrength(chip_, lines_.strength);
+        scanlineLevel_ = lines_.strength;
+    } else if (!want) {
+        scanlinesOff();
+    }
+}
+
 void Engine::setBaseGains(uint8_t port, const uint8_t (&gains)[3]) {
     for (uint8_t c = 0; c < 3; ++c) {
         baseGain_[port ? 1 : 0][c] = gains[c];
@@ -206,6 +248,9 @@ void Engine::goLowPower() {
     bypass_ = false;
     geometryBase_ = GeometryBase{};
     status_.geometryValid = false;
+    scanlineBase_ = ScanlineBase{};
+    scanlinesOn_ = false;
+    progressiveStable_ = false;
     newModeCounter_ = stableCounter_ = syncLossDebounce_ = sourceGoneProbes_ = 0;
     fallbackTried_ = crtcHold_ = sourceWasClassified_ = false;
     lastDetectMs_ = nowMs();
@@ -581,6 +626,9 @@ void Engine::runLoad() {
     loadedProgram_ = program;
     geometryBase_ = readGeometryBase(chip_, ctx_);
     applyGeometry();
+    scanlineBase_ = readScanlineBase(chip_);
+    scanlinesOn_ = false;
+    progressiveStable_ = false;
     status_.loads++;
     status_.lastLoadMs = nowMs();
     status_.outputMode = effectiveMode(standard);
@@ -597,6 +645,7 @@ void Engine::runLoad() {
 }
 
 void Engine::startHdBypass(Standard standard) {
+    scanlinesOff();
     reloadRequested_ = false;
     ctx_.standard = standard;
     motionAdaptiveActive_ = false;
@@ -607,6 +656,9 @@ void Engine::startHdBypass(Standard standard) {
     bypass_ = true;
     geometryBase_ = GeometryBase{};
     status_.geometryValid = false;
+    scanlineBase_ = ScanlineBase{};
+    scanlinesOn_ = false;
+    progressiveStable_ = false;
     hdmiSyncFix_ = false;
     status_.loads++;
     status_.lastLoadMs = nowMs();
@@ -619,6 +671,7 @@ void Engine::startHdBypass(Standard standard) {
 }
 
 void Engine::startRgbhvBypass() {
+    scanlinesOff();
     reloadRequested_ = false;
     motionAdaptiveActive_ = false;
     maPending_ = 0;
@@ -628,6 +681,9 @@ void Engine::startRgbhvBypass() {
     bypass_ = true;
     geometryBase_ = GeometryBase{};
     status_.geometryValid = false;
+    scanlineBase_ = ScanlineBase{};
+    scanlinesOn_ = false;
+    progressiveStable_ = false;
     rgbhvBand_ = 0;
     rgbhvUnstable_ = 0;
     lastBandCheckMs_ = nowMs();
@@ -1031,6 +1087,7 @@ void Engine::watchStable(bool /*genuineLoss*/) {
     if (stableCounter_ >= 3 && isSd(ctx_.standard) && !ctx_.hdBypass && ctx_.noSyncCounter == 0 &&
         loadedProgram_ != tv5725::ProgramId::Count) {
         followInterlace();
+        followScanlines();
     }
 }
 
@@ -1055,7 +1112,9 @@ void Engine::followInterlace() {
     if (isInterlacedCount(vp)) {
         progressiveReads_ = 0;
         if (++interlacedReads_ >= threshold) {
+            progressiveStable_ = false;
             if (!motionAdaptiveActive_) {
+                scanlinesOff(); // they use the deinterlacer's mixer (reference watch.cpp order)
                 ops_.enableMotionAdaptive(ctx_.standard);
                 motionAdaptiveActive_ = true;
                 maPending_ = 3; // select the motion-adaptive path ~60 ms later
@@ -1066,10 +1125,12 @@ void Engine::followInterlace() {
     } else if (isProgressiveCount(vp)) {
         interlacedReads_ = 0;
         if (++progressiveReads_ >= threshold) {
+            progressiveStable_ = true;
             if (motionAdaptiveActive_) {
                 ops_.disableMotionAdaptive();
                 motionAdaptiveActive_ = false;
                 maPending_ = 0;
+                scanlineHold_ = 1; // let the FIFOs stop before the mixer is taken over
                 armRetime();
             }
             progressiveReads_ = 0;
@@ -1086,8 +1147,8 @@ void Engine::followInterlace() {
 }
 
 void Engine::loopLevel() {
-    if (maPending_ > 0 && --maPending_ == 0 && motionAdaptiveActive_) {
-        chip_.write(MAPDT_VT_SEL_PRGV, 0);
+    if (maPending_ > 0 && --maPending_ == 0 && motionAdaptiveActive_ && !lines_.bob) {
+        chip_.write(MAPDT_VT_SEL_PRGV, 0); // bob leaves the path select at 1
     }
     if (phaseOpt_.busy()) {
         phaseOpt_.step(ops_, ctx_);
@@ -1248,6 +1309,8 @@ void Engine::refreshStatus() {
     st.stableCounter = stableCounter_;
     st.noSyncCounter = ctx_.noSyncCounter;
     st.deinterlacing = motionAdaptiveActive_;
+    st.bob = motionAdaptiveActive_ && lines_.bob;
+    st.scanlines = scanlinesOn_;
     st.pixelClockHz = clock_.frequency();
     st.frameLocked = clock_.locked();
     st.sourceMilliHz = clock_.lastSourceMilliHz();
