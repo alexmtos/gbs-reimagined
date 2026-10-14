@@ -15,6 +15,7 @@ public:
     virtual void setOutputPreference(OutputMode mode) = 0;
     virtual void setInputPreference(InputPreference pref) = 0;
     virtual void setFrameLock(bool on) = 0;
+    virtual void setForce60(bool on) = 0;
     virtual void setAutoGain(bool on) = 0;
     virtual void setPicture(const PictureAdjust& adj) = 0;
     virtual void setGeometry(const GeometryAdjust& adj) = 0;

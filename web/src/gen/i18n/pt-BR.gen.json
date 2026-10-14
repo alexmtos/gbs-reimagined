@@ -31,12 +31,7 @@
     "output.force60": {
       "label": "Forçar 60 Hz",
       "hint": "Jogos 50 Hz em 60 Hz",
-      "help": "Envia fontes de 50 Hz (PAL) a 60 Hz, para telas que não aceitam 50 Hz."
-    },
-    "output.blankOnChange": {
-      "label": "Apagar na troca",
-      "hint": "Oculta trocas de modo",
-      "help": "Mostra preto em vez de um quadro distorcido enquanto a fonte troca de resolução."
+      "help": "Envia fontes de 50 Hz (PAL) a 60 Hz, para telas que não aceitam 50 Hz. O frame lock não consegue seguir uma fonte de 50 Hz a 60 Hz, então o movimento dá pequenos trancos (um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita 50 Hz."
     },
     "output.aspect": {
       "label": "Proporção",

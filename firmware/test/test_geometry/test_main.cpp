@@ -251,6 +251,14 @@ TEST_CASE("the window stops short of the line end and of the sync") {
     CHECK(g.hbSp >= 0);
 }
 
+TEST_CASE("a 50 Hz source on a 60 Hz program shows its full 576 lines, at 4:3") {
+    Rig r(tv5725::ProgramId::Ntsc1080p, Standard::Pal, 625); // output.force60
+    const GeometryRegs g = r.at({});
+    CHECK(g.vscale == 546);               // 576 lines in 1080
+    CHECK(g.disVbSt - g.disVbSp == 1080); // 576 lines at that scale, inside the 1085 window
+    CHECK(g.hscale == 1019);              // the 60 Hz program samples less: true 4:3 here
+}
+
 TEST_CASE("the 15 kHz programs take position only") {
     Rig r(tv5725::ProgramId::NtscDownscale, Standard::Ntsc);
     GeometryAdjust adj = aspect(Aspect::SixteenNine);

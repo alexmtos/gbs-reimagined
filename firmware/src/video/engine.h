@@ -85,6 +85,9 @@ public:
     void setAutoGain(bool on) override;
     // output.frameLock: with it off the display runs on the chip's own clock at the program's rate.
     void setFrameLock(bool on) override;
+    // output.force60: 50 Hz sources load the 60 Hz program of the chosen output and run on its own
+    // clock (no frame lock can follow 50 Hz at 60 Hz). Takes effect with a reload.
+    void setForce60(bool on) override;
     // picture.*: applied now and after every program load.
     void setPicture(const PictureAdjust& adj) override;
     // output.aspect / position / size: applied now and after every program load, always from
@@ -179,6 +182,8 @@ private:
     AutoGain autoGain_;
     bool autoGainOn_ = false;
     bool frameLockOn_ = true;
+    bool force60_ = false;
+    bool forced60_ = false; // the loaded program is the 60 Hz one for a 50 Hz source
     PictureAdjust picture_;
     GeometryAdjust geometry_;
     GeometryBase geometryBase_; // of the loaded program; invalid in bypass

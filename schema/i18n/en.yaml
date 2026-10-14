@@ -38,11 +38,10 @@ settings:
   output.force60:
     label: Force 60 Hz
     hint: 50 Hz games at 60 Hz
-    help: Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz.
-  output.blankOnChange:
-    label: Blank on change
-    hint: Hide mode switches
-    help: Shows black instead of a distorted frame while the source changes resolution.
+    help: >-
+      Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. Frame lock
+      cannot follow a 50 Hz source at 60 Hz, so motion judders slightly (one frame in five is
+      shown twice); leave it off if your display takes 50 Hz.
   output.aspect:
     label: Aspect
     hint: Picture shape

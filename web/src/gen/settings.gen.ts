@@ -18,7 +18,7 @@ export interface SettingMeta {
   special?: Readonly<Record<string, string>>;
 }
 
-export const SCHEMA_HASH = '5898d1b8';
+export const SCHEMA_HASH = '7cbe1e84';
 
 export const SETTING_GROUPS = ["output", "input", "picture", "system"] as const;
 export type SettingGroup = (typeof SETTING_GROUPS)[number];
@@ -27,7 +27,6 @@ export const SETTING_IDS = [
   "output.resolution",
   "output.frameLock",
   "output.force60",
-  "output.blankOnChange",
   "output.aspect",
   "output.hPosition",
   "output.vPosition",
@@ -92,18 +91,8 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "advanced",
     "milestone": 2,
-    "available": false,
+    "available": true,
     "risky": true
-  },
-  {
-    "id": "output.blankOnChange",
-    "group": "output",
-    "type": "bool",
-    "default": false,
-    "tier": "advanced",
-    "milestone": 2,
-    "available": false,
-    "risky": false
   },
   {
     "id": "output.aspect",

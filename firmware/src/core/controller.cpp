@@ -132,6 +132,9 @@ void Controller::apply(Id id) {
     case Id::OutputFrameLock:
         video_.setFrameLock(v != 0);
         break;
+    case Id::OutputForce60:
+        video_.setForce60(v != 0);
+        break;
     case Id::InputPort:
         video_.setInputPreference(static_cast<video::InputPreference>(v));
         break;

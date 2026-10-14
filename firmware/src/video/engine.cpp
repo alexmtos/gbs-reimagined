@@ -106,6 +106,16 @@ void Engine::setFrameLock(bool on) {
     }
 }
 
+void Engine::setForce60(bool on) {
+    if (on == force60_) {
+        return;
+    }
+    force60_ = on;
+    if (loadedProgram_ != tv5725::ProgramId::Count && isPalFamily(ctx_.standard)) {
+        requestReload(); // a 50 Hz source is showing: load the other family's program
+    }
+}
+
 void Engine::setPicture(const PictureAdjust& adj) {
     if (adj == picture_) {
         return;
@@ -603,13 +613,14 @@ OutputMode Engine::effectiveMode(Standard standard) const {
     if (outputPref_ != OutputMode::Auto) {
         return outputPref_;
     }
-    // 960 is an exact 4x of 240p and 2x of 480i; PAL's 288p fits 1024 better.
-    return isPalFamily(standard) ? OutputMode::R1024p : OutputMode::R960p;
+    // 960 is an exact 4x of 240p and 2x of 480i; PAL's 288p fits 1024 better (unless forced to
+    // 60 Hz, where the 60 Hz family's choice applies).
+    return isPalFamily(standard) && !force60_ ? OutputMode::R1024p : OutputMode::R960p;
 }
 
 tv5725::ProgramId Engine::chooseProgram(Standard standard) const {
     using P = tv5725::ProgramId;
-    const bool pal = isPalFamily(standard);
+    const bool pal = isPalFamily(standard) && !force60_;
     switch (effectiveMode(standard)) {
     case OutputMode::R1080p:
         return pal ? P::Pal1080p : P::Ntsc1080p;
@@ -659,9 +670,10 @@ void Engine::runLoad() {
     reloadRequested_ = false; // this load uses the preferences in effect
     const tv5725::ProgramId program = chooseProgram(standard);
     const tv5725::ProgramInfo info = tv5725::programInfo(program);
-    ctx_.standard = standard;
+    ctx_.standard = standard; // a forced 50 Hz source keeps its own standard for the tuning
     ctx_.presetId = info.presetId;
     ctx_.hdBypass = false;
+    forced60_ = force60_ && isPalFamily(standard);
     motionAdaptiveActive_ = false;
     maPending_ = 0;
     clock_.unlock();
@@ -1250,7 +1262,7 @@ void Engine::loopLevel() {
     if (doneStagePending_ && stableCounter_ > 35) {
         ops_.setDac(true);
         ops_.setSyncOut(true);
-        if (clock_.present() && frameLockOn_ && !bypass_ &&
+        if (clock_.present() && frameLockOn_ && !bypass_ && !forced60_ &&
             ctx_.standard != Standard::RgbhvScaled) {
             clock_.adopt();
             lockFrameRate();
@@ -1280,7 +1292,8 @@ void Engine::loopLevel() {
     }
     // Watchdog: a missed adoption leaves the output free-running ~17 % fast with nothing on
     // screen to show it (video-path lessons §3.6).
-    if (!doneStagePending_ && clock_.present() && frameLockOn_ && !bypass_ && stableCounter_ > 45) {
+    if (!doneStagePending_ && clock_.present() && frameLockOn_ && !bypass_ && !forced60_ &&
+        stableCounter_ > 45) {
         if (clock_.adopted()) {
             gNotAdoptedSinceMs = nowMs();
         } else if (nowMs() - gNotAdoptedSinceMs > kAdoptWatchdogMs) {

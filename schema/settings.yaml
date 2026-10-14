@@ -42,14 +42,7 @@ settings:
     default: false
     tier: advanced
     milestone: M2
-    pending: true
     risky: true
-  output.blankOnChange:
-    type: bool
-    default: false
-    tier: advanced
-    milestone: M2
-    pending: true
   output.aspect:
     type: enum
     values: [a4x3, a16x9, full]

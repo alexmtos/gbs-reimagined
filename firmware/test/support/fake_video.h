@@ -10,6 +10,7 @@ public:
     video::OutputMode output = video::OutputMode::Auto;
     video::InputPreference input = video::InputPreference::Auto;
     bool frameLock = false;
+    bool force60 = false;
     bool autoGain = false;
     video::PictureAdjust picture;
     video::GeometryAdjust geometry;
@@ -25,6 +26,7 @@ public:
     }
     void setInputPreference(video::InputPreference p) override { input = p; }
     void setFrameLock(bool on) override { frameLock = on; }
+    void setForce60(bool on) override { force60 = on; }
     void setAutoGain(bool on) override { autoGain = on; }
     void setPicture(const video::PictureAdjust& a) override { picture = a; }
     void setGeometry(const video::GeometryAdjust& a) override { geometry = a; }
