@@ -20,7 +20,7 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 ## M1 — First picture, monitored everywhere
 
 - Boot sequence, Detector, Loader, Settler, Watcher, FrameLock (ratio) — `docs/design/video-engine.md`
-- Output modes from the baseline programs + HD/RGBHV bypass
+- Output modes from the baseline programs + HD/RGBHV bypass (bypass experimental: no HD or PC source on the bench to verify it)
 - Settings M1 subset, persisted; revert on risky changes; safe mode
 - Status model; web UI (Status, Picture, Output, Input, System), OLED home + menu, serial console
 - Wi-Fi: station + setup access point with captive portal, mDNS

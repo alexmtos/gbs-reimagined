@@ -166,6 +166,7 @@ void Engine::goLowPower() {
     doneStagePending_ = false;
     motionAdaptiveActive_ = false;
     loadedProgram_ = tv5725::ProgramId::Count;
+    bypass_ = false;
     newModeCounter_ = stableCounter_ = syncLossDebounce_ = sourceGoneProbes_ = 0;
     fallbackTried_ = crtcHold_ = sourceWasClassified_ = false;
     lastDetectMs_ = nowMs();
@@ -278,9 +279,10 @@ void Engine::tick() {
             ctx_.medResLineCount = static_cast<uint8_t>(chip_.get(MD_HD1250P_CNTRL));
             detectFound(false);
         } else if (++medResSteps_ >= 16) {
-            // Separate H/V sync that is not a known TV mode: an RGBHV computer source. Its bypass
-            // path arrives later in M1; scaling is attempted through the normal watcher meanwhile.
+            // Separate H/V sync that is not a known TV mode: an RGBHV computer source, passed
+            // through (experimental, video/bypass.h).
             detectFound(false);
+            beginLoad(Standard::RgbhvBypass);
         } else {
             chip_.write(MD_HD1250P_CNTRL, chip_.get(MD_HD1250P_CNTRL) + 1);
         }
@@ -502,13 +504,16 @@ void Engine::beginLoad(Standard standard) {
 
 void Engine::runLoad() {
     const Standard standard = pendingStandard_;
-    if (isHd(standard) || standard == Standard::RgbhvBypass) {
-        // HD and computer sources go through the bypass paths, which are not implemented yet:
-        // keep watching so the status explains it instead of loading a wrong program.
-        ctx_.standard = standard;
-        enterPhase(Phase::Running);
+    if (standard == Standard::RgbhvBypass) {
+        startRgbhvBypass();
         return;
     }
+    // The programs do not scale HD sources; any source passes through on request.
+    if (isHd(standard) || outputPref_ == OutputMode::Passthrough) {
+        startHdBypass(standard);
+        return;
+    }
+    bypass_ = false;
     reloadRequested_ = false; // this load uses the preferences in effect
     const tv5725::ProgramId program = chooseProgram(standard);
     const tv5725::ProgramInfo info = tv5725::programInfo(program);
@@ -547,6 +552,70 @@ void Engine::runLoad() {
     }
 }
 
+void Engine::startHdBypass(Standard standard) {
+    reloadRequested_ = false;
+    ctx_.standard = standard;
+    motionAdaptiveActive_ = false;
+    maPending_ = 0;
+    clock_.resetForProgram(0x35); // the display clock is not used in bypass
+    enterHdBypass(ops_, sense_, ctx_);
+    loadedProgram_ = tv5725::ProgramId::Count;
+    bypass_ = true;
+    hdmiSyncFix_ = false;
+    status_.loads++;
+    status_.lastLoadMs = nowMs();
+    status_.outputMode = OutputMode::Passthrough;
+    stableCounter_ = 0;
+    newModeCounter_ = 0;
+    ctx_.noSyncCounter = 0;
+    doneStagePending_ = false;
+    enterPhase(Phase::SettleSync);
+}
+
+void Engine::startRgbhvBypass() {
+    reloadRequested_ = false;
+    motionAdaptiveActive_ = false;
+    maPending_ = 0;
+    clock_.resetForProgram(0x35);
+    enterRgbhvBypass(ops_, ctx_);
+    loadedProgram_ = tv5725::ProgramId::Count;
+    bypass_ = true;
+    rgbhvBand_ = 0;
+    rgbhvUnstable_ = 0;
+    lastBandCheckMs_ = nowMs();
+    status_.loads++;
+    status_.lastLoadMs = nowMs();
+    status_.outputMode = OutputMode::Passthrough;
+    stableCounter_ = 0;
+    ctx_.noSyncCounter = 0;
+    doneStagePending_ = false;
+    enterPhase(Phase::Running);
+}
+
+// RGBHV pass-through supervision, reduced from the community firmware's branch (mechanics §5.6):
+// stability by sync status, a return to detection after a long loss, and the H-PLL band every
+// 900 ms. Not done yet: scaling RGBHV sources and following the sync polarity.
+void Engine::watchRgbhv() {
+    const bool csync = ctx_.syncCsync;
+    const bool stable = csync ? chip_.get(STATUS_INT_SOG_BAD) == 0 && (chip_.get(STATUS_00) & 0x04)
+                              : (chip_.get(STATUS_16) & 0x0A) == 0x0A;
+    if (stable) {
+        rgbhvUnstable_ = 0;
+        if (stableCounter_ < 255) {
+            ++stableCounter_;
+        }
+    } else if (++rgbhvUnstable_ > (csync ? 200 : 300)) {
+        goLowPower(); // the computer went away or changed: detect again
+        return;
+    }
+    if (nowMs() - lastBandCheckMs_ >= 900 && chip_.get(STATUS_INT_SOG_BAD) == 0) {
+        lastBandCheckMs_ = nowMs();
+        const uint8_t band = tuneRgbhvBand(ops_, sense_.pllRate(csync), rgbhvBand_);
+        rgbhvBand_ = band != 0 ? band : rgbhvBand_;
+        ops_.resetSogBadIrq();
+    }
+}
+
 void Engine::finishSettle() {
     if (ctx_.clampSet && chip_.get(SP_NO_CLAMP_REG) == 1) {
         chip_.write(SP_NO_CLAMP_REG, 0); // lock the clamp before the picture is visible again
@@ -567,6 +636,10 @@ void Engine::finishSettle() {
 // Watcher (mechanics §5)
 
 void Engine::watch() {
+    if (ctx_.standard == Standard::RgbhvBypass) {
+        watchRgbhv();
+        return;
+    }
     Standard detected = sense_.videoMode(ctx_.standard, ctx_.inputIsYpbpr);
     const bool hsStable = sense_.hsStable(ctx_.standard);
 
@@ -887,14 +960,14 @@ void Engine::watchStable(bool /*genuineLoss*/) {
             doFullRestore_ = false;
         }
         ops_.unfreeze();
-        if (chip_.get(DAC_RGBS_PWDNZ) == 0 && loadedProgram_ != tv5725::ProgramId::Count &&
-            !doneStagePending_) {
+        if (chip_.get(DAC_RGBS_PWDNZ) == 0 &&
+            (loadedProgram_ != tv5725::ProgramId::Count || bypass_) && !doneStagePending_) {
             ops_.setDac(true); // blanked on source loss: back on with the source
             ops_.setSyncOut(true);
         }
     }
     if (!ctx_.phaseSet && stableCounter_ >= 10 && stableCounter_ < 61 && stableCounter_ % 10 == 0 &&
-        !phaseOpt_.busy() && loadedProgram_ != tv5725::ProgramId::Count) {
+        !phaseOpt_.busy() && (loadedProgram_ != tv5725::ProgramId::Count || bypass_)) {
         phaseOpt_.start(ops_, ctx_);
     }
     if (stableCounter_ == 160) {
@@ -974,7 +1047,7 @@ void Engine::loopLevel() {
     if (sogOpt_.busy()) {
         sogOpt_.step(ops_, ctx_);
     }
-    if (loadedProgram_ == tv5725::ProgramId::Count) {
+    if (loadedProgram_ == tv5725::ProgramId::Count && !bypass_) {
         return;
     }
     const uint8_t s = static_cast<uint8_t>(ctx_.standard);
@@ -1001,11 +1074,14 @@ void Engine::loopLevel() {
     if (doneStagePending_ && stableCounter_ > 35) {
         ops_.setDac(true);
         ops_.setSyncOut(true);
-        if (clock_.present() && frameLockOn_ && ctx_.standard != Standard::RgbhvScaled) {
+        if (clock_.present() && frameLockOn_ && !bypass_ &&
+            ctx_.standard != Standard::RgbhvScaled) {
             clock_.adopt();
             lockFrameRate();
-        } else {
-            clock_.measure(ctx_.syncCsync); // rates for the status
+        } else if (!bypass_) {
+            // Rates for the status. Not in bypass: the scaler produces no output frame to time, and
+            // waiting for one cost 400 ms (bench 2026-10-13).
+            clock_.measure(ctx_.syncCsync);
         }
         doneStagePending_ = false;
         gNotAdoptedSinceMs = nowMs();
@@ -1028,7 +1104,7 @@ void Engine::loopLevel() {
     }
     // Watchdog: a missed adoption leaves the output free-running ~17 % fast with nothing on
     // screen to show it (video-path lessons §3.6).
-    if (!doneStagePending_ && clock_.present() && frameLockOn_ && stableCounter_ > 45) {
+    if (!doneStagePending_ && clock_.present() && frameLockOn_ && !bypass_ && stableCounter_ > 45) {
         if (clock_.adopted()) {
             gNotAdoptedSinceMs = nowMs();
         } else if (nowMs() - gNotAdoptedSinceMs > kAdoptWatchdogMs) {
@@ -1099,7 +1175,7 @@ void Engine::refreshStatus() {
         st.headline = Headline::Settling;
         break;
     case Phase::Running:
-        st.state = EngineState::Running;
+        st.state = bypass_ ? EngineState::Bypass : EngineState::Running;
         if (ctx_.noSyncCounter > 0) {
             st.headline = Headline::SyncUnstable;
         } else if (doneStagePending_) {

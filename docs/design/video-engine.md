@@ -207,6 +207,30 @@ or the preset 0x7B. Auto gain starts again from there for each source. While the
 gain is paused; a source loss, a format change or a reload aborts it and restores the previous
 gains. The calibrated gains live in RAM until the settings store persists them (M1).
 
+## Pass-through (experimental)
+
+Written from the community firmware's sequences (mechanics §6.5, §5.6) and **not yet verified on
+this bench**, which has no HD or PC source; the user chose to have it anyway, marked experimental
+(2026-10-13). Code in `video/bypass.cpp`.
+
+- **HD bypass.** HD sources (720p, 1080i, 1080p, PC over component) always take it, since no
+  program scales them; any other source takes it when the output is set to Passthrough. The ADC
+  samples go through the HD block to the DAC (`DAC_RGBS_BYPS2DAC`), YPbPr is converted to RGB
+  there, and the scaler, memory and display PLL idle (`PLL648_CONTROL_01` = 0x35). Per-standard
+  blanking, sync and sampling values come from the reference. It settles through the normal
+  SettleSync / SettleMode / SettleClamp phases; the watcher's usual loss and format-change
+  handling applies; frame lock and the clock generator stay out of it.
+- **RGBHV bypass.** A source with separate H/V sync that matches no TV mode after the
+  medium-resolution walk is taken for a computer: the ADC feeds the DAC directly
+  (`DAC_RGBS_ADC2DAC`). A reduced supervisor checks sync stability (300 bad passes for HV, 200
+  for composite, then back to detection) and retunes the H-PLL charge-pump band every 900 ms from
+  the measured H-PLL rate (bands below 1030 / 2300 / 3200 / 3800 and above).
+- **Not done:** scaling RGBHV sources (the reference's mode 14), following the HV sync polarity,
+  and the HD-bypass SD line tracking.
+
+Bench so far ([M1](../bench/M1.md#2026-10-13--pass-through)): with the 240p RGBS source and
+Passthrough, the board settles in bypass and holds sync; HDMI showed no picture.
+
 ## Output modes offered
 
 | Mode | Programs | Notes |
@@ -217,7 +241,7 @@ gains. The calibrated gains live in RAM until the settings store persists them (
 | 720p | NTSC/PAL 720 | |
 | 480p / 576p | NTSC 480 / PAL 576 | line doubling only |
 | 15 kHz | NTSC/PAL downscale | for CRTs, from 31 kHz sources |
-| Passthrough | HD bypass | HD and PC sources, or by choice |
+| Passthrough *(experimental)* | HD or RGBHV bypass | HD and PC sources always; any source by choice |
 
 ## Safety rules
 

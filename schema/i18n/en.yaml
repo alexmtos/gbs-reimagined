@@ -18,7 +18,8 @@ settings:
     hint: What the TV receives
     help: >-
       The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact
-      4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends HD and PC sources unscaled.
+      4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and
+      PC sources always pass through. Passthrough is experimental: not yet verified on a board.
     values:
       auto: Auto
       r1080p: 1080p
@@ -27,7 +28,7 @@ settings:
       r720p: 720p
       r480p: 480p / 576p
       r15khz: 15 kHz (CRT)
-      passthrough: Passthrough
+      passthrough: Passthrough (exp.)
   output.frameLock:
     label: Frame lock
     hint: Match source rate

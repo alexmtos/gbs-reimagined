@@ -7,6 +7,7 @@
 #include "hal/pulse_timer.h"
 #include "hal/si5351.h"
 #include "video/adc_levels.h"
+#include "video/bypass.h"
 #include "video/control.h"
 #include "video/ops.h"
 #include "video/picture.h"
@@ -126,6 +127,9 @@ private:
     tv5725::ProgramId chooseProgram(Standard standard) const;
     void beginLoad(Standard standard);
     void runLoad();
+    void startHdBypass(Standard standard);
+    void startRgbhvBypass();
+    void watchRgbhv();
     void finishSettle();
 
     // Watcher
@@ -175,6 +179,10 @@ private:
     uint8_t clampTries_ = 0;
 
     bool sourceConnected_ = false;
+    bool bypass_ = false; // an HD or RGBHV pass-through path is set up instead of a program
+    uint8_t rgbhvBand_ = 0;
+    uint16_t rgbhvUnstable_ = 0;
+    uint32_t lastBandCheckMs_ = 0;
     bool hdmiSyncFix_ = false;
     bool doneStagePending_ = false;
     tv5725::ProgramId loadedProgram_ = tv5725::ProgramId::Count;

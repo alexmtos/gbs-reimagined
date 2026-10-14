@@ -8,7 +8,7 @@ Schema hash `f838c797`. Every user-facing setting, as defined in `schema/setting
 
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
-| `output.resolution` ⚠ | Output resolution | Auto, 1080p, 1280x1024, 1280x960, 720p, 480p / 576p, 15 kHz (CRT), Passthrough | Auto | essential | M1 | The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends HD and PC sources unscaled. |
+| `output.resolution` ⚠ | Output resolution | Auto, 1080p, 1280x1024, 1280x960, 720p, 480p / 576p, 15 kHz (CRT), Passthrough (exp.) | Auto | essential | M1 | The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and PC sources always pass through. Passthrough is experimental: not yet verified on a board. |
 | `output.frameLock` ⚠ | Frame lock | off, on | on | essential | M1 | Makes the output refresh exactly follow the console, which removes judder and tearing. Turn it off only if your display refuses the slightly non-standard rate. |
 | `output.force60` ⚠ | Force 60 Hz | off, on | off | advanced | M2 | Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. |
 | `output.blankOnChange` | Blank on change | off, on | off | advanced | M2 | Shows black instead of a distorted frame while the source changes resolution. |
