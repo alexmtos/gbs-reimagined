@@ -131,7 +131,7 @@ TEST_CASE("values convert to and from text the way the console and the API spell
 TEST_CASE("settings of this milestone are available unless pending") {
     CHECK(settings::available(Id::OutputResolution));
     CHECK(settings::available(Id::InputAutoGain));
-    CHECK(settings::available(Id::OutputAspect));            // M2
-    CHECK_FALSE(settings::available(Id::PictureScanlines));  // M2, pending
+    CHECK(settings::available(Id::OutputAspect));           // M2
+    CHECK_FALSE(settings::available(Id::PictureScanlines)); // M2, pending
     CHECK(settings::def(Id::PictureScanlines).milestone() == 2);
 }

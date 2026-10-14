@@ -196,7 +196,8 @@ TEST_CASE("past the frame's edges the picture is cut, never wrapped") {
     CHECK(g.ifVbSt == 8 + 28);
 }
 
-TEST_CASE("size scales the picture; a picture larger than the window is cropped around its centre") {
+TEST_CASE(
+    "size scales the picture; a picture larger than the window is cropped around its centre") {
     Rig r(tv5725::ProgramId::Ntsc1080p, Standard::Ntsc);
     GeometryAdjust adj;
     adj.hSize = 20;

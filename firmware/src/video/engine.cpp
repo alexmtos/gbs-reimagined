@@ -137,8 +137,8 @@ void Engine::applyGeometry() {
             return;
         }
     }
-    status_.geometry = computeGeometry(geometryBase_, geometry_,
-                                       static_cast<uint16_t>(chip_.get(VDS_HSYNC_RST)));
+    status_.geometry =
+        computeGeometry(geometryBase_, geometry_, static_cast<uint16_t>(chip_.get(VDS_HSYNC_RST)));
     status_.geometryValid = true;
     writeGeometry(chip_, status_.geometry);
 }
