@@ -9,6 +9,7 @@
 #include "video/adc_levels.h"
 #include "video/bypass.h"
 #include "video/control.h"
+#include "video/geometry.h"
 #include "video/ops.h"
 #include "video/picture.h"
 #include "video/pixel_clock.h"
@@ -48,6 +49,8 @@ struct EngineStatus {
     bool offsetCalibrationFailed = false;
     uint8_t levelCalibration = 0; // GainCalibrator::Outcome of the last "calibrate levels"
     bool autoGain = false;
+    GeometryRegs geometry; // as last written, while geometryValid
+    bool geometryValid = false;
     uint32_t loads = 0; // programs loaded since boot
     uint32_t lastLoadMs = 0;
 };
@@ -80,6 +83,9 @@ public:
     void setFrameLock(bool on) override;
     // picture.*: applied now and after every program load.
     void setPicture(const PictureAdjust& adj) override;
+    // output.aspect / position / size: applied now and after every program load, always from
+    // the loaded program's own geometry.
+    void setGeometry(const GeometryAdjust& adj) override;
 
     // Base gains per input (0 component, 1 RGB), the gains a new source starts with: restored from
     // storage at boot, replaced by each successful "calibrate levels". levelsSequence() moves on
@@ -140,6 +146,7 @@ private:
     void followInterlace();
     void loopLevel();
     void lockFrameRate();
+    void applyGeometry();
 
     void enterPhase(Phase p);
     uint32_t inPhaseMs() const;
@@ -160,6 +167,8 @@ private:
     bool autoGainOn_ = false;
     bool frameLockOn_ = true;
     PictureAdjust picture_;
+    GeometryAdjust geometry_;
+    GeometryBase geometryBase_; // of the loaded program; invalid in bypass
     // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSequence_ = 0;

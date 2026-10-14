@@ -133,7 +133,8 @@ Writes one program and runs the post-load tuning. Input: standard + output prefe
 5. Map the program's internal clock code to the Si5351 frequency (`648 MHz / n`) and arm adoption.
 
 The order is not cosmetic: the reference fork lost weeks to a post-load that ran *after* a timing
-change and overwrote it (VP §1.6). Every later geometry adjustment therefore runs in the Settler.
+change and overwrote it (VP §1.6). The geometry is therefore computed after the post-load, from the
+state it leaves ([Geometry](#geometry)).
 
 ### Settler
 
@@ -206,6 +207,71 @@ A new source starts from its input's **base gain**: the last successful calibrat
 or the preset 0x7B. Auto gain starts again from there for each source. While the action runs, auto
 gain is paused; a source loss, a format change or a reload aborts it and restores the previous
 gains. The calibrated gains live in RAM until the settings store persists them (M1).
+
+## Geometry
+
+`output.aspect`, `hPosition`, `vPosition`, `hSize` and `vSize`, in `video/geometry.cpp`. One
+owner, one rule: right after the post-load the engine reads the program's own geometry (scales,
+display and fetch windows, capture starts) as a **baseline**, and every later write is computed
+from that baseline and the settings, never from the chip's current values. A value derived from its
+own previous output drifts; on the reference bench a scale that walked down about two counts per
+apply tore the picture (VP §3.5).
+
+Owned after a load: `VDS_HSCALE`/`VSCALE` and their bypass bits, `VDS_DIS_HB_*`, `VDS_HB_*`,
+`VDS_EXT_HB_*`, `VDS_DIS_VB_*`, `VDS_VB_*`, `VDS_EXT_VB_*`, `IF_HB_SP2` and `IF_VB_ST/SP`. The
+frame lock's line change (`applyBestHTotal`) goes through the same computation with the new line
+length, and writes the line and the horizontal fields together at a field start. A bus error while
+reading the baseline voids it; the engine reads it again at the next geometry change, and until
+then the frame lock changes only the line.
+
+**Aspect.** A picture's shape is defined against BT.601: a 4:3 picture is 704 samples at 13.5 MHz
+(52.148 µs) wide over the source's full height (480 or 576 lines after the line doubler). The HDMI
+converter shows a fixed share of each output line, the active share of the standard timing it
+recognises. A per-program table holds that share, the frame's lines and its shape: standard
+VESA/CEA timings that the bench captures confirm, except PAL 576p, whose share was inferred from one
+capture ([M2](../bench/M2.md#2026-10-14--what-the-converter-shows)). From these the code computes
+the scale divisors for the wanted shape:
+
+| Aspect | 16:9 frame (1080p, 720p) | 4:3 frame (960p, 480p, 576p) | 5:4 frame (1024p) |
+|---|---|---|---|
+| 4:3 | pillarboxed | fills the frame | letterboxed to 960 lines |
+| 16:9 | fills the width | letterboxed to ¾ of the height (user decision 2026-10-14) | letterboxed |
+| Full | fills the frame | fills the frame | fills the frame |
+
+Sources whose shape is not known (medium resolution, RGBHV, unknown modes) take the program's own
+capture as their 4:3 picture. The 15 kHz programs bypass the converter and take position only.
+
+**Windows.** On both axes the display window shows what the program captured at the new scale,
+centred where the program centred it (horizontally capped at the converter's visible width, or the
+program's own window when that is wider; vertically at the program's window, which already spans
+the frame). The fetch blanking (`VDS_HB_*`, `VDS_VB_*`) moves with the display window and keeps the
+program's own distances from it: the window's first line and column show the capture start. Offsets
+that are not the array's own wrap or tear the picture (VP §3.5), and on this bench moving the fetch
+blanking with the window letterboxed cleanly ([M2](../bench/M2.md#2026-10-14--geometry-on-the-board)).
+At a divisor other than the program's, the fetch also ends early enough to stay within 1008 samples
+per line (`PB_FETCH_NUM` is 256, i.e. 1024): beyond about 1016 a squashed copy of the picture showed
+at the window's far edge. Ending the fetch earlier leaves the content where it is.
+A picture larger than the window is cropped around its centre: the capture starts later by half the
+span that no longer fits. The capture start never moves earlier than the program's: earlier
+horizontally shows the decoder's green from before the source's active line, and earlier vertically
+wraps into the previous frame, past what the frame memory holds.
+
+**Position** moves the whole window (display, fetch and mask) against the sync: two output units
+per step horizontally, one source line per step vertically. The window stays clear of the sync
+and inside the frame; where it would cross either, the picture is cut there (vertically by starting
+the capture later, never by wrapping). **Size** multiplies the picture by 0.5 % per step on each
+axis.
+
+**Limits.**
+
+- The scaler only enlarges horizontally; at 1080p the programs are already 1:1, so horizontal size
+  below 0 does nothing there, and PAL at 1080p is expected to stay about 10 % wider than 4:3 (not yet
+  checked on the bench).
+- Horizontal size stops at 2× (divisor 512), or at the shape's own divisor where that is lower
+  (480p's 4:3 needs 478, measured clean): at 1280x960, divisors under 512 displaced lines
+  ([M2](../bench/M2.md#2026-10-14--geometry-on-the-board)).
+- 480p and 576p already show the source 1:1 vertically, so they cannot letterbox: there, 16:9
+  equals 4:3, and vertical size below 0 does nothing.
 
 ## Pass-through (experimental)
 

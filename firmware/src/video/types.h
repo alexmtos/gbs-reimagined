@@ -54,6 +54,19 @@ enum class Headline : uint8_t {
     Paused,
 };
 
+// Values match schema/settings.yaml output.aspect.
+enum class Aspect : uint8_t { FourThree, SixteenNine, Full };
+
+// output.aspect / hPosition / vPosition / hSize / vSize.
+struct GeometryAdjust {
+    Aspect aspect = Aspect::FourThree;
+    int8_t hPosition = 0; // + moves right; two output units per step
+    int8_t vPosition = 0; // + moves down; one source line per step
+    int8_t hSize = 0;     // + wider; 0.5 % per step
+    int8_t vSize = 0;     // + taller; 0.5 % per step
+    bool operator==(const GeometryAdjust&) const = default;
+};
+
 inline bool isSd(Standard s) {
     return s == Standard::Ntsc || s == Standard::Pal;
 }

@@ -12,7 +12,7 @@ Schema hash `1c3954ca`. Every user-facing setting, as defined in `schema/setting
 | `output.frameLock` ⚠ | Frame lock | off, on | on | essential | M1 | Makes the output refresh exactly follow the console, which removes judder and tearing. Turn it off only if your display refuses the slightly non-standard rate. |
 | `output.force60` ⚠ | Force 60 Hz | off, on | off | advanced | M2 (pending) | Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. |
 | `output.blankOnChange` | Blank on change | off, on | off | advanced | M2 (pending) | Shows black instead of a distorted frame while the source changes resolution. |
-| `output.aspect` | Aspect | 4:3, 16:9, Full screen | 4:3 | essential | M2 | The shape of the picture on screen. Most consoles were designed for 4:3. |
+| `output.aspect` | Aspect | 4:3, 16:9, Full screen | 4:3 | essential | M2 | The shape of the picture on screen. 4:3 suits most consoles; 16:9 is for games with a widescreen mode; Full screen stretches the picture to the shape of the screen. |
 | `output.hPosition` | Horizontal position | -64…64 | 0 | essential | M2 | Moves the picture left or right. |
 | `output.vPosition` | Vertical position | -64…64 | 0 | essential | M2 | Moves the picture up or down. |
 | `output.hSize` | Horizontal size | -64…64 | 0 | advanced | M2 | Makes the picture narrower or wider. |

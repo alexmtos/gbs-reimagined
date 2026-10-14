@@ -51,6 +51,7 @@ public:
 private:
     void apply(settings::Id id);
     void applyPicture();
+    void applyGeometry();
     void loadLevels();
     void saveLevels();
     uint32_t revertWindowMs() const;

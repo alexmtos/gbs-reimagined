@@ -41,7 +41,7 @@
     "output.aspect": {
       "label": "Proporção",
       "hint": "Formato da imagem",
-      "help": "O formato da imagem na tela. A maioria dos consoles foi feita para 4:3.",
+      "help": "O formato da imagem na tela. 4:3 serve para a maioria dos consoles; 16:9 é para jogos com modo widescreen; Tela cheia estica a imagem até o formato da tela.",
       "values": {
         "a4x3": "4:3",
         "a16x9": "16:9",

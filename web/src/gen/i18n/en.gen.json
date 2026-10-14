@@ -41,7 +41,7 @@
     "output.aspect": {
       "label": "Aspect",
       "hint": "Picture shape",
-      "help": "The shape of the picture on screen. Most consoles were designed for 4:3.",
+      "help": "The shape of the picture on screen. 4:3 suits most consoles; 16:9 is for games with a widescreen mode; Full screen stretches the picture to the shape of the screen.",
       "values": {
         "a4x3": "4:3",
         "a16x9": "16:9",

@@ -138,6 +138,13 @@ void Controller::apply(Id id) {
     case Id::InputAutoGain:
         video_.setAutoGain(v != 0);
         break;
+    case Id::OutputAspect:
+    case Id::OutputHPosition:
+    case Id::OutputVPosition:
+    case Id::OutputHSize:
+    case Id::OutputVSize:
+        applyGeometry();
+        break;
     case Id::PictureBrightness:
     case Id::PictureContrast:
     case Id::PictureSaturation:
@@ -156,6 +163,16 @@ void Controller::applyPicture() {
     adj.saturation = static_cast<int8_t>(store_.get(Id::PictureSaturation));
     adj.sharpness = static_cast<uint8_t>(store_.get(Id::PictureSharpness));
     video_.setPicture(adj);
+}
+
+void Controller::applyGeometry() {
+    video::GeometryAdjust adj;
+    adj.aspect = static_cast<video::Aspect>(store_.get(Id::OutputAspect));
+    adj.hPosition = static_cast<int8_t>(store_.get(Id::OutputHPosition));
+    adj.vPosition = static_cast<int8_t>(store_.get(Id::OutputVPosition));
+    adj.hSize = static_cast<int8_t>(store_.get(Id::OutputHSize));
+    adj.vSize = static_cast<int8_t>(store_.get(Id::OutputVSize));
+    video_.setGeometry(adj);
 }
 
 // /levels.bin: the base gains of both inputs (component, then RGB), three bytes each.

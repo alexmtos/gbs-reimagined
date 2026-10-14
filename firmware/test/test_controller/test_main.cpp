@@ -98,6 +98,19 @@ TEST_CASE("pending settings and out-of-range values are refused") {
     CHECK(r.ctl.set(Id::PictureContrast, 0, Origin::Web, 0) == Controller::Outcome::Unchanged);
 }
 
+TEST_CASE("the geometry settings reach the video path together") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    CHECK(r.ctl.set(Id::OutputAspect, 1, Origin::Web, 0) == Controller::Outcome::Applied);
+    CHECK(r.ctl.set(Id::OutputHPosition, -5, Origin::Oled, 0) == Controller::Outcome::Applied);
+    CHECK(r.ctl.set(Id::OutputVSize, 12, Origin::Console, 0) == Controller::Outcome::Applied);
+    CHECK(r.video.geometry.aspect == video::Aspect::SixteenNine);
+    CHECK(r.video.geometry.hPosition == -5);
+    CHECK(r.video.geometry.vSize == 12);
+    CHECK(r.video.geometry.vPosition == 0);
+    CHECK(r.ctl.set(Id::OutputHSize, 65, Origin::Web, 0) == Controller::Outcome::Invalid);
+}
+
 TEST_CASE("safe mode ignores the saved settings, outputs 480p and saves nothing") {
     Rig saved;
     saved.ctl.begin(false, 0);

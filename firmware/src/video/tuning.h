@@ -48,12 +48,6 @@ void updateClampPosition(Ops& ops, Sense& sense, PathContext& ctx);
 // programs that were not measured as they are.
 void fitPalVertical(Ops& ops, const PathContext& ctx);
 
-// Changes the output line length (VDS_HSYNC_RST) to `bestHTotal`, moving the display and memory
-// blanking edges by half the difference and keeping HSync inside the blanking, written at a field
-// start (mechanics §6.2, "Changing H total at runtime"). Refuses differences above 6 % of the line
-// (16 % for medium-resolution sources). Returns true when applied or nothing was needed.
-bool applyBestHTotal(Ops& ops, Sense& sense, PathContext& ctx, uint16_t bestHTotal);
-
 // Lowers the SOG slicer from its maximum until sync holds; one level per step (≤ ~70 ms each).
 class SogOptimizer {
 public:
