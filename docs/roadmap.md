@@ -39,7 +39,8 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 - Experimental: custom output timings (ADR 0004)
 - **Gate:** each setting verified on the capture card to do what its help text says.
 - **Progress:** geometry (aspect, position, size) verified with NTSC and PAL sources on every
-  output, 2026-10-14 ([bench M2](bench/M2.md)).
+  output, 2026-10-14; scanlines and the deinterlacer choice verified the same day
+  ([bench M2](bench/M2.md)).
 
 ## M3 — Distribution
 

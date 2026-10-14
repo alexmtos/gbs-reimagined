@@ -295,7 +295,8 @@ void Console::printStatus() {
     Serial.printf_P(PSTR("state %s | %s on %s, %s sync%s%s\r\n"), stateName(st.state),
                     standardName(st.standard), st.input == video::InputPort::Rgb ? "RGB" : "YPbPr",
                     st.sync == video::SyncType::Csync ? "composite" : "HV",
-                    st.deinterlacing ? ", deinterlacing" : "",
+                    st.deinterlacing ? (st.bob ? ", deinterlacing (bob)" : ", deinterlacing")
+                                     : (st.scanlines ? ", scanlines" : ""),
                     ctl_.safeMode() ? " | SAFE MODE" : "");
     Serial.printf_P(PSTR("source lines %u, HPERIOD_IF %u, VPERIOD_IF %u%s\r\n"), st.sourceLines,
                     st.hPeriodIf, st.vPeriodIf, st.interlaced ? " (interlaced)" : "");

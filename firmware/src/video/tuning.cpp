@@ -10,11 +10,11 @@ using platform::nowMs;
 using platform::sleepMs;
 using platform::sleepUs;
 
-namespace {
-
 bool isDownscale(uint8_t presetId) {
     return presetId == 0x06 || presetId == 0x16;
 }
+
+namespace {
 
 // Horizontal capture window per output program for EDTV sources (mechanics §4.1 step 13):
 // {preset id, IF_HB_ST2, IF_HB_SP2}. These were tuned on hardware by the community.

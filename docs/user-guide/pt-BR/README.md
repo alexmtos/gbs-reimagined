@@ -116,6 +116,23 @@ Algumas combinações não têm efeito, porque o scaler não consegue fazê-las 
 Em 1080p, consoles PAL aparecem cerca de 10 % mais largos que 4:3, pelo mesmo motivo; escolha 720p
 ou 1280x1024 para uma imagem 4:3 exata.
 
+## Scanlines e desentrelaçador
+
+Na aba **Imagem**:
+
+- **Scanlines** escurecem o espaço entre as linhas do console, como num CRT. Funcionam em jogos
+  240p e 288p e pausam sozinhas enquanto o console manda 480i ou 576i (menus, alguns jogos),
+  voltando quando ele retorna a 240p. A **Intensidade** vai de 1 (suave) a 8 (faixas pretas);
+  linhas mais fortes deixam a imagem mais escura — cerca de um sexto no 4, o padrão, e cerca de
+  dois quintos no 8.
+- As linhas ficam perfeitamente iguais quando a saída é um múltiplo inteiro da imagem do console:
+  **1280x960**, **720p** ou **480p** para jogos 240p. Em **1080p** as faixas alternam um pouco de
+  espessura, o que algumas pessoas notam em telas grandes.
+- **Desentrelaçador** (ajustes avançados) escolhe como imagens 480i e 576i são reconstruídas.
+  **Adaptativo** (ao movimento), o padrão, mantém detalhes parados, como texto, nítidos e estáveis.
+  **Bob** nunca mostra efeito pente em movimento rápido, mas faz linhas finas tremularem em imagens
+  paradas.
+
 ## Níveis de entrada
 
 Alguns consoles mandam um sinal mais forte do que a placa espera, o que deixa os brancos chapados e

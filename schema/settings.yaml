@@ -155,7 +155,6 @@ settings:
     default: false
     tier: essential
     milestone: M2
-    pending: true
   picture.scanlineStrength:
     type: int
     min: 1
@@ -163,14 +162,12 @@ settings:
     default: 4
     tier: essential
     milestone: M2
-    pending: true
   picture.deinterlace:
     type: enum
     values: [motionAdaptive, bob]
     default: motionAdaptive
     tier: advanced
     milestone: M2
-    pending: true
 
   system.language:
     type: enum

@@ -66,9 +66,9 @@ const Def kDefs[] PROGMEM = {
     {0x79648B93u, 237, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.contrast
     {0xFF59D3A9u, 254, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.saturation
     {0xDFA03AD8u, 273, 118, 0, 3, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // picture.sharpness
-    {0xBAB329D3u, 291, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x60}, // picture.scanlines
-    {0xD34407F3u, 309, 65535, 1, 8, 4, {kNoSpecial, kNoSpecial}, Type::Int, 0x60}, // picture.scanlineStrength
-    {0x7215F62Bu, 334, 139, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x62}, // picture.deinterlace
+    {0xBAB329D3u, 291, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x20}, // picture.scanlines
+    {0xD34407F3u, 309, 65535, 1, 8, 4, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // picture.scanlineStrength
+    {0x7215F62Bu, 334, 139, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x22}, // picture.deinterlace
     {0xCE880134u, 354, 159, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // system.language
     {0xF93B5751u, 370, 168, 0, 4, 3, {kNoSpecial, kNoSpecial}, Type::Enum, 0x12}, // system.oledSaver
     {0xBA60E50Cu, 387, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // system.encoderReverse

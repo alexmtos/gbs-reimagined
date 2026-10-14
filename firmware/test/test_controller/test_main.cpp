@@ -93,7 +93,7 @@ TEST_CASE("the revert window follows system.revertSeconds") {
 TEST_CASE("pending settings and out-of-range values are refused") {
     Rig r;
     r.ctl.begin(false, 0);
-    CHECK(r.ctl.set(Id::PictureScanlines, 1, Origin::Web, 0) == Controller::Outcome::Unavailable);
+    CHECK(r.ctl.set(Id::OutputForce60, 1, Origin::Web, 0) == Controller::Outcome::Unavailable);
     CHECK(r.ctl.set(Id::PictureContrast, 50, Origin::Web, 0) == Controller::Outcome::Invalid);
     CHECK(r.ctl.set(Id::PictureContrast, 0, Origin::Web, 0) == Controller::Outcome::Unchanged);
 }
@@ -109,6 +109,21 @@ TEST_CASE("the geometry settings reach the video path together") {
     CHECK(r.video.geometry.vSize == 12);
     CHECK(r.video.geometry.vPosition == 0);
     CHECK(r.ctl.set(Id::OutputHSize, 65, Origin::Web, 0) == Controller::Outcome::Invalid);
+}
+
+TEST_CASE("the line settings reach the video path together") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    CHECK(r.video.lines.strength == 4); // the default level
+    CHECK(r.ctl.set(Id::PictureScanlines, 1, Origin::Oled, 0) == Controller::Outcome::Applied);
+    CHECK(r.ctl.set(Id::PictureScanlineStrength, 7, Origin::Web, 0) ==
+          Controller::Outcome::Applied);
+    CHECK(r.ctl.set(Id::PictureDeinterlace, 1, Origin::Console, 0) == Controller::Outcome::Applied);
+    CHECK(r.video.lines.scanlines);
+    CHECK(r.video.lines.strength == 7);
+    CHECK(r.video.lines.bob);
+    CHECK(r.ctl.set(Id::PictureScanlineStrength, 0, Origin::Web, 0) ==
+          Controller::Outcome::Invalid);
 }
 
 TEST_CASE("safe mode ignores the saved settings, outputs 480p and saves nothing") {

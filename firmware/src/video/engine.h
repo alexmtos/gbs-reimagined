@@ -13,6 +13,7 @@
 #include "video/ops.h"
 #include "video/picture.h"
 #include "video/pixel_clock.h"
+#include "video/scanlines.h"
 #include "video/sense.h"
 #include "video/tuning.h"
 #include "video/types.h"
@@ -28,6 +29,8 @@ struct EngineStatus {
     SyncType sync = SyncType::None;
     bool interlaced = false;
     bool deinterlacing = false;
+    bool bob = false;         // deinterlacing in bob mode
+    bool scanlines = false;   // the scanline mixer is on
     uint16_t sourceLines = 0; // lines per field from the sync processor
     uint16_t hPeriodIf = 0;   // input formatter's line period count
     uint16_t vPeriodIf = 0;   // lines after the formatter (parity = interlace)
@@ -86,6 +89,8 @@ public:
     // output.aspect / position / size: applied now and after every program load, always from
     // the loaded program's own geometry.
     void setGeometry(const GeometryAdjust& adj) override;
+    // picture.scanlines / scanlineStrength / deinterlace: followed every settled tick.
+    void setLines(const LineAdjust& adj) override;
 
     // Base gains per input (0 component, 1 RGB), the gains a new source starts with: restored from
     // storage at boot, replaced by each successful "calibrate levels". levelsSequence() moves on
@@ -147,6 +152,8 @@ private:
     void loopLevel();
     void lockFrameRate();
     void applyGeometry();
+    void followScanlines();
+    void scanlinesOff();
 
     void enterPhase(Phase p);
     uint32_t inPhaseMs() const;
@@ -169,6 +176,12 @@ private:
     PictureAdjust picture_;
     GeometryAdjust geometry_;
     GeometryBase geometryBase_; // of the loaded program; invalid in bypass
+    LineAdjust lines_;
+    ScanlineBase scanlineBase_; // of the loaded program; invalid in bypass
+    bool scanlinesOn_ = false;
+    uint8_t scanlineLevel_ = 0;      // as written while on
+    bool progressiveStable_ = false; // followInterlace has confirmed a progressive source
+    uint8_t scanlineHold_ = 0;       // ticks to wait after the deinterlacer disengages
     // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSequence_ = 0;

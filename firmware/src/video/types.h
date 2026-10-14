@@ -67,6 +67,14 @@ struct GeometryAdjust {
     bool operator==(const GeometryAdjust&) const = default;
 };
 
+// picture.scanlines / scanlineStrength / deinterlace.
+struct LineAdjust {
+    bool scanlines = false;
+    uint8_t strength = 4; // 1..8
+    bool bob = false;     // deinterlacer: bob instead of motion adaptive
+    bool operator==(const LineAdjust&) const = default;
+};
+
 inline bool isSd(Standard s) {
     return s == Standard::Ntsc || s == Standard::Pal;
 }

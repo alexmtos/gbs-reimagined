@@ -145,6 +145,11 @@ void Controller::apply(Id id) {
     case Id::OutputVSize:
         applyGeometry();
         break;
+    case Id::PictureScanlines:
+    case Id::PictureScanlineStrength:
+    case Id::PictureDeinterlace:
+        applyLines();
+        break;
     case Id::PictureBrightness:
     case Id::PictureContrast:
     case Id::PictureSaturation:
@@ -173,6 +178,14 @@ void Controller::applyGeometry() {
     adj.hSize = static_cast<int8_t>(store_.get(Id::OutputHSize));
     adj.vSize = static_cast<int8_t>(store_.get(Id::OutputVSize));
     video_.setGeometry(adj);
+}
+
+void Controller::applyLines() {
+    video::LineAdjust adj;
+    adj.scanlines = store_.get(Id::PictureScanlines) != 0;
+    adj.strength = static_cast<uint8_t>(store_.get(Id::PictureScanlineStrength));
+    adj.bob = store_.get(Id::PictureDeinterlace) == 1;
+    video_.setLines(adj);
 }
 
 // /levels.bin: the base gains of both inputs (component, then RGB), three bytes each.
