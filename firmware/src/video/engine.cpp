@@ -66,6 +66,16 @@ void Engine::setOutputPreference(OutputMode mode) {
 
 void Engine::setInputPreference(InputPreference pref) {
     inputPref_ = pref;
+    if (pref == InputPreference::Auto || !sourceConnected_) {
+        return; // detection picks the input up on its next attempt
+    }
+    // Choosing an input while a source on the other one is shown switches to it now
+    // (bench 2026-10-13: with RGB and component both connected the choice did nothing).
+    const bool wantYpbpr = pref == InputPreference::Component;
+    if (wantYpbpr != ctx_.inputIsYpbpr) {
+        goLowPower();
+        chip_.write(ADC_INPUT_SEL, wantYpbpr ? 0 : 1);
+    }
 }
 
 void Engine::requestReload() {
@@ -411,7 +421,10 @@ void Engine::tick() {
 void Engine::startDetect() {
     sleepMs(10);
     const uint32_t input = chip_.get(ADC_INPUT_SEL);
-    if (sense_.hsStable(Standard::None)) {
+    // A chosen input is the only one searched, even when the other one carries a signal.
+    const bool wrongInput = (inputPref_ == InputPreference::Rgb && input != 1) ||
+                            (inputPref_ == InputPreference::Component && input != 0);
+    if (!wrongInput && sense_.hsStable(Standard::None)) {
         if (input == 1) {
             ctx_.inputIsYpbpr = false;
             ops_.setSogLevel(13);
