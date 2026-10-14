@@ -41,6 +41,13 @@ void updateCoastPosition(Ops& ops, Sense& sense, PathContext& ctx);
 // Clamp window from sixteen agreeing line-length reads. Sets ctx.clampSet on success.
 void updateClampPosition(Ops& ops, Sense& sense, PathContext& ctx);
 
+// PAL 15 kHz sources show all 576 lines (user decision 2026-10-13). The community programs scale
+// by whole numbers and capture 520-548 of them, cutting the top and bottom of the picture; this
+// sets the vertical scale that fits 576 lines into the visible height and starts the capture at
+// the first active line. Values measured per program with a PAL PS2 (docs/bench/M1.md). Leaves
+// programs that were not measured as they are.
+void fitPalVertical(Ops& ops, const PathContext& ctx);
+
 // Changes the output line length (VDS_HSYNC_RST) to `bestHTotal`, moving the display and memory
 // blanking edges by half the difference and keeping HSync inside the blanking, written at a field
 // start (mechanics §6.2, "Changing H total at runtime"). Refuses differences above 6 % of the line

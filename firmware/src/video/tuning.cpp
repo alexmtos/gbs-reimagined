@@ -183,6 +183,36 @@ void tuneByStandard(Ops& ops, Sense& sense, PathContext& ctx) {
 
 } // namespace
 
+void fitPalVertical(Ops& ops, const PathContext& ctx) {
+    if (ctx.standard != Standard::Pal || ctx.hdBypass) {
+        return;
+    }
+    // Program id → scale for 576 lines (0 = the program's own scale already fits).
+    struct Fit {
+        uint8_t presetId;
+        uint16_t vscale;
+    };
+    static constexpr Fit kFits[] = {
+        {0x15, 546}, // 1920x1080: 1024 × 576 / 1080; was 512 (2×, 540 lines)
+        {0x12, 576}, // 1280x1024: 1024 × 576 / 1024; was 512
+        {0x11, 614}, // 1280x960: 1024 × 576 / 960; was 585
+        {0x13, 0},   // 1280x720: 819 already shows 576 lines; only the capture start moves
+    };
+    constexpr uint16_t kFirstActiveLine = 16; // IF_VB_ST; the stop is two lines later
+    for (const Fit& f : kFits) {
+        if (f.presetId != ctx.presetId) {
+            continue;
+        }
+        tv5725::Chip& chip = ops.chip();
+        if (f.vscale != 0) {
+            chip.write(VDS_VSCALE, f.vscale);
+        }
+        chip.write(IF_VB_ST, kFirstActiveLine);
+        chip.write(IF_VB_SP, kFirstActiveLine + 2);
+        return;
+    }
+}
+
 bool postLoadTuning(Ops& ops, Sense& sense, PathContext& ctx) {
     tv5725::Chip& chip = ops.chip();
     LockState& lock = ops.lock();
@@ -290,6 +320,7 @@ bool postLoadTuning(Ops& ops, Sense& sense, PathContext& ctx) {
         chip.write(IF_VB_SP, chip.get(IF_VB_SP) + 4);
         chip.write(IF_VB_ST, chip.get(IF_VB_ST) + 4);
     }
+    fitPalVertical(ops, ctx);
 
     chip.write(VDS_EXT_HB_ST, chip.get(VDS_DIS_HB_ST));
     chip.write(VDS_EXT_HB_SP, chip.get(VDS_DIS_HB_SP));
