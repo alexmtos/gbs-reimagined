@@ -12,8 +12,8 @@ namespace {
 // it recognises, and that frame's lines and shape. On the M1 output-matrix captures the same
 // Mega Drive picture (NTSC programs) and the same PS2 picture (PAL programs) measure one width per
 // source within 0.3 % once the visible width is taken as this share of the line; the 50 Hz
-// programs follow the 60 Hz shares. The PAL 576p share was inferred from one capture and is not a
-// standard timing (docs/bench/M2.md, "What the converter shows").
+// programs follow the 60 Hz shares. The PAL 576p share is not a standard timing: inferred from one
+// capture, then confirmed with the same source (docs/bench/M2.md).
 struct Frame {
     uint16_t active, total;
     uint16_t lines;

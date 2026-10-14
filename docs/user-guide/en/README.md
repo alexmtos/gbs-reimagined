@@ -113,8 +113,8 @@ Some combinations have no effect, because the scaler cannot do them cleanly:
 - at **1280x960**, **1280x1024** and **480p / 576p** it cannot be made wider than at the start, and
   at 480p / 576p not shorter either.
 
-PAL consoles at 1080p are expected to look somewhat wider than 4:3 (the calculation gives about
-10 %, not yet checked on the bench).
+At 1080p, PAL consoles look about 10 % wider than 4:3, for the same reason; choose 720p or
+1280x1024 for an exact 4:3 picture.
 
 ## Input levels
 

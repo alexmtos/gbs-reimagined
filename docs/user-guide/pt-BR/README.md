@@ -113,8 +113,8 @@ Algumas combinações não têm efeito, porque o scaler não consegue fazê-las 
 - em **1280x960**, **1280x1024** e **480p / 576p** ela não pode ficar mais larga do que no início,
   e em 480p / 576p também não pode ficar mais baixa.
 
-Consoles PAL em 1080p devem aparecer um pouco mais largos que 4:3 (a conta dá cerca de 10 %, ainda
-não conferido na bancada).
+Em 1080p, consoles PAL aparecem cerca de 10 % mais largos que 4:3, pelo mesmo motivo; escolha 720p
+ou 1280x1024 para uma imagem 4:3 exata.
 
 ## Níveis de entrada
 

@@ -38,8 +38,8 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 - Force 60 Hz, blank on mode change
 - Experimental: custom output timings (ADR 0004)
 - **Gate:** each setting verified on the capture card to do what its help text says.
-- **Progress:** geometry (aspect, position, size) verified with an NTSC source on every output,
-  2026-10-14 ([bench M2](bench/M2.md)); PAL pending.
+- **Progress:** geometry (aspect, position, size) verified with NTSC and PAL sources on every
+  output, 2026-10-14 ([bench M2](bench/M2.md)).
 
 ## M3 — Distribution
 

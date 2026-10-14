@@ -228,8 +228,8 @@ then the frame lock changes only the line.
 (52.148 µs) wide over the source's full height (480 or 576 lines after the line doubler). The HDMI
 converter shows a fixed share of each output line, the active share of the standard timing it
 recognises. A per-program table holds that share, the frame's lines and its shape: standard
-VESA/CEA timings that the bench captures confirm, except PAL 576p, whose share was inferred from one
-capture ([M2](../bench/M2.md#2026-10-14--what-the-converter-shows)). From these the code computes
+VESA/CEA timings that the bench captures confirm, and for PAL 576p a share of 0.781 measured on the
+bench ([M2](../bench/M2.md#2026-10-14--what-the-converter-shows)). From these the code computes
 the scale divisors for the wanted shape:
 
 | Aspect | 16:9 frame (1080p, 720p) | 4:3 frame (960p, 480p, 576p) | 5:4 frame (1024p) |
@@ -265,8 +265,8 @@ axis.
 **Limits.**
 
 - The scaler only enlarges horizontally; at 1080p the programs are already 1:1, so horizontal size
-  below 0 does nothing there, and PAL at 1080p is expected to stay about 10 % wider than 4:3 (not yet
-  checked on the bench).
+  below 0 does nothing there, and PAL at 1080p stays 10 % wider than 4:3 (measured,
+  [M2](../bench/M2.md#2026-10-14--geometry-with-a-pal-source)).
 - Horizontal size stops at 2× (divisor 512), or at the shape's own divisor where that is lower
   (480p's 4:3 needs 478, measured clean): at 1280x960, divisors under 512 displaced lines
   ([M2](../bench/M2.md#2026-10-14--geometry-on-the-board)).
