@@ -11,6 +11,39 @@ namespace gbsr::video {
 // Reads what the chip reports about the source: the mode detector's classification, sync
 // activity, and rates measured on the debug pin. Read-only towards the picture, except where the
 // reference behaviour requires a nudge (noted per function).
+// Does the source carry a usable discrete VSync? Judged by a steady line count (median of up to
+// nine reads 20 ms apart, two thirds agreeing within ±2), not by the VS-active flag, which some
+// sources never raise. A machine (ADR 0013): the HV input needs 260 ms to settle, then one read
+// per step; leaves the HV input and SOG mode as found.
+struct VsyncProbe {
+    bool found = false;
+    bool flaggedByChip = false;
+    uint16_t lines = 0;
+};
+
+class VsyncProber {
+public:
+    static constexpr uint32_t kSettleMs = 260; // the sync processor's counters need this long
+    static constexpr uint32_t kSampleEveryMs = 20;
+    static constexpr uint8_t kSamples = 9;
+
+    void start(Ops& ops, uint32_t nowMs);
+    // Returns true while still running.
+    bool step(Ops& ops, uint32_t nowMs);
+    const VsyncProbe& result() const { return result_; }
+
+private:
+    void finish(Ops& ops);
+
+    bool running_ = false;
+    uint32_t extSync_ = 0;
+    uint32_t sogMode_ = 0;
+    uint32_t nextMs_ = 0;
+    uint8_t taken_ = 0;
+    uint16_t samples_[kSamples] = {};
+    VsyncProbe result_;
+};
+
 class Sense {
 public:
     Sense(Ops& ops, hal::PulseTimer* timer) : ops_(ops), timer_(timer) {}
@@ -27,16 +60,6 @@ public:
 
     // Sync present on the selected input at all (test-bus readout above 0x180).
     bool syncPresent();
-
-    // Does the source carry a usable discrete VSync? Judged by a steady line count (median of up
-    // to nine reads, two thirds agreeing within ±2), not by the VS-active flag, which some
-    // sources never raise. Blocks for about 0.45 s; leaves the HV input and SOG mode as found.
-    struct VsyncProbe {
-        bool found = false;
-        bool flaggedByChip = false;
-        uint16_t lines = 0;
-    };
-    VsyncProbe probeDiscreteVsync();
 
     // Field rate of the source in millihertz, 0 if not measurable (needs a running path).
     uint32_t sourceFieldRateMilliHz(bool useSyncProcessorBus, bool csync);

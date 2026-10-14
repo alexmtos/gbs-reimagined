@@ -98,6 +98,7 @@ private:
         DetectIdle,
         DetectFlipWait,
         DetectRgbVsync,
+        DetectVsyncProbe,
         DetectRgbHsync,
         DetectRgbHsyncSettle,
         DetectMedRes,
@@ -149,6 +150,7 @@ private:
     SogOptimizer sogOpt_;
     PhaseOptimizer phaseOpt_;
     OffsetCalibrator adcCal_;
+    VsyncProber vsyncProber_;
     GainCalibrator gainCal_;
     AutoGain autoGain_;
     bool autoGainOn_ = false;

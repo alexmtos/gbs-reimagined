@@ -151,31 +151,44 @@ bool Sense::syncPresent() {
     return readout > 0x0180;
 }
 
-Sense::VsyncProbe Sense::probeDiscreteVsync() {
-    tv5725::Chip& chip = ops_.chip();
-    const uint32_t extSync = chip.get(SP_EXT_SYNC_SEL);
-    const uint32_t sogMode = chip.get(SP_SOG_MODE);
+void VsyncProber::start(Ops& ops, uint32_t nowMs) {
+    tv5725::Chip& chip = ops.chip();
+    extSync_ = chip.get(SP_EXT_SYNC_SEL);
+    sogMode_ = chip.get(SP_SOG_MODE);
     chip.write(SP_EXT_SYNC_SEL, 0); // connect the HV input
     chip.write(SP_SOG_MODE, 0);
-    sleepMs(260); // the sync processor's counters need this long to settle
+    result_ = VsyncProbe{};
+    taken_ = 0;
+    nextMs_ = nowMs + kSettleMs;
+    running_ = true;
+}
 
-    VsyncProbe result;
-    result.flaggedByChip = chip.get(STATUS_SYNC_PROC_VSACT) == 1;
-
-    constexpr uint8_t kSamples = 9;
-    uint16_t samples[kSamples];
-    uint8_t taken = 0;
-    for (uint8_t i = 0; i < kSamples; ++i) {
-        if (i != 0)
-            sleepMs(20);
-        samples[taken++] = static_cast<uint16_t>(chip.get(STATUS_SYNC_PROC_VTOTAL));
-        // Three zeros = no H lock: nothing to measure, and a vertical source never reads that.
-        if (taken == 3 && samples[0] == 0 && samples[1] == 0 && samples[2] == 0)
-            break;
+bool VsyncProber::step(Ops& ops, uint32_t nowMs) {
+    if (!running_) {
+        return false;
     }
+    if (static_cast<int32_t>(nowMs - nextMs_) < 0) {
+        return true;
+    }
+    tv5725::Chip& chip = ops.chip();
+    if (taken_ == 0) {
+        result_.flaggedByChip = chip.get(STATUS_SYNC_PROC_VSACT) == 1;
+    }
+    samples_[taken_++] = static_cast<uint16_t>(chip.get(STATUS_SYNC_PROC_VTOTAL));
+    // Three zeros = no H lock: nothing to measure, and a vertical source never reads that.
+    const bool noLock = taken_ == 3 && samples_[0] == 0 && samples_[1] == 0 && samples_[2] == 0;
+    if (taken_ == kSamples || noLock) {
+        finish(ops);
+        return false;
+    }
+    nextMs_ = nowMs + kSampleEveryMs;
+    return true;
+}
+
+void VsyncProber::finish(Ops& ops) {
     uint16_t sorted[kSamples];
-    for (uint8_t i = 0; i < taken; ++i) { // insertion sort, at most nine values
-        uint16_t v = samples[i];
+    for (uint8_t i = 0; i < taken_; ++i) { // insertion sort, at most nine values
+        const uint16_t v = samples_[i];
         int8_t j = static_cast<int8_t>(i) - 1;
         while (j >= 0 && sorted[j] > v) {
             sorted[j + 1] = sorted[j];
@@ -183,19 +196,20 @@ Sense::VsyncProbe Sense::probeDiscreteVsync() {
         }
         sorted[j + 1] = v;
     }
-    result.lines = sorted[taken / 2];
-    result.found = result.flaggedByChip;
-    if (!result.found && result.lines >= 200 && result.lines <= 1300) {
+    result_.lines = sorted[taken_ / 2];
+    result_.found = result_.flaggedByChip;
+    if (!result_.found && result_.lines >= 200 && result_.lines <= 1300) {
         uint8_t agreeing = 0;
-        for (uint8_t i = 0; i < taken; ++i) {
-            if (samples[i] + 2 >= result.lines && samples[i] <= result.lines + 2)
+        for (uint8_t i = 0; i < taken_; ++i) {
+            if (samples_[i] + 2 >= result_.lines && samples_[i] <= result_.lines + 2)
                 ++agreeing;
         }
-        result.found = agreeing * 3 >= taken * 2;
+        result_.found = agreeing * 3 >= taken_ * 2;
     }
-    chip.write(SP_SOG_MODE, sogMode);
-    chip.write(SP_EXT_SYNC_SEL, extSync);
-    return result;
+    tv5725::Chip& chip = ops.chip();
+    chip.write(SP_SOG_MODE, sogMode_);
+    chip.write(SP_EXT_SYNC_SEL, extSync_);
+    running_ = false;
 }
 
 uint32_t Sense::measureMilliHz() {

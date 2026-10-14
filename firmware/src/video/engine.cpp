@@ -229,7 +229,13 @@ void Engine::tick() {
             enterPhase(Phase::DetectRgbHsync);
         } else if (inPhaseMs() >= kVsyncWaitMs) {
             // The VS-active flag stays low for some HV sources; judge by the line count instead.
-            if (sense_.probeDiscreteVsync().found) {
+            vsyncProber_.start(ops_, now);
+            enterPhase(Phase::DetectVsyncProbe);
+        }
+        break;
+    case Phase::DetectVsyncProbe:
+        if (!vsyncProber_.step(ops_, now)) {
+            if (vsyncProber_.result().found) {
                 chip_.write(MD_SEL_VGA60, 1);
                 enterPhase(Phase::DetectRgbHsync);
             } else {
@@ -1065,6 +1071,7 @@ void Engine::refreshStatus() {
     case Phase::DetectIdle:
     case Phase::DetectFlipWait:
     case Phase::DetectRgbVsync:
+    case Phase::DetectVsyncProbe:
     case Phase::DetectRgbHsync:
     case Phase::DetectRgbHsyncSettle:
     case Phase::DetectMedRes:
