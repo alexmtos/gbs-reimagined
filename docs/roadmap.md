@@ -26,6 +26,9 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 - Wi-Fi: station + setup access point with captive portal, mDNS
 - **Gate:** 240p, 480i, 480p and PAL 576i sources each reach a verified picture at 960p/1024p, 1080p,
   720p and 480p; 240p↔480i switch without a blank frame; settings survive a power cycle.
+  **Passed on the bench 2026-10-13 ([bench M1](bench/M1.md)): 20 of 20 source/output pairs
+  frame-locked with a picture; the 240p↔480i switch keeps sync and program (a short flicker on
+  the TV).**
 
 ## M2 — Profiles and processing
 
@@ -51,6 +54,6 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 | B-01 | Which physical jacks land on ADC input sets 0, 1 and 2 | Input names in every interface. **Front RGBS inputs = set 1, component = set 0 (2026-10-13); VGA open.** |
 | B-02 | What the "Compatibility mode" switch, the RGBHV/RGBS switch, the sync buttons and the R/G/B knobs actually do | User guide troubleshooting. **Traced on the front RGBS input 2026-10-13 ([board-gbsc.md](hardware/board-gbsc.md)); VGA-jack and output-side effects open.** |
 | B-03 | Free heap at idle with the web UI open, and during an OTA upload | OTA feasibility (the reference fork lost HTTP OTA below ~15 KB). **Idle measured 2026-10-13: ≥ 38 KB free, 35.5 KB low-water ([bench M1](bench/M1.md)); OTA part open.** |
-| B-04 | Whether the MS9288A accepts every output mode at the frame-locked rate | Which modes are offered on HDMI |
+| B-04 | Whether the MS9288A accepts every output mode at the frame-locked rate | Which modes are offered on HDMI. **Yes for all five on this bench, 2026-10-13 ([bench M1](bench/M1.md)).** |
 | B-05 | Which of the 12 programs give a clean picture on this board for each source | Default output per standard |
 | B-06 | Whether GPIO15/GPIO16 are broken out on the GBS-C (IR receiver option) | Future remote control |
