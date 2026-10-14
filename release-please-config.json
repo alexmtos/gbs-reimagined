@@ -6,6 +6,7 @@
   "packages": {
     ".": {
       "package-name": "gbs-reimagined",
+      "initial-version": "0.1.0",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         "firmware/src/version.h",
