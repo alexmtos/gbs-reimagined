@@ -100,7 +100,9 @@ public:
         Aborted,  // the source changed or went away
     };
 
-    static constexpr uint8_t kWhiteTarget = 0x7C; // white level aimed for: ~2.4 % under the ceiling
+    // White level aimed for, ~4 % under the ceiling: at 0x7C, 1-2 % of the reads touched 0x7F from
+    // noise around the plateau (bench 2026-10-13, docs/bench/M1.md).
+    static constexpr uint8_t kWhiteTarget = 0x7A;
     static constexpr uint8_t kMostGain = 0x30;
     static constexpr uint8_t kLeastGain = 0xFF;
 

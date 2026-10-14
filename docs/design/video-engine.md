@@ -199,7 +199,7 @@ measured gain response) is recorded in [docs/bench/M1.md](../bench/M1.md#reading
 | Mechanism | When | What it does |
 |---|---|---|
 | Black-level calibration | every bring-up, before detection | raises each offset from 0x3D until the channel reads near zero on the unconnected input; falls back to 0x40 if any channel reaches 0x52 |
-| Calibrate levels (action) | on request, with a white screen | per channel, bisects the gain register for the most gain that keeps white at or under level 0x7C, then checks that the field really was white (≥ 35 % of reads near the top); refuses a picture without a large white area or one that clips even at the least gain; component sources calibrate Y and give Pb/Pr the same gain |
+| Calibrate levels (action) | on request, with a white screen | per channel, bisects the gain register for the most gain that keeps white at or under level 0x7A (0x7C left noise touching the ceiling on the bench), then checks that the field really was white (≥ 35 % of reads near the top); refuses a picture without a large white area or one that clips even at the least gain; component sources calibrate Y and give Pb/Pr the same gain |
 | Auto gain (`input.autoGain`, off by default) | stable > 90, clamp set, line PLL locked, SOG clean | samples green and red (61 reads per tick for 30 s after a start or change, 8 after), and on two ceiling reads in a window of twenty raises all three gain registers by 2; only ever lowers the gain |
 
 A new source starts from its input's **base gain**: the last successful calibration for that input,
