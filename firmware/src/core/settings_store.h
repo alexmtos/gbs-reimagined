@@ -8,10 +8,8 @@
 
 namespace gbsr::settings {
 
-// Settings of later milestones are generated but not offered yet.
-constexpr uint8_t kMilestone = 1;
-
 Def def(Id id);
+// Offered to the user: of this milestone (kMilestone, generated) and not pending.
 bool available(Id id);
 
 // The schema id ("output.resolution") into `out`.

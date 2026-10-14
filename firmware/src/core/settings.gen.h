@@ -38,7 +38,9 @@ enum class Id : uint8_t {
     Count,
 };
 
-inline constexpr char kSchemaHash[] = "f838c797";
+inline constexpr char kSchemaHash[] = "1c3954ca";
 inline constexpr uint8_t kGroupCount = 4;
+// The milestone being built; later milestones' settings are generated but hidden.
+inline constexpr uint8_t kMilestone = 2;
 
 } // namespace gbsr::settings

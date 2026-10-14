@@ -2,7 +2,7 @@
 
 # Settings reference
 
-Schema hash `f838c797`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `1c3954ca`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
@@ -10,8 +10,8 @@ Schema hash `f838c797`. Every user-facing setting, as defined in `schema/setting
 |---|---|---|---|---|---|---|
 | `output.resolution` ⚠ | Output resolution | Auto, 1080p, 1280x1024, 1280x960, 720p, 480p / 576p, 15 kHz (CRT), Passthrough (exp.) | Auto | essential | M1 | The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and PC sources always pass through. Passthrough is experimental: not yet verified on a board. |
 | `output.frameLock` ⚠ | Frame lock | off, on | on | essential | M1 | Makes the output refresh exactly follow the console, which removes judder and tearing. Turn it off only if your display refuses the slightly non-standard rate. |
-| `output.force60` ⚠ | Force 60 Hz | off, on | off | advanced | M2 | Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. |
-| `output.blankOnChange` | Blank on change | off, on | off | advanced | M2 | Shows black instead of a distorted frame while the source changes resolution. |
+| `output.force60` ⚠ | Force 60 Hz | off, on | off | advanced | M2 (pending) | Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. |
+| `output.blankOnChange` | Blank on change | off, on | off | advanced | M2 (pending) | Shows black instead of a distorted frame while the source changes resolution. |
 | `output.aspect` | Aspect | 4:3, 16:9, Full screen | 4:3 | essential | M2 | The shape of the picture on screen. Most consoles were designed for 4:3. |
 | `output.hPosition` | Horizontal position | -64…64 | 0 | essential | M2 | Moves the picture left or right. |
 | `output.vPosition` | Vertical position | -64…64 | 0 | essential | M2 | Moves the picture up or down. |
@@ -23,10 +23,10 @@ Schema hash `f838c797`. Every user-facing setting, as defined in `schema/setting
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
 | `input.port` | Input | Auto, RGB (SCART/RGBS/VGA), Component (YPbPr) | Auto | essential | M1 | Auto watches all inputs and switches to the one with a signal. RGB covers SCART, the RGBS jacks and VGA; Component is YPbPr. |
-| `input.syncThreshold` | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 | The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. |
-| `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase. |
+| `input.syncThreshold` | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 (pending) | The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. |
+| `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 (pending) | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase. |
 | `input.autoGain` | Auto gain | off, on | off | advanced | M1 | While you play, lowers the input gain whenever the brightest parts of the picture clip. It only ever darkens, and starts again for each new source. For exact levels, use Calibrate levels with a white screen instead. |
-| `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
+| `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 (pending) | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
 
 ## Picture
 
@@ -36,9 +36,9 @@ Schema hash `f838c797`. Every user-facing setting, as defined in `schema/setting
 | `picture.contrast` | Contrast | -32…32 | 0 | essential | M1 | Increases or decreases the difference between dark and bright areas. |
 | `picture.saturation` | Saturation | -32…32 | 0 | essential | M1 | Makes colours stronger or weaker. |
 | `picture.sharpness` | Sharpness | Off, Low, Medium, High | Off | essential | M1 | Emphasises edges. Off shows the source as sampled. |
-| `picture.scanlines` | Scanlines | off, on | off | essential | M2 | Darkens every other output line pair to imitate a CRT. Works on progressive 15 kHz sources. |
-| `picture.scanlineStrength` | Scanline strength | 1…8 | 4 | essential | M2 | How dark the scanlines are. |
-| `picture.deinterlace` | Deinterlacer | Motion adaptive, Bob | Motion adaptive | advanced | M2 | How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing. |
+| `picture.scanlines` | Scanlines | off, on | off | essential | M2 (pending) | Darkens every other output line pair to imitate a CRT. Works on progressive 15 kHz sources. |
+| `picture.scanlineStrength` | Scanline strength | 1…8 | 4 | essential | M2 (pending) | How dark the scanlines are. |
+| `picture.deinterlace` | Deinterlacer | Motion adaptive, Bob | Motion adaptive | advanced | M2 (pending) | How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing. |
 
 ## System
 
@@ -49,4 +49,4 @@ Schema hash `f838c797`. Every user-facing setting, as defined in `schema/setting
 | `system.encoderReverse` | Reverse knob | off, on | off | advanced | M1 | Swaps the direction of the knob. |
 | `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change that could leave the screen black before it is undone. |
 | `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings for sampling, sync and diagnostics. |
-| `system.startupProfile` | Startup profile | -2…15 (-2 = Auto by input) (-1 = Last used) | -1 | essential | M2 | The profile loaded when the board starts: the last one used, one chosen automatically from the incoming signal, or a fixed profile. |
+| `system.startupProfile` | Startup profile | -2…15 (-2 = Auto by input) (-1 = Last used) | -1 | essential | M2 (pending) | The profile loaded when the board starts: the last one used, one chosen automatically from the incoming signal, or a fixed profile. |

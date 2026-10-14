@@ -10,6 +10,7 @@ export interface SettingMeta {
   default: string | number | boolean;
   tier: 'essential' | 'advanced';
   milestone: number;
+  available: boolean;
   risky: boolean;
   values?: readonly string[];
   min?: number;
@@ -17,7 +18,7 @@ export interface SettingMeta {
   special?: Readonly<Record<string, string>>;
 }
 
-export const SCHEMA_HASH = 'f838c797';
+export const SCHEMA_HASH = '1c3954ca';
 
 export const SETTING_GROUPS = ["output", "input", "picture", "system"] as const;
 export type SettingGroup = (typeof SETTING_GROUPS)[number];
@@ -61,6 +62,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "auto",
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": true,
     "values": [
       "auto",
@@ -80,6 +82,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": true,
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": true
   },
   {
@@ -89,6 +92,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": true
   },
   {
@@ -98,6 +102,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": false
   },
   {
@@ -107,6 +112,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "a4x3",
     "tier": "essential",
     "milestone": 2,
+    "available": true,
     "risky": false,
     "values": [
       "a4x3",
@@ -121,6 +127,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "essential",
     "milestone": 2,
+    "available": true,
     "risky": false,
     "min": -64,
     "max": 64
@@ -132,6 +139,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "essential",
     "milestone": 2,
+    "available": true,
     "risky": false,
     "min": -64,
     "max": 64
@@ -143,6 +151,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "advanced",
     "milestone": 2,
+    "available": true,
     "risky": false,
     "min": -64,
     "max": 64
@@ -154,6 +163,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "advanced",
     "milestone": 2,
+    "available": true,
     "risky": false,
     "min": -64,
     "max": 64
@@ -165,6 +175,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "auto",
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "values": [
       "auto",
@@ -179,6 +190,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": -1,
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": false,
     "min": -1,
     "max": 31,
@@ -193,6 +205,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": -1,
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": false,
     "min": -1,
     "max": 31,
@@ -207,6 +220,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "advanced",
     "milestone": 1,
+    "available": true,
     "risky": false
   },
   {
@@ -216,6 +230,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "auto",
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": true,
     "values": [
       "auto",
@@ -232,6 +247,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "min": -32,
     "max": 32
@@ -243,6 +259,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "min": -32,
     "max": 32
@@ -254,6 +271,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 0,
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "min": -32,
     "max": 32
@@ -265,6 +283,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "off",
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "values": [
       "off",
@@ -280,6 +299,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "essential",
     "milestone": 2,
+    "available": false,
     "risky": false
   },
   {
@@ -289,6 +309,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": 4,
     "tier": "essential",
     "milestone": 2,
+    "available": false,
     "risky": false,
     "min": 1,
     "max": 8
@@ -300,6 +321,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "motionAdaptive",
     "tier": "advanced",
     "milestone": 2,
+    "available": false,
     "risky": false,
     "values": [
       "motionAdaptive",
@@ -313,6 +335,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "en",
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "values": [
       "en",
@@ -326,6 +349,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "m5",
     "tier": "advanced",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "values": [
       "off",
@@ -342,6 +366,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "advanced",
     "milestone": 1,
+    "available": true,
     "risky": false
   },
   {
@@ -351,6 +376,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": "s20",
     "tier": "advanced",
     "milestone": 1,
+    "available": true,
     "risky": false,
     "values": [
       "s10",
@@ -365,6 +391,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": false,
     "tier": "essential",
     "milestone": 1,
+    "available": true,
     "risky": false
   },
   {
@@ -374,6 +401,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "default": -1,
     "tier": "essential",
     "milestone": 2,
+    "available": false,
     "risky": false,
     "min": -2,
     "max": 15,

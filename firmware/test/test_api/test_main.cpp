@@ -47,7 +47,8 @@ TEST_CASE("GET /api/settings lists this milestone's settings as text") {
     CHECK(has(out.text, "\"output.resolution\":\"auto\""));
     CHECK(has(out.text, "\"output.frameLock\":\"on\""));
     CHECK(has(out.text, "\"picture.sharpness\":\"off\""));
-    CHECK_FALSE(has(out.text, "output.aspect")); // M2
+    CHECK(has(out.text, "\"output.aspect\":\"a4x3\""));
+    CHECK_FALSE(has(out.text, "picture.scanlines")); // pending
     CHECK(out.text.back() == '}');
     CHECK(out.writes >= 2); // streamed through the small buffer, not built whole
 }
@@ -56,12 +57,12 @@ TEST_CASE("POST /api/settings takes text, numbers and booleans, and reports each
     Rig r;
     const std::string s =
         r.post(R"({"picture.sharpness":"medium","picture.brightness":-4,"input.autoGain":true,)"
-               R"("picture.contrast":99,"output.aspect":"a16x9","no.such":1})");
+               R"("picture.contrast":99,"picture.scanlines":true,"no.such":1})");
     CHECK(has(s, "\"picture.sharpness\":\"applied\""));
     CHECK(has(s, "\"picture.brightness\":\"applied\""));
     CHECK(has(s, "\"input.autoGain\":\"applied\""));
     CHECK(has(s, "\"picture.contrast\":\"invalid\""));
-    CHECK(has(s, "\"output.aspect\":\"unavailable\""));
+    CHECK(has(s, "\"picture.scanlines\":\"unavailable\""));
     CHECK(has(s, "\"no.such\":\"unknown\""));
     CHECK(r.video.picture.sharpness == 2);
     CHECK(r.video.picture.brightness == -4);

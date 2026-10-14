@@ -90,10 +90,10 @@ TEST_CASE("the revert window follows system.revertSeconds") {
     CHECK(r.ctl.revertRemainingMs(0) == 10'000);
 }
 
-TEST_CASE("settings of a later milestone and out-of-range values are refused") {
+TEST_CASE("pending settings and out-of-range values are refused") {
     Rig r;
     r.ctl.begin(false, 0);
-    CHECK(r.ctl.set(Id::OutputAspect, 1, Origin::Web, 0) == Controller::Outcome::Unavailable);
+    CHECK(r.ctl.set(Id::PictureScanlines, 1, Origin::Web, 0) == Controller::Outcome::Unavailable);
     CHECK(r.ctl.set(Id::PictureContrast, 50, Origin::Web, 0) == Controller::Outcome::Invalid);
     CHECK(r.ctl.set(Id::PictureContrast, 0, Origin::Web, 0) == Controller::Outcome::Unchanged);
 }

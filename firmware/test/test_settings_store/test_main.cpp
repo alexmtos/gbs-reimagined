@@ -128,8 +128,10 @@ TEST_CASE("values convert to and from text the way the console and the API spell
     CHECK_FALSE(settings::findId("picture.hue", id));
 }
 
-TEST_CASE("only settings of this milestone are available") {
+TEST_CASE("settings of this milestone are available unless pending") {
     CHECK(settings::available(Id::OutputResolution));
     CHECK(settings::available(Id::InputAutoGain));
-    CHECK_FALSE(settings::available(Id::OutputAspect)); // M2
+    CHECK(settings::available(Id::OutputAspect));            // M2
+    CHECK_FALSE(settings::available(Id::PictureScanlines));  // M2, pending
+    CHECK(settings::def(Id::PictureScanlines).milestone() == 2);
 }
