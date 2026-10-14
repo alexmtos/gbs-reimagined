@@ -14,7 +14,11 @@ struct LockState {
     uint8_t phaseSp = 16;  // sync-processor sampling phase, 0..31
     uint8_t phaseAdc = 16; // ADC sampling phase, 0..31
     uint8_t sogLevel = 5;  // sync-on-green slicer, 0..31
-    uint8_t osr = 0;       // oversampling ratio in effect: 1, 2 or 4 (0 = not set)
+    // input.syncThreshold / input.phase: a fixed value the automatic code cannot move (-1: none).
+    // The fields above keep the automatic choice; the registers get the override.
+    int8_t sogManual = -1;
+    int8_t phaseAdcManual = -1;
+    uint8_t osr = 0; // oversampling ratio in effect: 1, 2 or 4 (0 = not set)
     uint8_t adcOffset[3] = {0x40, 0x40, 0x40}; // R, G, B black levels; boot calibration
     uint8_t adcGain[3] = {0x7B, 0x7B, 0x7B};   // R, G, B; higher values dim the picture (a range)
 };
@@ -71,6 +75,8 @@ public:
 
     // --- sampling ----------------------------------------------------------------------------
     void setSogLevel(uint8_t level); // also re-latches both phases and the PLLAD (§3.6)
+    uint8_t sogLevelInEffect() const;
+    uint8_t phaseAdcInEffect() const;
     void latchPhaseSp();
     void latchPhaseAdc();
     void togglePhaseUnits();

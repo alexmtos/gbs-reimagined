@@ -53,6 +53,7 @@ private:
     void applyPicture();
     void applyGeometry();
     void applyLines();
+    void applySampling();
     void loadLevels();
     void saveLevels();
     uint32_t revertWindowMs() const;

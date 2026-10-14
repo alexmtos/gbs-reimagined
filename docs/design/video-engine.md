@@ -304,6 +304,35 @@ scanline feature).
   output is a whole multiple of the source (960p, 720p and 480p for 240p): at 1080p (4.5×) they
   alternate between 2 and 3 output lines (user decision 2026-10-14: allowed everywhere).
 
+## Sampling controls
+
+`input.syncThreshold`, `input.phase` and `input.videoLpf`: fixed values over the automatic
+sampling, with a live sync-quality reading.
+
+- **Overrides in one place.** `LockState` keeps the automatic choice (`sogLevel`, `phaseAdc`) and
+  the user's override (`sogManual`, `phaseAdcManual`, −1 for Auto). `Ops::setSogLevel` and
+  `Ops::latchPhaseAdc`, through which every automatic change goes, write the override when there
+  is one; the automatic SOG search (`SogOptimizer`) does not start, and the detector's slicer walk
+  leaves the register alone. Back to Auto, the kept automatic value returns.
+- **The phase is the ADC's** (`PA_ADC_S`, user decision 2026-10-14): where in each pixel the sample
+  is taken. The sync processor's phase (`PA_SP_S`) stays with the phase optimiser.
+- **Filter.** After every load (and bypass setup) the engine notes the `ADC_FLTR` the tuning chose,
+  then writes the user's value over it; Auto writes the noted value back. The field takes effect
+  live (bench, below).
+- **Confirmation.** The threshold and the filter arm the timed revert like the output resolution:
+  a wrong threshold loses sync. The phase does not.
+- **Sync quality.** Every running tick with a scaled program, one sample: good when
+  `STATUS_SYNC_PROC_HTOTAL` is within 2 of `PLLAD_MD` (the line PLL locked to the source, the test
+  auto gain uses) and the sync processor's line count per field (`STATUS_SYNC_PROC_VTOTAL`) is
+  within 2 of the previous sample's. The last 64 samples (~1.3 s) give a percentage (100 only when
+  all were good, otherwise in 5 % steps, so the status does not change on every tick), published in
+  the status (`source.syncQuality`), the console, the web Input page and the OLED edit screen of
+  these three settings. With SOG at 0 on a component Wii the picture rolled while the line length
+  still matched; the field count jumped between 100 and 244. Neither reading is latched: the
+  SOG-bad flag, tried first, would have pinned the meter at 0 % after a single glitch
+  ([M2](../bench/M2.md#2026-10-14--sampling-controls)). Automatic SOG decisions (the guard, the
+  detection walk, the settle-time search, the SD bump) stand down under a fixed threshold.
+
 ## Pass-through (experimental)
 
 Written from the community firmware's sequences (mechanics §6.5, §5.6) and **not yet verified on

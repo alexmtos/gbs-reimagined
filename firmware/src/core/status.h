@@ -30,9 +30,12 @@ struct StatusModel {
     video::SyncType sync = video::SyncType::None;
     video::Standard standard = video::Standard::None;
     bool interlaced = false;
-    uint16_t lines = 0;    // per field
-    uint32_t vMilliHz = 0; // field rate
-    uint32_t hHz = 0;      // lines × field rate
+    uint16_t lines = 0;         // per field
+    uint32_t vMilliHz = 0;      // field rate
+    uint32_t hHz = 0;           // lines × field rate
+    uint8_t sogLevel = 0;       // SOG threshold in effect
+    uint8_t phase = 0;          // ADC sampling phase in effect
+    uint8_t syncQuality = 0xFF; // % of recent lines with a locked line PLL; 0xFF unknown
     // output
     video::OutputMode mode = video::OutputMode::Auto;
     uint32_t pixelClockHz = 0;

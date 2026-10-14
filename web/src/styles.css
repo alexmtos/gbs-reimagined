@@ -256,6 +256,22 @@ input[type="checkbox"] {
   color: var(--bad);
 }
 
+.sync-quality {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.sync-quality.good {
+  color: var(--ok);
+}
+.sync-quality.warn {
+  color: var(--warn);
+}
+.sync-quality.bad {
+  color: var(--bad);
+}
+
 .range {
   display: flex;
   align-items: center;

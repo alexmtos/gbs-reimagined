@@ -126,6 +126,19 @@ TEST_CASE("the line settings reach the video path together") {
           Controller::Outcome::Invalid);
 }
 
+TEST_CASE("the sampling settings reach the video path, Auto as -1 and 0") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    CHECK(r.video.sampling.sog == -1);
+    CHECK(r.video.sampling.phase == -1);
+    CHECK(r.video.sampling.lpf == 0);
+    CHECK(r.ctl.set(Id::InputSyncThreshold, 9, Origin::Web, 0) ==
+          Controller::Outcome::RevertArmed); // can lose sync: confirmed like the resolution
+    CHECK(r.ctl.set(Id::InputPhase, 20, Origin::Web, 0) == Controller::Outcome::Applied);
+    CHECK(r.video.sampling.sog == 9);
+    CHECK(r.video.sampling.phase == 20);
+}
+
 TEST_CASE("safe mode ignores the saved settings, outputs 480p and saves nothing") {
     Rig saved;
     saved.ctl.begin(false, 0);

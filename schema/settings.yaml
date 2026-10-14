@@ -98,7 +98,7 @@ settings:
     default: -1
     tier: advanced
     milestone: M2
-    pending: true
+    risky: true
     special: {-1: auto}
   input.phase:
     type: int
@@ -107,7 +107,6 @@ settings:
     default: -1
     tier: advanced
     milestone: M2
-    pending: true
     special: {-1: auto}
   input.autoGain:
     type: bool
@@ -120,7 +119,6 @@ settings:
     default: auto
     tier: advanced
     milestone: M2
-    pending: true
     risky: true
 
   picture.brightness:

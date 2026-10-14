@@ -14,6 +14,7 @@ public:
     video::PictureAdjust picture;
     video::GeometryAdjust geometry;
     video::LineAdjust lines;
+    video::SamplingAdjust sampling;
     uint8_t base[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSeq = 0;
     int outputCalls = 0;
@@ -28,6 +29,7 @@ public:
     void setPicture(const video::PictureAdjust& a) override { picture = a; }
     void setGeometry(const video::GeometryAdjust& a) override { geometry = a; }
     void setLines(const video::LineAdjust& a) override { lines = a; }
+    void setSampling(const video::SamplingAdjust& a) override { sampling = a; }
     void setBaseGains(uint8_t port, const uint8_t (&g)[3]) override {
         for (int c = 0; c < 3; ++c) {
             base[port][c] = g[c];

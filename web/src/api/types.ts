@@ -23,6 +23,12 @@ export interface SourceStatus {
   interlaced: boolean;
   hFreqKHz: number;
   vFreqHz: number;
+  /** Sync-on-green threshold in effect. */
+  sog: number;
+  /** ADC sampling phase in effect. */
+  phase: number;
+  /** Share of the last ~1.3 s with the line PLL locked, 0..100; null when unknown. */
+  syncQuality: number | null;
 }
 
 export interface OutputStatus {

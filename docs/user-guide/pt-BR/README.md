@@ -133,6 +133,24 @@ Na aba **Imagem**:
   **Bob** nunca mostra efeito pente em movimento rápido, mas faz linhas finas tremularem em imagens
   paradas.
 
+## Amostragem e sync (avançado)
+
+Na aba **Entrada**, com **Mostrar ajustes avançados** ligado:
+
+- **Qualidade do sync** mostra quanto do último segundo a placa ficou travada nas linhas do
+  console. O ideal é 100 %; qualquer valor menor significa que a imagem está, ou está prestes a
+  ficar, instável.
+- **Limiar de sync** separa o sincronismo da imagem nos consoles que mandam o sync no verde ou no Y
+  do vídeo componente. Auto encontra sozinho um valor que funciona; escolha um número só se a
+  imagem rolar ou cair, e acompanhe a qualidade do sync enquanto ajusta. Se a tela apagar, espere:
+  a placa volta ao valor anterior em 20 segundos, a não ser que você confirme.
+- **Fase de amostragem** escolhe em que ponto de cada pixel a entrada é amostrada. Faz pouca
+  diferença em consoles 240p; experimente em fontes 480p ou de computador se detalhes finos
+  tremularem.
+- **Filtro passa-baixa** filtra a entrada antes da amostragem. Valores menores suavizam a imagem
+  e podem acalmar uma fonte ruidosa; Auto escolhe conforme o tipo de fonte. Este também pede
+  confirmação.
+
 ## Níveis de entrada
 
 Alguns consoles mandam um sinal mais forte do que a placa espera, o que deixa os brancos chapados e

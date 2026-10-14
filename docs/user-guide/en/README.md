@@ -132,6 +132,21 @@ On the **Picture** page:
   adaptive**, the default, keeps still detail such as text sharp and steady. **Bob** never shows
   combing on fast motion but makes thin lines shimmer on still pictures.
 
+## Sampling and sync (advanced)
+
+On the **Input** page, with **Show advanced settings** on:
+
+- **Sync quality** shows how much of the last second the board stayed locked to the console's
+  lines. 100 % is what you want; anything lower means the picture is, or is about to be, unstable.
+- **Sync threshold** separates the sync from the picture for consoles that send sync on green or on
+  the Y of component video. Auto finds a working value by itself; set a number only if the picture
+  rolls or drops out, and watch the sync quality while you do. If the screen goes blank, wait: the
+  board puts the previous value back after 20 seconds unless you confirm.
+- **Sampling phase** chooses where in each pixel the input is sampled. It makes little difference
+  for 240p consoles; try it on 480p or computer sources if fine detail shimmers.
+- **Video LPF** filters the input before it is sampled. Lower values soften the picture and can
+  calm a noisy source; Auto chooses per kind of source. This one also asks for confirmation.
+
 ## Input levels
 
 Some consoles send a brighter signal than the board expects, which makes whites look flat and

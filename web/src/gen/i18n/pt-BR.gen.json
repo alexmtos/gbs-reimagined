@@ -81,7 +81,7 @@
     "input.syncThreshold": {
       "label": "Limiar de sync",
       "hint": "Nível do SOG",
-      "help": "O nível usado para separar o sincronismo do sync-on-green ou do sync composto. Auto procura um valor estável; aumente se a imagem rolar, diminua se perder sincronismo em cenas escuras.",
+      "help": "O nível usado para separar o sincronismo do sync-on-green ou do sync composto (não faz nada com sync H/V separado). Auto procura um valor estável; aumente se a imagem rolar, diminua se perder sincronismo em cenas escuras. Acompanhe a qualidade do sync enquanto ajusta.",
       "values": {
         "auto": "Auto"
       }
@@ -89,7 +89,7 @@
     "input.phase": {
       "label": "Fase de amostragem",
       "hint": "Nitidez dos pixels",
-      "help": "Em que momento de cada pixel a entrada é amostrada. Ajuste olhando detalhes finos até ficar nítido e estável; Auto usa a melhor fase medida.",
+      "help": "Em que momento de cada pixel a entrada é amostrada. Ajuste olhando detalhes finos até ficar nítido e estável; faz mais diferença em fontes 480p e de computador. Auto usa a fase do programa de saída.",
       "values": {
         "auto": "Auto"
       }
@@ -243,6 +243,9 @@
     "common.unknown": "—",
     "revert.countdown": "Manter estes ajustes? Desfazendo em {seconds} s",
     "settings.advanced": "Mostrar ajustes avançados",
+    "input.syncQuality": "Qualidade do sync",
+    "input.syncQuality.help": "Quanto do último segundo a placa ficou travada nas linhas da fonte. Mantenha em 100 % enquanto ajusta o limiar de sync e a fase de amostragem.",
+    "input.syncQuality.none": "Sem fonte",
     "nav.network": "Rede",
     "status.safeMode": "Modo de segurança: os ajustes salvos não estão em uso e mudanças não são salvas.",
     "settings.saving": "Salvando…",
@@ -304,6 +307,7 @@
     "oled.factoryReset": "Restaurar fábrica",
     "oled.confirm": "Aperte de novo: ok",
     "oled.done": "Feito",
+    "oled.edit.sync": "Sync",
     "oled.status.version": "Firmware",
     "oled.status.heap": "RAM livre",
     "oled.status.lockOn": "frame lock",

@@ -75,6 +75,14 @@ struct LineAdjust {
     bool operator==(const LineAdjust&) const = default;
 };
 
+// input.syncThreshold / phase / videoLpf.
+struct SamplingAdjust {
+    int8_t sog = -1;   // 0..31, -1 automatic
+    int8_t phase = -1; // ADC sampling phase 0..31, -1 automatic
+    uint8_t lpf = 0;   // 0 automatic, 1..4 = 150, 110, 70, 40 MHz
+    bool operator==(const SamplingAdjust&) const = default;
+};
+
 inline bool isSd(Standard s) {
     return s == Standard::Ntsc || s == Standard::Pal;
 }

@@ -382,9 +382,22 @@ void Ops::resetNoHsyncIrq() {
 // ------------------------------------------------------------------------------------------------
 // Sampling
 
+uint8_t Ops::sogLevelInEffect() const {
+    return lock_.sogManual >= 0 ? static_cast<uint8_t>(lock_.sogManual & 0x1F) : lock_.sogLevel;
+}
+
+uint8_t Ops::phaseAdcInEffect() const {
+    return lock_.phaseAdcManual >= 0 ? static_cast<uint8_t>(lock_.phaseAdcManual & 0x1F)
+                                     : lock_.phaseAdc;
+}
+
 void Ops::setSogLevel(uint8_t level) {
-    lock_.sogLevel = level & 0x1F;
-    chip_.write(ADC_SOGCTRL, lock_.sogLevel);
+    // Every automatic SOG change comes through here; a user's fixed value wins, and the automatic
+    // choice is kept for when the setting goes back to Auto.
+    if (lock_.sogManual < 0) {
+        lock_.sogLevel = level & 0x1F;
+    }
+    chip_.write(ADC_SOGCTRL, sogLevelInEffect());
     latchPhaseSp();
     latchPhaseAdc();
     latchPllad();
@@ -399,7 +412,7 @@ void Ops::latchPhaseSp() {
 
 void Ops::latchPhaseAdc() {
     chip_.write(PA_ADC_LAT, 0);
-    chip_.write(PA_ADC_S, lock_.phaseAdc & 0x1F);
+    chip_.write(PA_ADC_S, phaseAdcInEffect());
     chip_.write(PA_ADC_LAT, 1);
 }
 

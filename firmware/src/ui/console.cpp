@@ -322,9 +322,14 @@ void Console::printStatus() {
                     st.offsetCalibrationFailed ? " (calibration failed)" : "", st.adcGain[0],
                     st.adcGain[1], st.adcGain[2], st.autoGain ? "on" : "off",
                     st.levelCalibration < 6 ? kLevelOutcome[st.levelCalibration] : "?");
-    Serial.printf_P(PSTR("SOG %u, phase SP %u ADC %u | heap %u, longest tick %lu ms\r\n"),
-                    st.sogLevel, st.phaseSp, st.phaseAdc, ESP.getFreeHeap(),
-                    static_cast<unsigned long>(loop_.longestTickMs));
+    char quality[8] = "--";
+    if (st.syncQuality <= 100) {
+        snprintf(quality, sizeof quality, "%u%%", st.syncQuality);
+    }
+    Serial.printf_P(
+        PSTR("SOG %u, phase SP %u ADC %u, sync quality %s | heap %u, longest tick %lu ms\r\n"),
+        st.sogLevel, st.phaseSp, st.phaseAdc, quality, ESP.getFreeHeap(),
+        static_cast<unsigned long>(loop_.longestTickMs));
     if (ctl_.revertPending()) {
         Serial.printf_P(PSTR("revert pending: %lu s left (keep | revert)\r\n"),
                         static_cast<unsigned long>(ctl_.revertRemainingMs(millis()) / 1000));

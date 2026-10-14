@@ -91,6 +91,9 @@ export function sampleStatus(overrides: Partial<Status> = {}): Status {
       interlaced: false,
       hFreqKHz: 15.734,
       vFreqHz: 59.826,
+      sog: 13,
+      phase: 16,
+      syncQuality: 100,
     },
     output: { mode: "r960p", pixelClockMHz: 108.0, rateHz: 59.826, frameLock: "locked" },
     board: {

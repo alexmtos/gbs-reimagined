@@ -115,6 +115,20 @@ TEST_CASE("picture settings change while turning; a long press backs the change 
     CHECK(r.ctl.get(Id::PictureBrightness) == 0);
 }
 
+TEST_CASE("editing a sampling setting shows the live sync quality") {
+    Rig r;
+    r.ctl.set(Id::SystemShowAdvanced, 1, core::Origin::Oled, 0);
+    r.status.syncQuality = 97;
+    r.openGroup(1); // Input: port, sync threshold, phase, ...
+    r.turn(2);
+    r.press(); // edit the sampling phase
+    CHECK(r.line(0).rfind("Sampling phase", 0) == 0);
+    CHECK(r.line(4).find("Sync 97%") != std::string::npos);
+    r.status.syncQuality = 0xFF;
+    CHECK(r.line(4).find("Sync --") != std::string::npos);
+    r.hold();
+}
+
 TEST_CASE("risky settings apply on the press, without a revert from the OLED") {
     Rig r;
     r.openGroup(0); // Output: resolution first
