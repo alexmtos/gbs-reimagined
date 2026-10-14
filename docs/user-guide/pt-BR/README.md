@@ -46,19 +46,19 @@ tomada: nesse momento o mesmo botão coloca o chip em modo de atualização.)
 
 ## Chaves e botões da própria placa
 
-Alguns controles são ligados diretamente ao caminho do vídeo; o firmware não consegue ver a
-posição deles, então confira-os quando algo parecer errado. A função exata de cada um ainda está
-sendo confirmada na bancada.
+Alguns controles ficam ligados direto no caminho do vídeo; o firmware não consegue ver a posição
+deles, então confira-os quando algo parecer errado. Isto é o que cada um fez na nossa bancada (um
+console nas entradas RGBS da frente, saída HDMI):
 
-| Nome impresso na placa | Tipo |
+| Nome na placa | O que faz |
 |---|---|
-| HDMI ON / OFF | chave deslizante |
-| RGBHV / RGBS | chave deslizante |
-| Compatibility mode | chave deslizante |
-| RGBS Sync | botão com trava |
-| Sync on Green | botão com trava |
-| R / G / B | potenciômetros |
-| Power | botão com trava |
+| Knobs R / G / B | Diminuem o nível da entrada vermelha, verde ou azul. **Deixe no mínimo** (girados até o fim para baixo) para o sinal completo; girar um deles para cima escurece aquela cor. Úteis se as cores de um console parecerem estouradas mesmo depois de **Calibrar níveis**. |
+| HDMI ON / OFF | Desliga a saída HDMI. Se a placa diz que está escalando mas a TV pelo HDMI não mostra nada, confira esta chave. |
+| RGBS Sync | Muda como o sincronismo das entradas RGBS da frente é captado. Deixe solto, a não ser que a imagem role ou caia com a sua fonte. |
+| Sync on Green | Tira o sincronismo do sinal verde: para fontes componente (YPbPr) e RGsB. |
+| RGBHV / RGBS | Não fez diferença com as entradas RGBS da frente; ela diz respeito à entrada VGA. |
+| Compatibility mode | Não fez diferença na entrada nem na saída HDMI; pode dizer respeito à saída VGA/RGBS. |
+| Power | Liga a placa. |
 
 ## Conectando ao seu Wi-Fi
 

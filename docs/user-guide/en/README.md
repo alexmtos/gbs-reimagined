@@ -46,17 +46,18 @@ board in: at that moment the same button starts the chip's update mode instead.)
 ## The board's own switches and buttons
 
 Some controls are wired directly into the video path; the firmware cannot see their position, so
-check them when something looks wrong. Their exact function is still being confirmed on the bench.
+check them when something looks wrong. This is what each one did on our bench (a console on the
+front RGBS inputs, HDMI output):
 
-| Label on the board | Kind |
+| Label on the board | What it does |
 |---|---|
-| HDMI ON / OFF | slide switch |
-| RGBHV / RGBS | slide switch |
-| Compatibility mode | slide switch |
-| RGBS Sync | latching button |
-| Sync on Green | latching button |
-| R / G / B | knobs |
-| Power | latching button |
+| R / G / B knobs | Lower the level of the red, green or blue input. **Leave them at minimum** (turned fully down) for the full signal; turning one up dims that colour. Useful if a console's colours look burnt even after **Calibrate levels**. |
+| HDMI ON / OFF | Turns the HDMI output off. If the board says it is scaling but the TV over HDMI shows nothing, check this switch. |
+| RGBS Sync | Changes how the sync of the front RGBS inputs is taken. Leave it released unless the picture rolls or drops out with your source. |
+| Sync on Green | Takes sync from the green signal: for component (YPbPr) and RGsB sources. |
+| RGBHV / RGBS | Made no difference with the front RGBS inputs; it concerns the VGA input. |
+| Compatibility mode | Made no difference to the input or the HDMI output; it may concern the VGA/RGBS output. |
+| Power | Board power. |
 
 ## Joining your Wi-Fi
 
