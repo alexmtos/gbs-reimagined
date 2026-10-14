@@ -82,8 +82,33 @@ void Web::handleUi() {
     server_.sendHeader(F("Content-Encoding"), F("gzip"));
     server_.sendHeader(F("ETag"), ui::kEtag);
     server_.sendHeader(F("Cache-Control"), F("no-cache"));
-    server_.send_P(200, PSTR("text/html; charset=utf-8"), reinterpret_cast<PGM_P>(ui::kGzip),
-                   ui::kSize);
+    server_.setContentLength(ui::kSize);
+    server_.send(200, F("text/html; charset=utf-8"), emptyString);
+    // The body is written here rather than with send_P: the core streams flash data through a small
+    // buffer and gives up at the first partial write, which the low-memory TCP stack produces on a
+    // 20 KB page (bench 2026-10-13: browsers saw ERR_CONTENT_LENGTH_MISMATCH). Partial writes are
+    // resumed; only ten seconds without progress abandon the client.
+    WiFiClient client = server_.client();
+    uint8_t block[512];
+    uint32_t sent = 0;
+    uint32_t progressMs = millis();
+    while (sent < ui::kSize && client.connected()) {
+        const uint32_t n = ui::kSize - sent < sizeof block ? ui::kSize - sent : sizeof block;
+        memcpy_P(block, ui::kGzip + sent, n);
+        uint32_t done = 0;
+        while (done < n) {
+            const size_t w = client.write(block + done, n - done);
+            if (w > 0) {
+                done += w;
+                progressMs = millis();
+            } else if (millis() - progressMs > 10'000 || !client.connected()) {
+                return;
+            } else {
+                delay(1); // let the TCP stack take the acknowledgements
+            }
+        }
+        sent += n;
+    }
 }
 
 void Web::handleStatus() {
@@ -156,6 +181,8 @@ void Web::handleWifi() {
     j.raw("{\"mode\":").str(kMode[static_cast<uint8_t>(wifi_.mode())]);
     j.raw(",\"ssid\":").str(wifi_.ssid()).raw(",\"ip\":").str(ip);
     j.raw(",\"rssi\":").num(wifi_.rssi()).raw(",\"hostname\":").str("gbs.local");
+    static const char* const kFailure[] = {"", "refused", "notFound", "noAnswer"};
+    j.raw(",\"lastFailure\":").str(kFailure[static_cast<uint8_t>(wifi_.lastFailure())]);
     j.raw(",\"ap\":{\"active\":").raw(wifi_.apActive() ? "true" : "false");
     j.raw(",\"ssid\":").str(wifi_.apSsid()).raw(",\"ip\":").str(apIp).raw("}}");
 }

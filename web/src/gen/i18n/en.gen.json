@@ -265,6 +265,10 @@
     "net.ssid": "Network name",
     "net.password": "Password",
     "net.join": "Join",
-    "net.joinNote": "The board joins this network and then closes its setup network. Reconnect your phone or computer to your usual network and open http://gbs.local."
+    "net.joinNote": "The board joins this network and then closes its setup network. Reconnect your phone or computer to your usual network and open http://gbs.local.",
+    "net.failed.refused": "Could not join {ssid}: the network refused the password. Check it and try again.",
+    "net.failed.notFound": "Could not join {ssid}: the network was not found from here.",
+    "net.failed.noAnswer": "Could not join {ssid}: the network did not answer. Try again closer to the router.",
+    "net.joinStarted": "Joining… this page shows the result in a few seconds. While your phone is on the board's own network, every address leads to this page — gbs.local included."
   }
 }

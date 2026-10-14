@@ -95,6 +95,8 @@ export interface WifiStatus {
   ip: string;
   rssi: number;
   hostname: string;
+  /** Why the last join did not succeed ("" when it did, or none was tried). */
+  lastFailure: "" | "refused" | "notFound" | "noAnswer";
   ap: { active: boolean; ssid: string; ip: string };
 }
 

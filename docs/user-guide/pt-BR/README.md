@@ -36,10 +36,66 @@ sendo confirmada na bancada.
 | R / G / B | potenciômetros |
 | Power | botão com trava |
 
+## Conectando ao seu Wi-Fi
+
+Na primeira vez, a placa não conhece a sua rede, então ela abre uma rede própria.
+
+1. Ligue a placa. Ela abre uma rede Wi-Fi chamada **GBS-** seguida de quatro letras e números
+   únicos da sua placa (por exemplo `GBS-EAC4`). A senha é **`qqqqqqqq`** (oito letras q) — a
+   mesma do projeto GBS-Control original.
+2. Conecte o celular ou o computador a essa rede. A página do GBS Reimagined abre sozinha; se não
+   abrir, acesse **http://192.168.4.1** no navegador.
+3. Vá na aba **Rede**, toque em **Procurar redes**, escolha a sua rede, digite a senha dela e toque
+   em **Conectar**. A sua senha vai direto para a placa.
+4. A placa entra na sua rede e fecha a rede própria cerca de um minuto depois (antes, se o celular
+   sair dela). Volte o celular para a sua rede de sempre e abra **http://gbs.local**. Alguns
+   celulares Android não entendem endereços `.local`: use o endereço mostrado na aba **Rede** ou o
+   que o seu roteador mostra para a placa.
+
+Se a placa não conseguir falar com a sua rede por 30 segundos (roteador desligado, ou você trocou
+a senha), ela abre a rede própria de novo para você corrigir, e continua tentando a sua rede a cada
+dois minutos enquanto ninguém estiver conectado nela.
+
+## Mudanças que pedem confirmação
+
+Algumas mudanças podem deixar a TV sem imagem — a resolução de saída e o frame lock, por exemplo.
+Quando você faz uma delas pela página web ou pelo console serial, um aviso pede que você
+toque em **Manter**. Se você não responder em 20 segundos, a placa volta ao que era antes: uma
+TV apagada se resolve sozinha. O tempo de espera pode ser mudado em **Sistema → Confirmar em**.
+
+## Níveis de entrada
+
+Alguns consoles mandam um sinal mais forte do que a placa espera, o que deixa os brancos chapados e
+"estourados" e as cores lavadas. Duas ferramentas ajudam (ligue **Mostrar ajustes avançados**, aba
+**Entrada**):
+
+- **Calibrar níveis** — mostre uma tela totalmente branca no console (o 240p Test Suite tem uma;
+  qualquer tela toda branca serve) e toque no botão. Leva alguns segundos e as cores podem piscar
+  enquanto isso. A placa guarda o resultado para aquela entrada (RGB ou componente). Se a tela não
+  for branca o bastante, ela avisa e não muda nada.
+- **Ganho automático** — durante o jogo, reduz o nível da entrada sempre que as partes mais claras
+  da imagem estouram. Só escurece, e recomeça a cada novo console conectado.
+
+## Console serial (avançado)
+
+Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 baud**. Digite
+`help` para ver a lista de comandos (o console é em inglês). Os mais úteis:
+
+| Comando | O que faz |
+|---|---|
+| `status` | o que a placa está fazendo, com os números |
+| `list` | todos os ajustes com o valor atual |
+| `set picture.sharpness medium` | muda um ajuste (`get` lê um) |
+| `output 1080p` / `input rgb` | atalhos para a resolução de saída e a entrada |
+| `keep` / `revert` | responde a uma mudança que espera confirmação |
+| `wifi` | o estado da rede; `wifi <nome> <senha>` conecta a uma rede |
+| `calibrate` | calibra os níveis com uma tela branca |
+| `factory-reset` | tudo volta ao padrão (digite duas vezes) |
+
 ## Em breve neste guia
 
 1. Instalando o GBS Reimagined pelo navegador
-2. Primeiro uso e conexão ao seu Wi-Fi
+2. O botão giratório e a telinha
 3. Escolhendo a resolução de saída para a sua tela
 4. Ajustes de imagem
 5. Solução de problemas, pela mensagem que a placa mostra

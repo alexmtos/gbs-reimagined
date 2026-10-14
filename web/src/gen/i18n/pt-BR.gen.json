@@ -265,6 +265,10 @@
     "net.ssid": "Nome da rede",
     "net.password": "Senha",
     "net.join": "Conectar",
-    "net.joinNote": "A placa entra nesta rede e depois fecha a rede de configuração. Volte o celular ou o computador para a sua rede de sempre e abra http://gbs.local."
+    "net.joinNote": "A placa entra nesta rede e depois fecha a rede de configuração. Volte o celular ou o computador para a sua rede de sempre e abra http://gbs.local.",
+    "net.failed.refused": "Não foi possível entrar em {ssid}: a rede recusou a senha. Confira e tente de novo.",
+    "net.failed.notFound": "Não foi possível entrar em {ssid}: a rede não foi encontrada daqui.",
+    "net.failed.noAnswer": "Não foi possível entrar em {ssid}: a rede não respondeu. Tente mais perto do roteador.",
+    "net.joinStarted": "Conectando… esta página mostra o resultado em alguns segundos. Enquanto o celular estiver na rede da própria placa, qualquer endereço abre esta página — inclusive gbs.local."
   }
 }

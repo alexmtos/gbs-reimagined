@@ -4,7 +4,7 @@ import type { ScanResult, WifiStatus } from "../api/types";
 import type { MessageKey } from "../i18n";
 import { t } from "../i18n";
 
-const AP_PASSWORD = "gbsreimagined"; // documented in the user guide (user decision, 2026-10-13)
+const AP_PASSWORD = "qqqqqqqq"; // as the community firmware (user decision, 2026-10-13)
 const SCAN_POLL_MS = 1000;
 const SCAN_GIVE_UP = 20;
 
@@ -13,6 +13,12 @@ function describe(w: WifiStatus): string {
   if (w.mode === "joining") return t("net.joining", { ssid: w.ssid });
   return t("net.setup", { ap: w.ap.ssid, password: AP_PASSWORD });
 }
+
+const FAILURE_KEY: Record<Exclude<WifiStatus["lastFailure"], "">, MessageKey> = {
+  refused: "net.failed.refused",
+  notFound: "net.failed.notFound",
+  noAnswer: "net.failed.noAnswer",
+};
 
 export function NetworkPage() {
   const [wifi, setWifi] = useState<WifiStatus | null>(null);
@@ -61,7 +67,7 @@ export function NetworkPage() {
     e.preventDefault();
     try {
       const r = await joinWifi(ssid, password);
-      setNote(r.ok ? "net.joinNote" : "action.failed");
+      setNote(r.ok ? "net.joinStarted" : "action.failed");
     } catch {
       setNote("action.failed");
     }
@@ -70,6 +76,9 @@ export function NetworkPage() {
   return (
     <section>
       {wifi && <p class="headline">{describe(wifi)}</p>}
+      {wifi && wifi.mode !== "joined" && wifi.lastFailure !== "" && (
+        <p class="banner banner-bad">{t(FAILURE_KEY[wifi.lastFailure], { ssid: wifi.ssid })}</p>
+      )}
       <div class="card">
         <button type="button" disabled={scanning} onClick={scan}>
           {scanning ? t("net.scanning") : t("net.scan")}

@@ -178,6 +178,22 @@ void Console::help() {
 
 void Console::cmdWifi(char* args) {
     const char* ssid = nextWord(args);
+    if (strcasecmp(ssid, "scan") == 0 && args[0] == '\0') {
+        // Diagnostic: how the saved network is heard from here (blocks ~2 s).
+        const int n = WiFi.scanNetworks(false, true);
+        int seen = 0;
+        for (int i = 0; i < n; ++i) {
+            if (WiFi.SSID(i) == wifi_.ssid()) {
+                ++seen;
+                Serial.printf_P(PSTR("saved network: %d dBm, channel %d, encryption %u\r\n"),
+                                WiFi.RSSI(i), WiFi.channel(i), WiFi.encryptionType(i));
+            }
+        }
+        Serial.printf_P(PSTR("%d networks heard, saved one %s\r\n"), n,
+                        seen ? "among them" : "not heard");
+        WiFi.scanDelete();
+        return;
+    }
     if (ssid[0] != '\0') {
         const char* password = nextWord(args);
         Serial.println(wifi_.join(ssid, password, millis()) ? F("joining") : F("invalid network"));
@@ -188,6 +204,13 @@ void Console::cmdWifi(char* args) {
     Serial.printf_P(PSTR("wifi %s, network \"%s\", address %u.%u.%u.%u (gbs.local), rssi %d\r\n"),
                     kMode[static_cast<uint8_t>(wifi_.mode())], wifi_.ssid(), ip & 0xFF,
                     ip >> 8 & 0xFF, ip >> 16 & 0xFF, ip >> 24, wifi_.rssi());
+    static const char* const kFailure[] = {"", "the network refused the password",
+                                           "the network was not found",
+                                           "the network did not answer"};
+    if (wifi_.lastFailure() != net::Wifi::Failure::None) {
+        Serial.printf_P(PSTR("last join failed: %s\r\n"),
+                        kFailure[static_cast<uint8_t>(wifi_.lastFailure())]);
+    }
     if (wifi_.apActive()) {
         Serial.printf_P(PSTR("setup access point \"%s\", password \"%s\", http://192.168.4.1\r\n"),
                         wifi_.apSsid(), net::Wifi::kApPassword);

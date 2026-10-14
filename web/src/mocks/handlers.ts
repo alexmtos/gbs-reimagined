@@ -42,6 +42,7 @@ const device = {
     ip: "0.0.0.0",
     rssi: 0,
     hostname: "gbs.local",
+    lastFailure: "",
     ap: { active: true, ssid: "GBS-EAC4", ip: "192.168.4.1" },
   } as WifiStatus,
   scanPolls: 0,

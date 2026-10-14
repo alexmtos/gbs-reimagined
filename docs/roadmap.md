@@ -50,7 +50,7 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 |---|---|---|
 | B-01 | Which physical jacks land on ADC input sets 0, 1 and 2 | Input names in every interface |
 | B-02 | What the "Compatibility mode" switch, the RGBHV/RGBS switch, the sync buttons and the R/G/B knobs actually do | User guide troubleshooting |
-| B-03 | Free heap at idle with the web UI open, and during an OTA upload | OTA feasibility (the reference fork lost HTTP OTA below ~15 KB) |
+| B-03 | Free heap at idle with the web UI open, and during an OTA upload | OTA feasibility (the reference fork lost HTTP OTA below ~15 KB). **Idle measured 2026-10-13: ≥ 38 KB free, 35.5 KB low-water ([bench M1](bench/M1.md)); OTA part open.** |
 | B-04 | Whether the MS9288A accepts every output mode at the frame-locked rate | Which modes are offered on HDMI |
 | B-05 | Which of the 12 programs give a clean picture on this board for each source | Default output per standard |
 | B-06 | Whether GPIO15/GPIO16 are broken out on the GBS-C (IR receiver option) | Future remote control |
