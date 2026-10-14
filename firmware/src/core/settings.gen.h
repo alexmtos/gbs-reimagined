@@ -38,7 +38,7 @@ enum class Id : uint8_t {
     Count,
 };
 
-inline constexpr char kSchemaHash[] = "57f96039";
+inline constexpr char kSchemaHash[] = "f838c797";
 inline constexpr uint8_t kGroupCount = 4;
 
 } // namespace gbsr::settings

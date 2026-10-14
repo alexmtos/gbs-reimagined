@@ -23,15 +23,17 @@ from pathlib import Path
 # Some annotations drop the leading zero (`// s3_0` is s3_00), so the offset is 1-2 hex digits.
 ENTRY_RE = re.compile(r"(0x[0-9A-Fa-f]+|\d+)\s*,\s*//\s*s([0-5])_([0-9A-Fa-f]{1,2})\b")
 
-# Source file stem -> (program id, input standard, output description).
+# Source file stem -> (program id, input standard, output description). The upstream file names do
+# not describe the raster: `*_240p.h` carry preset id 0x01/0x11, the 1280x960 output (verified from
+# the S1_2B byte each program stores).
 PROGRAMS: dict[str, tuple[str, str, str]] = {
-    "ntsc_240p": ("ntsc-240p", "ntsc", "720x240 progressive, 15 kHz"),
+    "ntsc_240p": ("ntsc-960p", "ntsc", "1280x960"),
     "ntsc_720x480": ("ntsc-480p", "ntsc", "720x480 progressive, 31 kHz"),
     "ntsc_1280x720": ("ntsc-720p", "ntsc", "1280x720"),
     "ntsc_1280x1024": ("ntsc-1024p", "ntsc", "1280x1024"),
     "ntsc_1920x1080": ("ntsc-1080p", "ntsc", "1920x1080"),
     "ntsc_downscale": ("ntsc-downscale", "ntsc", "downscale to 15 kHz"),
-    "pal_240p": ("pal-288p", "pal", "768x288 progressive, 15 kHz"),
+    "pal_240p": ("pal-960p", "pal", "1280x960"),
     "pal_768x576": ("pal-576p", "pal", "768x576 progressive, 31 kHz"),
     "pal_1280x720": ("pal-720p", "pal", "1280x720"),
     "pal_1280x1024": ("pal-1024p", "pal", "1280x1024"),
@@ -88,12 +90,21 @@ def main() -> int:
             sys.exit(f"missing {src}")
         image = parse(src)
         segs = sorted({s for s, _ in image})
+        meta = []
+        if (1, 0x2B) in image and (0, 0x41) in image:
+            # S1_2B: upstream's output id (0x01 960p … 0x06 downscale, +0x10 for PAL);
+            # S0_41: the internal display-clock code the program was tuned with.
+            meta = [
+                f"preset_id: 0x{image[(1, 0x2B)] & 0x7F:02X}",
+                f"display_clock: 0x{image[(0, 0x41)]:02X}",
+            ]
         lines = [
             "# Baseline register program for the TV5725. Factual chip configuration data;",
             "# see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.",
             f"id: {pid}",
             f"standard: {standard}",
             f'output: "{output}"',
+            *meta,
             "source:",
             f"  file: {stem}.h",
             f"  commit: {args.commit}",

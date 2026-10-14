@@ -3,6 +3,8 @@
 id: ntsc-1080p
 standard: ntsc
 output: "1920x1080"
+preset_id: 0x05
+display_clock: 0x85
 source:
   file: ntsc_1920x1080.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

@@ -8,7 +8,7 @@ namespace gbsr::i18n {
 const char kText_en[] PROGMEM =
     "Output resolution\0"
     "What the TV receives\0"
-    "Auto\0371080p\0371280x1024\0371280x960\037720p\037480p / 576p\03715 kHz (CRT)\037Passthrough\0"
+    "Auto\0371080p\0371280x1024\0371280x960\037720p\037480p / 576p\03715 kHz (CRT)\037Passthrough (exp.)\0"
     "Frame lock\0"
     "Match source rate\0"
     "Force 60 Hz\0"
@@ -35,7 +35,7 @@ const char kText_en[] PROGMEM =
     "Sampling phase\0"
     "Pixel sharpness\0"
     "Auto gain\0"
-    "Adjust input levels\0"
+    "Dims when it clips\0"
     "Video LPF\0"
     "Input low-pass filter\0"
     "Auto\037150 MHz\037110 MHz\03770 MHz\03740 MHz\0"
@@ -73,16 +73,58 @@ const char kText_en[] PROGMEM =
     "Auto by input\037Last used\0"
     "Output\0"
     "Picture\0"
-    "System\0";
-const uint16_t kLabel_en[] PROGMEM = {0, 111, 140, 173, 208, 250, 288, 321, 354, 385, 456, 493, 524, 554, 621, 644, 665, 693, 740, 766, 798, 847, 903, 962, 995, 1046, 1076};
-const uint16_t kHint_en[] PROGMEM = {18, 122, 152, 189, 215, 270, 306, 337, 368, 391, 471, 508, 534, 564, 632, 653, 676, 703, 750, 784, 811, 856, 917, 975, 1010, 1060, 1092};
-const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 65535, 229, 65535, 65535, 65535, 65535, 412, 488, 488, 65535, 586, 65535, 65535, 65535, 720, 65535, 65535, 827, 875, 933, 65535, 1031, 65535, 1111};
-const uint16_t kGroup_en[] PROGMEM = {1135, 385, 1142, 1150};
+    "System\0"
+    "Scaler not answering\0"
+    "No signal\0"
+    "Sync unstable\0"
+    "Signal found, settling\0"
+    "Locking to the source\0"
+    "Scaling\0"
+    "Output paused\0"
+    "Press for the menu\0"
+    "Network\0"
+    "Status\0"
+    "< Back\0"
+    "Long press: back\0"
+    "Keep\0"
+    "Revert\0"
+    "Keep the change?\0"
+    "Reverting in {s} s\0"
+    "SAFE MODE\0"
+    "Hold knob: safe mode\0"
+    "Calibrate levels\0"
+    "Show a white screen\0"
+    "Calibrating...\0"
+    "Levels calibrated\0"
+    "Not a white screen\0"
+    "No stable picture\0"
+    "Wi-Fi connected\0"
+    "Joining Wi-Fi...\0"
+    "Setup network:\0"
+    "Password:\0"
+    "Password refused\0"
+    "Network not found\0"
+    "Restart\0"
+    "Factory reset\0"
+    "Press again: confirm\0"
+    "Done\0"
+    "Firmware\0"
+    "Free RAM\0"
+    "frame lock\0"
+    "free running\0"
+    "On\0"
+    "Off\0"
+    "Signal too strong\0";
+const uint16_t kLabel_en[] PROGMEM = {0, 118, 147, 180, 215, 257, 295, 328, 361, 392, 463, 500, 531, 560, 627, 650, 671, 699, 746, 772, 804, 853, 909, 968, 1001, 1052, 1082};
+const uint16_t kHint_en[] PROGMEM = {18, 129, 159, 196, 222, 277, 313, 344, 375, 398, 478, 515, 541, 570, 638, 659, 682, 709, 756, 790, 817, 862, 923, 981, 1016, 1066, 1098};
+const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 65535, 236, 65535, 65535, 65535, 65535, 419, 495, 495, 65535, 592, 65535, 65535, 65535, 726, 65535, 65535, 833, 881, 939, 65535, 1037, 65535, 1117};
+const uint16_t kGroup_en[] PROGMEM = {1141, 392, 1148, 1156};
+const uint16_t kMsg_en[] PROGMEM = {1163, 1184, 1194, 1208, 1231, 1253, 1261, 1275, 1294, 1302, 1309, 1316, 1333, 1338, 1345, 1362, 1381, 1391, 1412, 1429, 1449, 1464, 1482, 1501, 1519, 1535, 1552, 1567, 1577, 1594, 1612, 1620, 1634, 1655, 1660, 1669, 1678, 1689, 1702, 1705, 1709};
 
 const char kText_ptBR[] PROGMEM =
     "Resolução de saída\0"
     "O que a TV recebe\0"
-    "Auto\0371080p\0371280x1024\0371280x960\037720p\037480p / 576p\03715 kHz (CRT)\037Passthrough\0"
+    "Auto\0371080p\0371280x1024\0371280x960\037720p\037480p / 576p\03715 kHz (CRT)\037Passthrough (exp.)\0"
     "Frame lock\0"
     "Igualar taxa da fonte\0"
     "Forçar 60 Hz\0"
@@ -109,7 +151,7 @@ const char kText_ptBR[] PROGMEM =
     "Fase de amostragem\0"
     "Nitidez dos pixels\0"
     "Ganho automático\0"
-    "Ajusta níveis\0"
+    "Escurece se estourar\0"
     "Filtro passa-baixa\0"
     "Filtro de entrada\0"
     "Auto\037150 MHz\037110 MHz\03770 MHz\03740 MHz\0"
@@ -147,15 +189,57 @@ const char kText_ptBR[] PROGMEM =
     "Auto pela entrada\037Último usado\0"
     "Saída\0"
     "Imagem\0"
-    "Sistema\0";
-const uint16_t kLabel_ptBR[] PROGMEM = {0, 112, 145, 180, 218, 268, 307, 345, 375, 400, 474, 508, 546, 579, 651, 674, 701, 735, 788, 816, 850, 899, 954, 1026, 1057, 1104, 1140};
-const uint16_t kHint_ptBR[] PROGMEM = {22, 123, 159, 196, 230, 289, 326, 353, 382, 408, 489, 527, 564, 598, 658, 684, 713, 743, 798, 828, 867, 906, 973, 1042, 1070, 1122, 1155};
-const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 65535, 248, 65535, 65535, 65535, 65535, 429, 503, 503, 65535, 616, 65535, 65535, 65535, 760, 65535, 65535, 884, 926, 991, 65535, 1089, 65535, 1174};
-const uint16_t kGroup_ptBR[] PROGMEM = {1206, 400, 1213, 1220};
+    "Sistema\0"
+    "Scaler não responde\0"
+    "Sem sinal\0"
+    "Sincronismo instável\0"
+    "Sinal encontrado, estabilizando\0"
+    "Sincronizando com a fonte\0"
+    "Escalando\0"
+    "Saída pausada\0"
+    "Aperte para o menu\0"
+    "Rede\0"
+    "Status\0"
+    "< Voltar\0"
+    "Segure: voltar\0"
+    "Manter\0"
+    "Desfazer\0"
+    "Manter a mudança?\0"
+    "Desfaz em {s} s\0"
+    "MODO SEGURO\0"
+    "Segure: modo seguro\0"
+    "Calibrar níveis\0"
+    "Mostre tela branca\0"
+    "Calibrando...\0"
+    "Níveis calibrados\0"
+    "Tela não é branca\0"
+    "Sem imagem estável\0"
+    "Wi-Fi conectado\0"
+    "Conectando Wi-Fi...\0"
+    "Rede de configuração:\0"
+    "Senha:\0"
+    "Senha recusada\0"
+    "Rede não encontrada\0"
+    "Reiniciar\0"
+    "Restaurar fábrica\0"
+    "Aperte de novo: ok\0"
+    "Feito\0"
+    "Firmware\0"
+    "RAM livre\0"
+    "frame lock\0"
+    "sem frame lock\0"
+    "Ligado\0"
+    "Desligado\0"
+    "Sinal forte demais\0";
+const uint16_t kLabel_ptBR[] PROGMEM = {0, 119, 152, 187, 225, 275, 314, 352, 382, 407, 481, 515, 553, 592, 664, 687, 714, 748, 801, 829, 863, 912, 967, 1039, 1070, 1117, 1153};
+const uint16_t kHint_ptBR[] PROGMEM = {22, 130, 166, 203, 237, 296, 333, 360, 389, 415, 496, 534, 571, 611, 671, 697, 726, 756, 811, 841, 880, 919, 986, 1055, 1083, 1135, 1168};
+const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 65535, 255, 65535, 65535, 65535, 65535, 436, 510, 510, 65535, 629, 65535, 65535, 65535, 773, 65535, 65535, 897, 939, 1004, 65535, 1102, 65535, 1187};
+const uint16_t kGroup_ptBR[] PROGMEM = {1219, 407, 1226, 1233};
+const uint16_t kMsg_ptBR[] PROGMEM = {1241, 1262, 1272, 1294, 1326, 1352, 1362, 1377, 1396, 1401, 1408, 1417, 1432, 1439, 1448, 1467, 1483, 1495, 1515, 1532, 1551, 1565, 1584, 1604, 1624, 1640, 1660, 1684, 1691, 1706, 1727, 1737, 1756, 1775, 1781, 1790, 1800, 1811, 1826, 1833, 1843};
 
 const LocaleTables kLocales[] PROGMEM = {
-    {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en},
-    {kText_ptBR, kLabel_ptBR, kHint_ptBR, kValues_ptBR, kGroup_ptBR},
+    {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en, kMsg_en},
+    {kText_ptBR, kLabel_ptBR, kHint_ptBR, kValues_ptBR, kGroup_ptBR, kMsg_ptBR},
 };
 
 const uint8_t kLocaleCount = 2;

@@ -1,8 +1,10 @@
 # Baseline register program for the TV5725. Factual chip configuration data;
 # see NOTICE.md for provenance. Imported by tools/codegen/import_programs.py.
-id: ntsc-240p
+id: ntsc-960p
 standard: ntsc
-output: "720x240 progressive, 15 kHz"
+output: "1280x960"
+preset_id: 0x01
+display_clock: 0xA5
 source:
   file: ntsc_240p.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

@@ -60,7 +60,7 @@ const Def kDefs[] PROGMEM = {
     {0xBA8D3898u, 145, 74, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // input.port
     {0x4B71DECBu, 156, 65535, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x22}, // input.syncThreshold
     {0x07FD70AAu, 176, 65535, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x22}, // input.phase
-    {0xDA8358FFu, 188, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x22}, // input.autoGain
+    {0xDA8358FFu, 188, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // input.autoGain
     {0xBD282EA8u, 203, 94, 0, 4, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x23}, // input.videoLpf
     {0x1543544Au, 218, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.brightness
     {0x79648B93u, 237, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.contrast

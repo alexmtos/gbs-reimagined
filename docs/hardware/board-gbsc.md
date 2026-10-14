@@ -41,19 +41,23 @@ by the vendor and must be confirmed on the bench (open item B-01 in the
 ## Hardware controls the firmware cannot see
 
 These are wired in the analogue path. The firmware cannot read their position, so the interfaces
-tell the user to check them when a symptom matches. The vendor publishes only their labels; the
-"function" column is **unverified** until traced on the board (open item B-02 in the
-[roadmap](../roadmap.md)).
+tell the user to check them when a symptom matches. The vendor publishes only their labels. Each
+control was operated one at a time on 2026-10-13 with a 240p RGBS source on the **front RGBS
+inputs** (ADC input set 1), output at 1080p over HDMI into the capture card
+([bench record](../bench/M1.md#2026-10-13--board-controls-b-02)).
 
-| Control (label on the board) | Presumed function — to verify | When it would matter |
-|---|---|---|
-| HDMI slide switch (ON/OFF) | Enables the MS9288A HDMI path | No HDMI picture while VGA out works |
-| RGBHV / RGBS slide switch | Sync routing for the VGA-connector input | RGBS sources through the VGA jack |
-| Compatibility mode slide switch | Unknown | — |
-| "RGBS Sync" latching button | Routes the RGBS sync input | RGBS sources with separate sync |
-| "Sync on Green" latching button | Routes sync-on-green | Component (YPbPr) and RGsB sources |
-| R / G / B knobs | Analogue level trims | Colour balance |
-| Power latching button | Board power | — |
+| Control (label on the board) | Observed on the bench | Still open | When it matters |
+|---|---|---|---|
+| R / G / B knobs | **Per-channel attenuators before the ADC.** At minimum the full signal passes; at maximum the channel's peak fell to about a sixth (R 0x76 → 0x15, G 0x7D → 0x15, B 0x5B → 0x10) | the curve in between | colour balance; taming a "hot" source before the ADC |
+| HDMI slide switch (ON/OFF) | **OFF blanks the HDMI output** (capture black); the scaler keeps running and cannot tell | whether VGA out stays live | "the board says Scaling but HDMI is black" |
+| "RGBS Sync" latching button | Changes the sync reaching the sync slicer: picture kept, the watcher's SOG guard lowered the slicer 13 → 11 | what exactly it switches | RGBS sources with weak or unusual sync |
+| "Sync on Green" latching button | Same kind of effect: slicer lowered 11 → 9; picture kept with an RGBS source | behaviour with a real sync-on-green source | component (YPbPr) and RGsB sources |
+| RGBHV / RGBS slide switch | **No effect** on the front RGBS input (no reload, no sync change, same picture) | its effect on the VGA (DB15) input | RGBS or RGBHV sources on the VGA jack |
+| Compatibility mode slide switch | **No effect** on the input or on the HDMI output | the VGA/RGBS output (sync format for monitors and CRTs) | — |
+| Power latching button | Board power | — | — |
+
+**Inputs (B-01, partly):** the front RGBS inputs are ADC input set 1 (`ADC_INPUT_SEL` = 1), the
+one the firmware calls "RGB". Component and the VGA connector are still to be traced.
 
 ## ESP8266 pins
 

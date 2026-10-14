@@ -190,8 +190,11 @@ def gen_programs() -> dict[Path, str]:
         std = {"ntsc": "Standard::Ntsc", "pal": "Standard::Pal", "any": "Standard::Any"}[
             p["standard"]
         ]
+        preset = p.get("preset_id", 0)
+        clock = p.get("display_clock", 0)
         body.append(
-            f"    {{ProgramId::{name}, {std}, k{name}Name, k{name}, {p['_size']}, {p['bytes']}}},"
+            f"    {{ProgramId::{name}, {std}, 0x{preset:02X}, 0x{clock:02X}, k{name}Name, k{name},"
+            f" {p['_size']}, {p['bytes']}}},"
         )
     body += ["};", "", "} // namespace gbsr::tv5725", ""]
     out[FW_CHIP / "programs.gen.cpp"] = "\n".join(body)

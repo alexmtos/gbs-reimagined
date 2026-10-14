@@ -1,12 +1,14 @@
 import { signal } from "@preact/signals";
+import { RevertBanner, SafeModeBanner } from "./components/banners";
 import type { MessageKey } from "./i18n";
 import { LOCALES, locale, setLocale, t } from "./i18n";
+import { NetworkPage } from "./pages/network-page";
 import { SettingsPage } from "./pages/settings-page";
 import { StatusPage } from "./pages/status-page";
 import { connection } from "./state/status";
 
-type PageId = "status" | "picture" | "output" | "input" | "system";
-const PAGES: readonly PageId[] = ["status", "picture", "output", "input", "system"];
+type PageId = "status" | "picture" | "output" | "input" | "system" | "network";
+const PAGES: readonly PageId[] = ["status", "picture", "output", "input", "system", "network"];
 
 function pageFromHash(): PageId {
   const id = location.hash.replace("#", "");
@@ -52,7 +54,17 @@ export function App() {
           </a>
         ))}
       </nav>
-      <main>{current === "status" ? <StatusPage /> : <SettingsPage group={current} />}</main>
+      <SafeModeBanner />
+      <RevertBanner />
+      <main>
+        {current === "status" ? (
+          <StatusPage />
+        ) : current === "network" ? (
+          <NetworkPage />
+        ) : (
+          <SettingsPage group={current} />
+        )}
+      </main>
     </div>
   );
 }

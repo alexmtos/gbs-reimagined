@@ -15,6 +15,7 @@ struct LocaleTables {
     const uint16_t* hint;   // per setting
     const uint16_t* values; // per setting, 0xFFFF when none
     const uint16_t* group;  // per group
+    const uint16_t* msg;    // per i18n::Msg (ui/messages.gen.h)
 };
 
 extern const LocaleTables kLocales[] PROGMEM;

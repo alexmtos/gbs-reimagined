@@ -12,7 +12,9 @@ Rig facts this script encodes (from the reference project,
 docs/research/gbs-control-lessons-platform.md §7.4):
 - the NZXT Signal HD60 presents yuyv422 on some modes and nv12 on others; naming the wrong one
   returns zero frames, which looks like a black picture, so formats are tried in turn;
-- the card encodes BT.601 even at 1080 lines, while ffmpeg assumes BT.709 there;
+- at 1080p this card encodes BT.709: decoded so, the 240p Test Suite's full red, green and blue
+  bars read 213/6/8, 4/210/8 and 5/7/213 against a 210/210/210 white, while BT.601 turned green
+  into 245 (docs/bench/M1.md, 2026-10-13; the reference project had noted BT.601);
 - DirectShow can lock up after repeated opens: capture once per run and reuse the frames.
 """
 
@@ -97,7 +99,7 @@ def main() -> int:
     ap.add_argument("--frames", type=int, default=30)
     ap.add_argument("--label", default="capture")
     ap.add_argument("--device", default=DEFAULT_DEVICE)
-    ap.add_argument("--matrix", default="bt601", choices=["bt601", "bt709"])
+    ap.add_argument("--matrix", default="bt709", choices=["bt601", "bt709"])
     ap.add_argument("--host", default=os.environ.get("GBS_HOST"), help="board address for status")
     args = ap.parse_args()
 

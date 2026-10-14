@@ -3,6 +3,8 @@
 id: pal-1080p
 standard: pal
 output: "1920x1080"
+preset_id: 0x15
+display_clock: 0x65
 source:
   file: pal_1920x1080.h
   commit: JuergenLeber/gbs-control@7bfb9b349a5cf30c379c2e290be7a2b02f94453c

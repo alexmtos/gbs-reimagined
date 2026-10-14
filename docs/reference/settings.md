@@ -2,13 +2,13 @@
 
 # Settings reference
 
-Schema hash `57f96039`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `f838c797`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
-| `output.resolution` ⚠ | Output resolution | Auto, 1080p, 1280x1024, 1280x960, 720p, 480p / 576p, 15 kHz (CRT), Passthrough | Auto | essential | M1 | The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends HD and PC sources unscaled. |
+| `output.resolution` ⚠ | Output resolution | Auto, 1080p, 1280x1024, 1280x960, 720p, 480p / 576p, 15 kHz (CRT), Passthrough (exp.) | Auto | essential | M1 | The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and PC sources always pass through. Passthrough is experimental: not yet verified on a board. |
 | `output.frameLock` ⚠ | Frame lock | off, on | on | essential | M1 | Makes the output refresh exactly follow the console, which removes judder and tearing. Turn it off only if your display refuses the slightly non-standard rate. |
 | `output.force60` ⚠ | Force 60 Hz | off, on | off | advanced | M2 | Outputs 50 Hz (PAL) sources at 60 Hz for displays that do not accept 50 Hz. |
 | `output.blankOnChange` | Blank on change | off, on | off | advanced | M2 | Shows black instead of a distorted frame while the source changes resolution. |
@@ -25,7 +25,7 @@ Schema hash `57f96039`. Every user-facing setting, as defined in `schema/setting
 | `input.port` | Input | Auto, RGB (SCART/RGBS/VGA), Component (YPbPr) | Auto | essential | M1 | Auto watches all inputs and switches to the one with a signal. RGB covers SCART, the RGBS jacks and VGA; Component is YPbPr. |
 | `input.syncThreshold` | Sync threshold | -1…31 (-1 = Auto) | -1 | advanced | M2 | The level used to separate sync from sync-on-green or composite sync. Auto searches for a stable value; raise it if the picture rolls, lower it if it loses sync on dark scenes. |
 | `input.phase` | Sampling phase | -1…31 (-1 = Auto) | -1 | advanced | M2 | When within each pixel the input is sampled. Adjust while watching fine detail until it is sharp and stable; Auto uses the measured best phase. |
-| `input.autoGain` | Auto gain | off, on | off | advanced | M2 | Lowers the input gain until the brightest white no longer clips. Show a white screen for a few seconds after turning it on. |
+| `input.autoGain` | Auto gain | off, on | off | advanced | M1 | While you play, lowers the input gain whenever the brightest parts of the picture clip. It only ever darkens, and starts again for each new source. For exact levels, use Calibrate levels with a white screen instead. |
 | `input.videoLpf` ⚠ | Video LPF | Auto, 150 MHz, 110 MHz, 70 MHz, 40 MHz | Auto | advanced | M2 | Filters high frequencies before sampling. Auto chooses per standard; lower values soften the picture and reduce shimmer from noisy sources. |
 
 ## Picture
