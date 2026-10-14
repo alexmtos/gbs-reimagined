@@ -73,11 +73,53 @@ const char kText_en[] PROGMEM =
     "Auto by input\037Last used\0"
     "Output\0"
     "Picture\0"
-    "System\0";
+    "System\0"
+    "Scaler not answering\0"
+    "No signal\0"
+    "Sync unstable\0"
+    "Signal found, settling\0"
+    "Locking to the source\0"
+    "Scaling\0"
+    "Output paused\0"
+    "Press for the menu\0"
+    "Network\0"
+    "Status\0"
+    "< Back\0"
+    "Long press: back\0"
+    "Keep\0"
+    "Revert\0"
+    "Keep the change?\0"
+    "Reverting in {s} s\0"
+    "SAFE MODE\0"
+    "Hold knob: safe mode\0"
+    "Calibrate levels\0"
+    "Show a white screen\0"
+    "Calibrating...\0"
+    "Levels calibrated\0"
+    "Not a white screen\0"
+    "No stable picture\0"
+    "Wi-Fi connected\0"
+    "Joining Wi-Fi...\0"
+    "Setup network:\0"
+    "Password:\0"
+    "Password refused\0"
+    "Network not found\0"
+    "Restart\0"
+    "Factory reset\0"
+    "Press again: confirm\0"
+    "Done\0"
+    "Firmware\0"
+    "Free RAM\0"
+    "frame lock\0"
+    "free running\0"
+    "On\0"
+    "Off\0"
+    "Signal too strong\0";
 const uint16_t kLabel_en[] PROGMEM = {0, 111, 140, 173, 208, 250, 288, 321, 354, 385, 456, 493, 524, 553, 620, 643, 664, 692, 739, 765, 797, 846, 902, 961, 994, 1045, 1075};
 const uint16_t kHint_en[] PROGMEM = {18, 122, 152, 189, 215, 270, 306, 337, 368, 391, 471, 508, 534, 563, 631, 652, 675, 702, 749, 783, 810, 855, 916, 974, 1009, 1059, 1091};
 const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 65535, 229, 65535, 65535, 65535, 65535, 412, 488, 488, 65535, 585, 65535, 65535, 65535, 719, 65535, 65535, 826, 874, 932, 65535, 1030, 65535, 1110};
 const uint16_t kGroup_en[] PROGMEM = {1134, 385, 1141, 1149};
+const uint16_t kMsg_en[] PROGMEM = {1156, 1177, 1187, 1201, 1224, 1246, 1254, 1268, 1287, 1295, 1302, 1309, 1326, 1331, 1338, 1355, 1374, 1384, 1405, 1422, 1442, 1457, 1475, 1494, 1512, 1528, 1545, 1560, 1570, 1587, 1605, 1613, 1627, 1648, 1653, 1662, 1671, 1682, 1695, 1698, 1702};
 
 const char kText_ptBR[] PROGMEM =
     "Resolução de saída\0"
@@ -147,15 +189,57 @@ const char kText_ptBR[] PROGMEM =
     "Auto pela entrada\037Último usado\0"
     "Saída\0"
     "Imagem\0"
-    "Sistema\0";
+    "Sistema\0"
+    "Scaler não responde\0"
+    "Sem sinal\0"
+    "Sincronismo instável\0"
+    "Sinal encontrado, estabilizando\0"
+    "Sincronizando com a fonte\0"
+    "Escalando\0"
+    "Saída pausada\0"
+    "Aperte para o menu\0"
+    "Rede\0"
+    "Status\0"
+    "< Voltar\0"
+    "Segure: voltar\0"
+    "Manter\0"
+    "Desfazer\0"
+    "Manter a mudança?\0"
+    "Desfaz em {s} s\0"
+    "MODO SEGURO\0"
+    "Segure: modo seguro\0"
+    "Calibrar níveis\0"
+    "Mostre tela branca\0"
+    "Calibrando...\0"
+    "Níveis calibrados\0"
+    "Tela não é branca\0"
+    "Sem imagem estável\0"
+    "Wi-Fi conectado\0"
+    "Conectando Wi-Fi...\0"
+    "Rede de configuração:\0"
+    "Senha:\0"
+    "Senha recusada\0"
+    "Rede não encontrada\0"
+    "Reiniciar\0"
+    "Restaurar fábrica\0"
+    "Aperte de novo: ok\0"
+    "Feito\0"
+    "Firmware\0"
+    "RAM livre\0"
+    "frame lock\0"
+    "sem frame lock\0"
+    "Ligado\0"
+    "Desligado\0"
+    "Sinal forte demais\0";
 const uint16_t kLabel_ptBR[] PROGMEM = {0, 112, 145, 180, 218, 268, 307, 345, 375, 400, 474, 508, 546, 585, 657, 680, 707, 741, 794, 822, 856, 905, 960, 1032, 1063, 1110, 1146};
 const uint16_t kHint_ptBR[] PROGMEM = {22, 123, 159, 196, 230, 289, 326, 353, 382, 408, 489, 527, 564, 604, 664, 690, 719, 749, 804, 834, 873, 912, 979, 1048, 1076, 1128, 1161};
 const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 65535, 248, 65535, 65535, 65535, 65535, 429, 503, 503, 65535, 622, 65535, 65535, 65535, 766, 65535, 65535, 890, 932, 997, 65535, 1095, 65535, 1180};
 const uint16_t kGroup_ptBR[] PROGMEM = {1212, 400, 1219, 1226};
+const uint16_t kMsg_ptBR[] PROGMEM = {1234, 1255, 1265, 1287, 1319, 1345, 1355, 1370, 1389, 1394, 1401, 1410, 1425, 1432, 1441, 1460, 1476, 1488, 1508, 1525, 1544, 1558, 1577, 1597, 1617, 1633, 1653, 1677, 1684, 1699, 1720, 1730, 1749, 1768, 1774, 1783, 1793, 1804, 1819, 1826, 1836};
 
 const LocaleTables kLocales[] PROGMEM = {
-    {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en},
-    {kText_ptBR, kLabel_ptBR, kHint_ptBR, kValues_ptBR, kGroup_ptBR},
+    {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en, kMsg_en},
+    {kText_ptBR, kLabel_ptBR, kHint_ptBR, kValues_ptBR, kGroup_ptBR, kMsg_ptBR},
 };
 
 const uint8_t kLocaleCount = 2;

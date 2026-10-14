@@ -14,6 +14,9 @@ import yaml
 
 LABEL_MAX = 20  # OLED line at the menu font, with the cursor
 HINT_MAX = 21  # OLED bottom line
+OLED_LINE = 21  # characters per OLED line (6x10 font, 128 px)
+OLED_PREFIX = "oled."
+OLED_TWO_LINES = "oled.headline."  # status sentences may wrap onto a second line
 REFERENCE_LOCALE = "en"
 FLAG_RISKY = 0x01
 FLAG_ADVANCED = 0x02
@@ -150,7 +153,34 @@ def validate(schema: dict, locales: dict[str, dict]) -> list[str]:
             problems.append(f"[{loc}] message {key}: missing")
         for key in sorted(messages - reference_messages):
             problems.append(f"[{loc}] message {key}: not in the reference locale")
+        for key, text in (data.get("messages") or {}).items():
+            if not key.startswith(OLED_PREFIX):
+                continue
+            limit = 2 * OLED_LINE if key.startswith(OLED_TWO_LINES) else OLED_LINE
+            if len(text) > limit:
+                problems.append(f"[{loc}] message {key}: longer than {limit} for the OLED")
+        # Everything the OLED shows must exist in its Latin-1 font.
+        shown = [m for k, m in (data.get("messages") or {}).items() if k.startswith(OLED_PREFIX)]
+        for entry in (data.get("settings") or {}).values():
+            shown += [entry.get("label", ""), entry.get("hint", "")]
+            shown += list((entry.get("values") or {}).values())
+        shown += list((data.get("groups") or {}).values())
+        for text in shown:
+            try:
+                text.encode("latin-1")
+            except UnicodeEncodeError:
+                problems.append(f"[{loc}] {text!r}: not displayable on the OLED (Latin-1 only)")
     return problems
+
+
+def oled_keys(locales: dict[str, dict]) -> list[str]:
+    messages = (locales.get(REFERENCE_LOCALE) or {}).get("messages") or {}
+    return [k for k in messages if k.startswith(OLED_PREFIX)]
+
+
+def msg_ident(key: str) -> str:
+    parts = key[len(OLED_PREFIX) :].replace("-", ".").split(".")
+    return "".join(p[:1].upper() + p[1:] for p in parts)
 
 
 def schema_hash(schema: dict) -> str:
@@ -237,24 +267,34 @@ def generate(root: Path, banner) -> dict[Path, str]:
             labels += [e["values"][name] for _, name in special_ids(s)]
             val_off.append(blob.add("\x1f".join(labels)) if labels else 0xFFFF)
         group_off = [blob.add(data["groups"][g]) for g in schema["groups"]]
+        msg_off = [blob.add(data["messages"][k]) for k in oled_keys(locales)]
         sbody += blob.emit(f"kText_{tag}")
         for name, values in (
             ("Label", label_off),
             ("Hint", hint_off),
             ("Values", val_off),
             ("Group", group_off),
+            ("Msg", msg_off),
         ):
             sbody.append(
                 f"const uint16_t k{name}_{tag}[] PROGMEM = {{{', '.join(map(str, values))}}};"
             )
         sbody.append("")
-        tables.append(
-            f"    {{kText_{tag}, kLabel_{tag}, kHint_{tag}, kValues_{tag}, kGroup_{tag}}},"
-        )
+        names = ("Text", "Label", "Hint", "Values", "Group", "Msg")
+        fields = ", ".join(f"k{n}_{tag}" for n in names)
+        tables.append(f"    {{{fields}}},")
     sbody += ["const LocaleTables kLocales[] PROGMEM = {"] + tables + ["};", ""]
     sbody += [f"const uint8_t kLocaleCount = {len(locales)};", ""]
     sbody += ["} // namespace gbsr::i18n", ""]
     out[root / "firmware/src/ui/strings.gen.cpp"] = "\n".join(sbody)
+
+    mbody = [banner(src), "#pragma once", "", "#include <stdint.h>", ""]
+    mbody += ["namespace gbsr::i18n {", ""]
+    mbody += ["// OLED messages (schema/i18n, keys oled.*), in the order of the tables' `msg`."]
+    mbody += ["enum class Msg : uint8_t {"]
+    mbody += [f"    {msg_ident(k)}, // {k}" for k in oled_keys(locales)]
+    mbody += ["    Count,", "};", "", "} // namespace gbsr::i18n", ""]
+    out[root / "firmware/src/ui/messages.gen.h"] = "\n".join(mbody)
 
     # ---------------------------------------------------------------- web
     meta = []

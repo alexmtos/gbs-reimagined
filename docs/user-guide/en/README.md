@@ -19,6 +19,30 @@ You will be able to control it three ways:
   shows nothing.
 - **From a USB serial terminal**, for advanced users and console switchers.
 
+## The knob and the small screen
+
+The screen on the board always works, even when the TV shows nothing. Its home screen says what
+the board is doing (for example "Scaling" and "240p > 1080p"), the input and its frequency, the
+output clock, and the board's address on your network.
+
+| Do this | To |
+|---|---|
+| Press the knob | open the menu, enter an item, confirm a value |
+| Turn it | move through the menu, or change a value |
+| Turn it while holding it down | change a number ten steps at a time |
+| Hold it for about a second | go back (and, while editing, undo the change) |
+
+Picture settings change as you turn, so you can watch the TV. The output resolution and frame lock
+change only when you press, so the picture does not jump through every mode on the way. The
+screen goes back home after 30 seconds untouched and turns itself off after the time set in
+**System → Display saver**; any turn or press wakes it, and so does a change of signal.
+
+**Safe mode.** If a setting ever leaves you without a picture and without the web page, restart the
+board and, **while the first screen shows "Hold knob: safe mode"**, press and hold the knob for
+five seconds. The board then starts with the factory settings and 480p output, without changing
+your saved settings; restart normally to get them back. (Do not hold the knob while plugging the
+board in: at that moment the same button starts the chip's update mode instead.)
+
 ## The board's own switches and buttons
 
 Some controls are wired directly into the video path; the firmware cannot see their position, so
@@ -93,8 +117,7 @@ Connect the board's USB port to a computer and open a serial terminal at **11520
 ## Coming in this guide
 
 1. Installing GBS Reimagined from your browser
-2. The knob and the small screen
-3. Choosing the output resolution for your display
-4. Picture settings
-5. Troubleshooting, by the message the board shows
-6. Updating and restoring
+2. Choosing the output resolution for your display
+3. Picture settings
+4. Troubleshooting, by the message the board shows
+5. Updating and restoring

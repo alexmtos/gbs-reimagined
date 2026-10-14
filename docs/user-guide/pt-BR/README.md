@@ -20,6 +20,30 @@ Você poderá controlá-lo de três formas:
   não mostra nada.
 - **Por um terminal serial USB**, para usuários avançados e chaveadores de consoles.
 
+## O botão giratório e a telinha
+
+A telinha da placa funciona sempre, mesmo quando a TV não mostra nada. A tela inicial diz o que a
+placa está fazendo (por exemplo "Escalando" e "240p > 1080p"), a entrada e a frequência dela, o
+clock de saída e o endereço da placa na sua rede.
+
+| Faça isto | Para |
+|---|---|
+| Aperte o botão | abrir o menu, entrar num item, confirmar um valor |
+| Gire | andar pelo menu ou mudar um valor |
+| Gire segurando o botão apertado | mudar um número de dez em dez |
+| Segure por cerca de um segundo | voltar (e, editando, desfazer a mudança) |
+
+Os ajustes de imagem mudam enquanto você gira, para você acompanhar na TV. A resolução de saída e
+o frame lock só mudam quando você aperta, para a imagem não passar por todos os modos no caminho.
+A telinha volta para o início depois de 30 segundos sem uso e se apaga depois do tempo definido
+em **Sistema → Proteção de tela**; qualquer giro ou toque a acende, e uma mudança de sinal também.
+
+**Modo de segurança.** Se algum ajuste deixar você sem imagem e sem a página web, reinicie a placa
+e, **enquanto a primeira tela mostra "Segure: modo seguro"**, aperte e segure o botão por cinco
+segundos. A placa então começa com os ajustes de fábrica e saída 480p, sem mudar os seus ajustes
+salvos; reinicie normalmente para voltar a eles. (Não segure o botão enquanto liga a placa na
+tomada: nesse momento o mesmo botão coloca o chip em modo de atualização.)
+
 ## Chaves e botões da própria placa
 
 Alguns controles são ligados diretamente ao caminho do vídeo; o firmware não consegue ver a
@@ -95,8 +119,7 @@ Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 
 ## Em breve neste guia
 
 1. Instalando o GBS Reimagined pelo navegador
-2. O botão giratório e a telinha
-3. Escolhendo a resolução de saída para a sua tela
-4. Ajustes de imagem
-5. Solução de problemas, pela mensagem que a placa mostra
-6. Atualizando e restaurando
+2. Escolhendo a resolução de saída para a sua tela
+3. Ajustes de imagem
+4. Solução de problemas, pela mensagem que a placa mostra
+5. Atualizando e restaurando

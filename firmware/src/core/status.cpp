@@ -88,6 +88,7 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
     next.board = board;
     next.revertSecondsLeft = revertSecondsLeft;
     next.safeMode = safeMode;
+    next.levelCalibration = e.levelCalibration;
 
     // Uptime, heap and signal strength move on every rebuild; they do not count as a change.
     const bool changed =
@@ -97,7 +98,7 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
         next.pixelClockHz != m.pixelClockHz || next.rateMilliHz != m.rateMilliHz ||
         next.frameLock != m.frameLock || next.board.ip != m.board.ip ||
         next.board.clockGen != m.board.clockGen || next.revertSecondsLeft != m.revertSecondsLeft ||
-        next.safeMode != m.safeMode;
+        next.safeMode != m.safeMode || next.levelCalibration != m.levelCalibration;
     next.seq = changed ? m.seq + 1 : m.seq;
     m = next;
 }

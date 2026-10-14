@@ -19,6 +19,7 @@ struct BoardProfile {
     uint8_t pinEncoderA;
     uint8_t pinEncoderB;
     uint8_t pinEncoderButton;
+    bool encoderClockwiseNegative; // the A/B wiring counts clockwise turns as negative
 
     // TV5725 test-bus output (selected vsync), timed by the frame lock and latency instruments.
     uint8_t pinVsyncProbe;
@@ -45,6 +46,7 @@ inline constexpr BoardProfile kBoardGbsc{
     /*pinEncoderA*/ 14,
     /*pinEncoderB*/ 13,
     /*pinEncoderButton*/ 0,
+    /*encoderClockwiseNegative*/ true, // bench 2026-10-13: clockwise moved up the menu
     /*pinVsyncProbe*/ 12,
     /*pinStatusLed*/ 2,
     /*statusLedActiveLow*/ true,

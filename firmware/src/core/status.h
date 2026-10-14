@@ -42,6 +42,7 @@ struct StatusModel {
     BoardInfo board;
     uint16_t revertSecondsLeft = 0; // 0: nothing pending
     bool safeMode = false;
+    uint8_t levelCalibration = 0; // video::GainCalibrator::Outcome of the last "calibrate levels"
 };
 
 // Rebuilds `m` from its inputs; increments m.seq if anything other than the uptime changed.

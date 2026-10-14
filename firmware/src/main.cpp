@@ -9,6 +9,7 @@
 #include "core/settings.gen.h"
 #include "core/status.h"
 #include "hal/board.h"
+#include "hal/encoder.h"
 #include "hal/esp_i2c_bus.h"
 #include "hal/pulse_timer.h"
 #include "hal/si5351.h"
@@ -16,6 +17,9 @@
 #include "net/wifi.h"
 #include "platform/storage_esp.h"
 #include "ui/console.h"
+#include "ui/knob.h"
+#include "ui/menu.h"
+#include "ui/oled.h"
 #include "version.h"
 #include "video/engine.h"
 
@@ -25,6 +29,10 @@ using namespace gbsr;
 
 constexpr uint32_t kVideoTickMs = 20;
 constexpr uint32_t kStatusEveryMs = 250;
+constexpr uint32_t kOledEveryMs = 50;
+constexpr uint32_t kSplashMs = 1500;
+constexpr uint32_t kSafeModeHoldMs = 5000;
+constexpr uint32_t kSaverMinutes[] = {0, 1, 3, 5, 10}; // system.oledSaver
 
 hal::EspI2cBus bus;
 tv5725::Chip chip(bus);
@@ -38,12 +46,93 @@ net::Wifi wifi(files);
 net::Web web(controller, statusModel, wifi);
 ui::LoopStats loopStats;
 ui::Console console(controller, engine, chip, wifi, loopStats);
+hal::EspEncoder encoder(hal::board().pinEncoderA, hal::board().pinEncoderB,
+                        hal::board().pinEncoderButton, hal::board().encoderClockwiseNegative);
+ui::Knob knob;
+ui::NetView netView;
+ui::Menu menu(controller, statusModel, netView);
+ui::Oled oled(bus, hal::board().addrDisplay);
+ui::Frame frame;
 
 bool clockGenPresent = false;
 uint32_t lastTickMs = 0;
 uint32_t lastStatusMs = 0;
 uint32_t heapMin = UINT32_MAX;
 uint32_t rebootAtMs = 0;
+uint32_t lastOledMs = 0;
+uint32_t headlineChangedMs = 0;
+video::Headline lastHeadline = video::Headline::ScalerMissing;
+
+// Boot splash, in both languages since the settings are not loaded yet. Holding the knob for five
+// seconds while it shows starts in safe mode (docs/design/ux.md, Safety); at power-on the same
+// button would select the ESP8266's bootloader, hence the wait for the splash.
+bool splashAndSafeMode() {
+    ui::Frame f;
+    snprintf(f.line[0], sizeof f.line[0], "GBS Reimagined");
+    snprintf(f.line[1], sizeof f.line[1], "%s", GBSR_VERSION);
+    snprintf(f.line[3], sizeof f.line[3], "Hold knob: safe mode");
+    snprintf(f.line[4], sizeof f.line[4], "Segure: modo seguro");
+    f.inverted = 0x01;
+    oled.show(f);
+    const uint32_t start = millis();
+    uint32_t heldSince = 0;
+    while (millis() - start < kSplashMs || heldSince != 0) {
+        if (encoder.buttonDown()) {
+            heldSince = heldSince != 0 ? heldSince : millis();
+            const uint32_t held = millis() - heldSince;
+            if (held >= kSafeModeHoldMs) {
+                return true;
+            }
+            snprintf(f.line[5], sizeof f.line[5], "%lu...",
+                     static_cast<unsigned long>((kSafeModeHoldMs - held + 999) / 1000));
+            oled.show(f);
+        } else if (heldSince != 0) {
+            return false; // let go before five seconds
+        }
+        delay(20);
+    }
+    return false;
+}
+
+void serviceKnobAndOled(uint32_t now) {
+    const ui::Knob::Events ev = knob.update(encoder.buttonDown(), encoder.takeDetents(), now);
+    if (ev.turn != 0) {
+        const bool reverse = controller.get(settings::Id::SystemEncoderReverse) != 0;
+        menu.turn(reverse ? -ev.turn : ev.turn, ev.coarse, now);
+    }
+    if (ev.press) {
+        menu.press(now);
+    }
+    if (ev.longPress) {
+        menu.longPress(now);
+    }
+    const bool input = ev.turn != 0 || ev.press || ev.longPress;
+    if (!input && now - lastOledMs < kOledEveryMs) {
+        return;
+    }
+    lastOledMs = now;
+    netView.mode = static_cast<ui::NetView::Mode>(wifi.mode());
+    netView.ssid = wifi.ssid();
+    netView.apSsid = wifi.apSsid();
+    netView.apPassword = net::Wifi::kApPassword;
+    netView.ip = wifi.stationIp();
+    netView.failure = static_cast<uint8_t>(wifi.lastFailure());
+    menu.tick(now);
+    if (statusModel.headline != lastHeadline) {
+        lastHeadline = statusModel.headline;
+        headlineChangedMs = now; // something happened: show it
+    }
+    const int16_t saver = controller.get(settings::Id::SystemOledSaver);
+    const uint32_t saverMs = kSaverMinutes[saver >= 0 && saver < 5 ? saver : 3] * 60'000u;
+    const uint32_t lastActivity =
+        menu.lastInputMs() > headlineChangedMs ? menu.lastInputMs() : headlineChangedMs;
+    oled.sleep(saverMs != 0 && now - lastActivity >= saverMs && !controller.revertPending());
+    menu.render(frame, now);
+    oled.show(frame);
+    if (menu.rebootRequested() && rebootAtMs == 0) {
+        rebootAtMs = now + 500;
+    }
+}
 
 void refreshStatus(uint32_t now) {
     core::BoardInfo b;
@@ -82,7 +171,13 @@ void setup() {
     if (!files.begin()) {
         Serial.println(F("filesystem unavailable: settings will not be saved"));
     }
-    controller.begin(false, millis());
+    encoder.begin();
+    oled.begin();
+    const bool safeMode = splashAndSafeMode();
+    if (safeMode) {
+        Serial.println(F("safe mode: saved settings not loaded, nothing will be saved"));
+    }
+    controller.begin(safeMode, millis());
     engine.begin(clockGenPresent);
     wifi.begin(millis());
     web.begin();
@@ -99,12 +194,12 @@ void loop() {
         lastStatusMs = now;
         refreshStatus(now);
     }
-    if (web.rebootRequested()) {
-        if (rebootAtMs == 0) {
-            rebootAtMs = now + 300; // let the answer reach the browser first
-        } else if (static_cast<int32_t>(now - rebootAtMs) >= 0) {
-            ESP.restart();
-        }
+    serviceKnobAndOled(now);
+    if (web.rebootRequested() && rebootAtMs == 0) {
+        rebootAtMs = now + 300; // let the answer reach the browser first
+    }
+    if (rebootAtMs != 0 && static_cast<int32_t>(now - rebootAtMs) >= 0) {
+        ESP.restart();
     }
     if (now - lastTickMs >= kVideoTickMs) {
         lastTickMs = now;
