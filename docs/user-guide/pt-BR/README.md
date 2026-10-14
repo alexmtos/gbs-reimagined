@@ -87,6 +87,35 @@ Quando você faz uma delas pela página web ou pelo console serial, um aviso ped
 toque em **Manter**. Se você não responder em 20 segundos, a placa volta ao que era antes: uma
 TV apagada se resolve sozinha. O tempo de espera pode ser mudado em **Sistema → Confirmar em**.
 
+## Formato, posição e tamanho da imagem
+
+Na aba **Saída**:
+
+- **Proporção** — o formato da imagem.
+  - **4:3**, o padrão, mostra os consoles como foram feitos para ser vistos: com faixas pretas nas
+    laterais em **1080p** e **720p**, ocupando a tela em **1280x960** e **480p / 576p**, e com
+    faixas pretas finas em cima e embaixo em **1280x1024**, cuja tela é um pouco mais alta que 4:3.
+  - **16:9** é para jogos com modo widescreen (GameCube, PS2, Wii): a imagem ocupa a largura em
+    1080p e 720p; em 1280x960 e 1280x1024 ganha faixas pretas em cima e embaixo, para continuar
+    correta num monitor 4:3 ou 5:4. Em 480p / 576p fica igual a 4:3.
+  - **Tela cheia** ocupa a tela, seja qual for o formato dela, esticando a imagem.
+- **Posição horizontal** e **Posição vertical** — movem a imagem, para consoles que a colocam um
+  pouco fora do centro. Cada passo vertical é uma linha da imagem do console. Onde a imagem chega à
+  borda da tela, ela é cortada ali.
+- **Largura** e **Altura** — aumentam ou diminuem a imagem, cerca de meio por cento por passo. São
+  ajustes avançados: ligue **Mostrar ajustes avançados**, no fim da página. Uma imagem maior que a
+  tela é cortada nas bordas.
+
+Algumas combinações não têm efeito, porque o scaler não consegue fazê-las sem defeito:
+
+- em **15 kHz (CRT)** só a posição funciona, e o **Passthrough** não usa nenhum desses ajustes;
+- em **1080p** a imagem não pode ficar mais estreita do que no início;
+- em **1280x960**, **1280x1024** e **480p / 576p** ela não pode ficar mais larga do que no início,
+  e em 480p / 576p também não pode ficar mais baixa.
+
+Em 1080p, consoles PAL aparecem cerca de 10 % mais largos que 4:3, pelo mesmo motivo; escolha 720p
+ou 1280x1024 para uma imagem 4:3 exata.
+
 ## Níveis de entrada
 
 Alguns consoles mandam um sinal mais forte do que a placa espera, o que deixa os brancos chapados e

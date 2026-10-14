@@ -12,7 +12,6 @@ import { SCHEMA_HASH, SETTINGS } from "../gen/settings.gen";
 // The mock device used by `pnpm dev` (browser worker) and by the tests (node server). It answers
 // like the firmware (firmware/src/core/api.cpp) on a board scaling a 240p source, so every page
 // works without hardware.
-const MILESTONE = 1;
 const REVERT_MS = 20_000;
 let seq = 0;
 const bootedAt = Date.now();
@@ -28,7 +27,7 @@ function defaultText(id: string): string {
 
 function freshValues(): Record<string, string> {
   return Object.fromEntries(
-    SETTINGS.filter((m) => m.milestone <= MILESTONE).map((m) => [m.id, defaultText(m.id)]),
+    SETTINGS.filter((m) => m.available).map((m) => [m.id, defaultText(m.id)]),
   );
 }
 
@@ -135,7 +134,7 @@ export const handlers = [
         results[id] = "unknown";
         continue;
       }
-      if (meta.milestone > MILESTONE) {
+      if (!meta.available) {
         results[id] = "unavailable";
         continue;
       }

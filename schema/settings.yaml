@@ -8,6 +8,8 @@
 #   default    value id (enum), integer (int) or true/false (bool)
 #   tier       essential | advanced
 #   milestone  M1 | M2 | M3 (settings of later milestones are generated but hidden)
+#   pending    true while a setting of the current milestone is not implemented yet: generated,
+#              hidden and refused like a later milestone's setting
 #   risky      true when a change can blank the output: it arms the timed revert
 #   unit       optional display unit
 #
@@ -15,6 +17,9 @@
 # default on existing boards. Add, remove or reorder freely; never reuse an old id for a new
 # meaning.
 schema_version: 1
+
+# The milestone this firmware is building: its settings are offered unless marked pending.
+current_milestone: M2
 
 groups: [output, input, picture, system]
 
@@ -37,12 +42,14 @@ settings:
     default: false
     tier: advanced
     milestone: M2
+    pending: true
     risky: true
   output.blankOnChange:
     type: bool
     default: false
     tier: advanced
     milestone: M2
+    pending: true
   output.aspect:
     type: enum
     values: [a4x3, a16x9, full]
@@ -91,6 +98,7 @@ settings:
     default: -1
     tier: advanced
     milestone: M2
+    pending: true
     special: {-1: auto}
   input.phase:
     type: int
@@ -99,6 +107,7 @@ settings:
     default: -1
     tier: advanced
     milestone: M2
+    pending: true
     special: {-1: auto}
   input.autoGain:
     type: bool
@@ -111,6 +120,7 @@ settings:
     default: auto
     tier: advanced
     milestone: M2
+    pending: true
     risky: true
 
   picture.brightness:
@@ -145,6 +155,7 @@ settings:
     default: false
     tier: essential
     milestone: M2
+    pending: true
   picture.scanlineStrength:
     type: int
     min: 1
@@ -152,12 +163,14 @@ settings:
     default: 4
     tier: essential
     milestone: M2
+    pending: true
   picture.deinterlace:
     type: enum
     values: [motionAdaptive, bob]
     default: motionAdaptive
     tier: advanced
     milestone: M2
+    pending: true
 
   system.language:
     type: enum
@@ -194,4 +207,5 @@ settings:
     default: -1
     tier: essential
     milestone: M2
+    pending: true
     special: {-2: autoByInput, -1: lastUsed}

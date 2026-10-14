@@ -13,7 +13,9 @@ exists in one interface and not the others is a defect.
    - Type, range, default (compatibility first), tier (essential/advanced), milestone, risky?
      (risky = can blank the output, arms the revert).
 2. **Schema:** add the entry to `schema/settings.yaml` (fields documented at the top of the file).
-   Never reuse an old id for a new meaning: ids are persisted by hash.
+   Never reuse an old id for a new meaning: ids are persisted by hash. A setting of the milestone
+   being built (`current_milestone`) that is planned but not implemented carries `pending: true`;
+   remove it in the change that implements the setting.
 3. **Strings:** add `label` (≤ 20 chars), `hint` (≤ 21 chars), `help` and value labels to both
    `schema/i18n/en.yaml` and `schema/i18n/pt-BR.yaml`. Write natural Brazilian Portuguese, not a
    word-for-word translation.

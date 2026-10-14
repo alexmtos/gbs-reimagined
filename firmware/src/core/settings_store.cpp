@@ -47,7 +47,8 @@ Def def(Id id) {
 }
 
 bool available(Id id) {
-    return def(id).milestone() <= kMilestone;
+    const Def d = def(id);
+    return d.milestone() <= kMilestone && !d.pending();
 }
 
 void idName(Id id, char* out, size_t cap) {

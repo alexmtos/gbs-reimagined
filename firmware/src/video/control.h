@@ -17,6 +17,7 @@ public:
     virtual void setFrameLock(bool on) = 0;
     virtual void setAutoGain(bool on) = 0;
     virtual void setPicture(const PictureAdjust& adj) = 0;
+    virtual void setGeometry(const GeometryAdjust& adj) = 0;
     virtual void setBaseGains(uint8_t port, const uint8_t (&gains)[3]) = 0;
     virtual void baseGains(uint8_t port, uint8_t (&gains)[3]) const = 0;
     virtual uint16_t levelsSequence() const = 0;

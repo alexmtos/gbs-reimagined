@@ -44,15 +44,9 @@ void updateClampPosition(Ops& ops, Sense& sense, PathContext& ctx);
 // PAL 15 kHz sources show all 576 lines (user decision 2026-10-13). The community programs scale
 // by whole numbers and capture 520-548 of them, cutting the top and bottom of the picture; this
 // sets the vertical scale that fits 576 lines into the visible height and starts the capture at
-// the first active line. Values measured per program with a PAL PS2 (docs/bench/M1.md). Leaves
-// programs that were not measured as they are.
+// the first active line. Values measured per program with a PAL PS2 (docs/bench/M1.md; 576p in
+// docs/bench/M2.md). Leaves the 15 kHz program, not measured, as it is.
 void fitPalVertical(Ops& ops, const PathContext& ctx);
-
-// Changes the output line length (VDS_HSYNC_RST) to `bestHTotal`, moving the display and memory
-// blanking edges by half the difference and keeping HSync inside the blanking, written at a field
-// start (mechanics §6.2, "Changing H total at runtime"). Refuses differences above 6 % of the line
-// (16 % for medium-resolution sources). Returns true when applied or nothing was needed.
-bool applyBestHTotal(Ops& ops, Sense& sense, PathContext& ctx, uint16_t bestHTotal);
 
 // Lowers the SOG slicer from its maximum until sync holds; one level per step (≤ ~70 ms each).
 class SogOptimizer {

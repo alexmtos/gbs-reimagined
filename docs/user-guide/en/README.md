@@ -86,6 +86,36 @@ example. When you make one from the web page or the serial console, a banner ask
 **Keep** it. If you do not answer within 20 seconds, the board goes back to how it was: a blank
 TV fixes itself. The waiting time can be changed in **System → Confirm within**.
 
+## Picture shape, position and size
+
+On the **Output** page:
+
+- **Aspect** — the shape of the picture.
+  - **4:3**, the default, shows consoles the way they were designed to be seen: with black bars at
+    the sides at **1080p** and **720p**, filling the screen at **1280x960** and **480p / 576p**,
+    and with thin black bars above and below at **1280x1024**, whose screen is a little taller than
+    4:3.
+  - **16:9** is for games with a widescreen mode (GameCube, PS2, Wii): the picture fills the width
+    at 1080p and 720p; at 1280x960 and 1280x1024 it gets black bars above and below, so it still
+    looks right on a 4:3 or 5:4 monitor. At 480p / 576p it looks the same as 4:3.
+  - **Full screen** fills the screen whatever its shape, stretching the picture.
+- **Horizontal position** and **Vertical position** — move the picture, for consoles that put it a
+  little off centre. Each vertical step is one line of the console's picture. Where the picture
+  reaches the edge of the screen, it is cut there.
+- **Horizontal size** and **Vertical size** — make the picture bigger or smaller, about half a
+  percent per step. They are advanced settings: turn on **Show advanced settings** at the bottom of
+  the page. A picture bigger than the screen is cut at the edges.
+
+Some combinations have no effect, because the scaler cannot do them cleanly:
+
+- at **15 kHz (CRT)** only the position works, and **Passthrough** takes none of these settings;
+- at **1080p** the picture cannot be made narrower than at the start;
+- at **1280x960**, **1280x1024** and **480p / 576p** it cannot be made wider than at the start, and
+  at 480p / 576p not shorter either.
+
+At 1080p, PAL consoles look about 10 % wider than 4:3, for the same reason; choose 720p or
+1280x1024 for an exact 4:3 picture.
+
 ## Input levels
 
 Some consoles send a brighter signal than the board expects, which makes whites look flat and

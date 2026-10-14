@@ -116,6 +116,33 @@ void Engine::setPicture(const PictureAdjust& adj) {
     }
 }
 
+void Engine::setGeometry(const GeometryAdjust& adj) {
+    if (adj == geometry_) {
+        return;
+    }
+    geometry_ = adj;
+    applyGeometry();
+}
+
+void Engine::applyGeometry() {
+    if (bypass_ || loadedProgram_ == tv5725::ProgramId::Count) {
+        status_.geometryValid = false;
+        return;
+    }
+    if (!geometryBase_.valid) {
+        // Nothing has been written over the program yet, so its geometry can still be read.
+        geometryBase_ = readGeometryBase(chip_, ctx_);
+        if (!geometryBase_.valid) {
+            status_.geometryValid = false;
+            return;
+        }
+    }
+    status_.geometry =
+        computeGeometry(geometryBase_, geometry_, static_cast<uint16_t>(chip_.get(VDS_HSYNC_RST)));
+    status_.geometryValid = true;
+    writeGeometry(chip_, status_.geometry);
+}
+
 void Engine::setBaseGains(uint8_t port, const uint8_t (&gains)[3]) {
     for (uint8_t c = 0; c < 3; ++c) {
         baseGain_[port ? 1 : 0][c] = gains[c];
@@ -177,6 +204,8 @@ void Engine::goLowPower() {
     motionAdaptiveActive_ = false;
     loadedProgram_ = tv5725::ProgramId::Count;
     bypass_ = false;
+    geometryBase_ = GeometryBase{};
+    status_.geometryValid = false;
     newModeCounter_ = stableCounter_ = syncLossDebounce_ = sourceGoneProbes_ = 0;
     fallbackTried_ = crtcHold_ = sourceWasClassified_ = false;
     lastDetectMs_ = nowMs();
@@ -550,6 +579,8 @@ void Engine::runLoad() {
     clock_.resetForProgram(info.displayClock);
     hdmiSyncFix_ = false;
     loadedProgram_ = program;
+    geometryBase_ = readGeometryBase(chip_, ctx_);
+    applyGeometry();
     status_.loads++;
     status_.lastLoadMs = nowMs();
     status_.outputMode = effectiveMode(standard);
@@ -574,6 +605,8 @@ void Engine::startHdBypass(Standard standard) {
     enterHdBypass(ops_, sense_, ctx_);
     loadedProgram_ = tv5725::ProgramId::Count;
     bypass_ = true;
+    geometryBase_ = GeometryBase{};
+    status_.geometryValid = false;
     hdmiSyncFix_ = false;
     status_.loads++;
     status_.lastLoadMs = nowMs();
@@ -593,6 +626,8 @@ void Engine::startRgbhvBypass() {
     enterRgbhvBypass(ops_, ctx_);
     loadedProgram_ = tv5725::ProgramId::Count;
     bypass_ = true;
+    geometryBase_ = GeometryBase{};
+    status_.geometryValid = false;
     rgbhvBand_ = 0;
     rgbhvUnstable_ = 0;
     lastBandCheckMs_ = nowMs();
@@ -1136,7 +1171,12 @@ void Engine::lockFrameRate() {
         const uint64_t htotal = chip_.get(VDS_HSYNC_RST);
         const uint64_t best = htotal * PixelClock::kMaxHz * 998u /
                               (static_cast<uint64_t>(clock_.requiredHz()) * 1000u);
-        if (applyBestHTotal(ops_, sense_, ctx_, static_cast<uint16_t>(best))) {
+        if (applyBestHTotal(ops_, sense_, ctx_, static_cast<uint16_t>(best), geometryBase_,
+                            geometry_)) {
+            if (geometryBase_.valid) {
+                status_.geometry =
+                    computeGeometry(geometryBase_, geometry_, static_cast<uint16_t>(best));
+            }
             r = clock_.syncToSource(ctx_.syncCsync);
         }
     }

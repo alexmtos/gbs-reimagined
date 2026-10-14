@@ -306,6 +306,13 @@ void Console::printStatus() {
                     st.clockAdopted ? "(external)" : "(internal)", st.frameLocked ? " locked" : "",
                     static_cast<unsigned long>(st.sourceMilliHz),
                     static_cast<unsigned long>(st.outputMilliHz));
+    if (st.geometryValid) {
+        const video::GeometryRegs& g = st.geometry;
+        Serial.printf_P(PSTR("geometry scale H %u V %u | window H %u..%u V %u..%u | capture H %u V "
+                             "%u\r\n"),
+                        g.hscale, g.vscale, g.disHbSp, g.disHbSt, g.disVbSp, g.disVbSt, g.ifHbSp2,
+                        g.ifVbSp);
+    }
     static const char* const kLevelOutcome[] = {"not run",   "running", "done",
                                                 "not white", "too hot", "aborted"};
     Serial.printf_P(PSTR("ADC offset R %02X G %02X B %02X%s | gain R %02X G %02X B %02X, auto gain "

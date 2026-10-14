@@ -66,7 +66,9 @@ def main() -> int:
     status = [
         ln.strip()
         for ln in text.splitlines()
-        if ln.startswith(("state ", "source lines", "program ", "clock ", "ADC offset", "SOG "))
+        if ln.startswith(
+            ("state ", "source lines", "program ", "clock ", "geometry ", "ADC offset", "SOG ")
+        )
     ]
     levels = [ln for ln in text.splitlines() if ln.startswith("top ")]
     cap = subprocess.run(

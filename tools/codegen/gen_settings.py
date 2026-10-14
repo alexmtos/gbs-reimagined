@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -21,6 +22,7 @@ REFERENCE_LOCALE = "en"
 FLAG_RISKY = 0x01
 FLAG_ADVANCED = 0x02
 MILESTONE_SHIFT = 4  # flags bits 4..5: milestone 1..3
+FLAG_PENDING = 0x40
 
 
 def fnv1a(text: str) -> int:
@@ -93,6 +95,8 @@ def special_ids(setting: dict) -> list[tuple[int, str]]:
 def validate(schema: dict, locales: dict[str, dict]) -> list[str]:
     problems: list[str] = []
     settings: dict = schema["settings"]
+    if not re.fullmatch(r"M[123]", str(schema.get("current_milestone", ""))):
+        problems.append("current_milestone must be M1, M2 or M3")
     if REFERENCE_LOCALE not in locales:
         problems.append(f"missing reference locale {REFERENCE_LOCALE}")
     hashes: dict[int, str] = {}
@@ -121,6 +125,8 @@ def validate(schema: dict, locales: dict[str, dict]) -> list[str]:
         for field in ("tier", "milestone"):
             if field not in s:
                 problems.append(f"{sid}: missing {field}")
+        if "pending" in s and s["pending"] is not True:
+            problems.append(f"{sid}: pending is either true or absent")
     for loc, data in locales.items():
         strings = data.get("settings", {})
         for group in schema["groups"]:
@@ -192,6 +198,14 @@ def milestone_number(s: dict) -> int:
     return int(str(s["milestone"]).lstrip("M"))
 
 
+def current_milestone(schema: dict) -> int:
+    return int(str(schema["current_milestone"]).lstrip("M"))
+
+
+def is_available(schema: dict, s: dict) -> bool:
+    return milestone_number(s) <= current_milestone(schema) and not s.get("pending")
+
+
 def generate(root: Path, banner) -> dict[Path, str]:
     schema, locales = load(root / "schema")
     problems = validate(schema, locales)
@@ -213,6 +227,7 @@ def generate(root: Path, banner) -> dict[Path, str]:
         flags = FLAG_RISKY if s.get("risky") else 0
         flags |= FLAG_ADVANCED if s["tier"] == "advanced" else 0
         flags |= milestone_number(s) << MILESTONE_SHIFT
+        flags |= FLAG_PENDING if s.get("pending") else 0
         if s["type"] == "enum":
             vmin, vmax, vdef = 0, len(s["values"]) - 1, s["values"].index(s["default"])
             # Trailing NUL plus the blob's own terminator = the empty string that ends the list.
@@ -239,6 +254,8 @@ def generate(root: Path, banner) -> dict[Path, str]:
     hdr += ["    Count,", "};", ""]
     hdr += [f'inline constexpr char kSchemaHash[] = "{shash}";']
     hdr += [f"inline constexpr uint8_t kGroupCount = {len(schema['groups'])};"]
+    hdr += ["// The milestone being built; later milestones' settings are generated but hidden."]
+    hdr += [f"inline constexpr uint8_t kMilestone = {current_milestone(schema)};"]
     hdr += ["", "} // namespace gbsr::settings", ""]
     out[root / "firmware/src/core/settings.gen.h"] = "\n".join(hdr)
 
@@ -307,6 +324,7 @@ def generate(root: Path, banner) -> dict[Path, str]:
             "default": s["default"],
             "tier": s["tier"],
             "milestone": milestone_number(s),
+            "available": is_available(schema, s),
             "risky": bool(s.get("risky")),
         }
         if s["type"] == "enum":
@@ -321,7 +339,8 @@ def generate(root: Path, banner) -> dict[Path, str]:
     ts += ["export interface SettingMeta {"]
     ts += ["  id: SettingId;", "  group: SettingGroup;", "  type: SettingType;"]
     ts += ["  default: string | number | boolean;", "  tier: 'essential' | 'advanced';"]
-    ts += ["  milestone: number;", "  risky: boolean;", "  values?: readonly string[];"]
+    ts += ["  milestone: number;", "  available: boolean;", "  risky: boolean;"]
+    ts += ["  values?: readonly string[];"]
     ts += ["  min?: number;", "  max?: number;", "  special?: Readonly<Record<string, string>>;"]
     ts += ["}", ""]
     ts += [f"export const SCHEMA_HASH = '{shash}';", ""]
@@ -376,7 +395,7 @@ def generate(root: Path, banner) -> dict[Path, str]:
             risky = " ⚠" if s.get("risky") else ""
             md.append(
                 f"| `{sid}`{risky} | {e['label']} | {values} | {default} | {s['tier']} |"
-                f" {s['milestone']} | {e['help']} |"
+                f" {s['milestone']}{' (pending)' if s.get('pending') else ''} | {e['help']} |"
             )
         md.append("")
     out[root / "docs/reference/settings.md"] = "\n".join(md)

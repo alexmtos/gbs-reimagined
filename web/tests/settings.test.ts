@@ -19,7 +19,8 @@ describe("settings", () => {
     await loadSettings();
     expect(values.value["output.resolution"]).toBe("auto");
     expect(values.value["picture.sharpness"]).toBe("off");
-    expect(values.value["output.aspect"]).toBeUndefined(); // M2
+    expect(values.value["output.aspect"]).toBe("a4x3");
+    expect(values.value["picture.scanlines"]).toBeUndefined(); // M2, pending
   });
 
   it("keeps an accepted change and marks it saved", async () => {

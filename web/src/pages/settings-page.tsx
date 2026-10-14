@@ -8,7 +8,6 @@ import { settingText, t, valueLabel } from "../i18n";
 import { changeSetting, fieldState, loaded, values } from "../state/settings";
 
 export const showAdvanced = signal(false);
-const CURRENT_MILESTONE = 1;
 
 /** The control for one setting; the board's answer decides what it finally shows. */
 function Control({ meta }: { meta: SettingMeta }) {
@@ -134,10 +133,7 @@ function SystemActions() {
 
 export function SettingsPage({ group }: { group: SettingGroup }) {
   const visible = SETTINGS.filter(
-    (m) =>
-      m.group === group &&
-      m.milestone <= CURRENT_MILESTONE &&
-      (showAdvanced.value || m.tier === "essential"),
+    (m) => m.group === group && m.available && (showAdvanced.value || m.tier === "essential"),
   );
   if (!loaded.value) {
     return <p class="muted">{t("conn.reconnecting")}</p>;
