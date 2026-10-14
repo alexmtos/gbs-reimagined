@@ -1,5 +1,5 @@
-// Shape of GET /api/status. Draft contract for M1; it moves to schema/api.yaml with the firmware
-// implementation (docs/design/architecture.md, "HTTP API").
+// Shapes of the board's JSON API (firmware/src/core/api.cpp, core/status.cpp, net/web.cpp;
+// docs/design/architecture.md, "HTTP API").
 
 export type HeadlineCode =
   | "scalerMissing"
@@ -50,8 +50,56 @@ export interface BoardStatus {
 export interface Status {
   seq: number;
   headline: HeadlineCode;
+  /** Booted with defaults; nothing is saved. */
+  safeMode?: boolean;
   source: SourceStatus;
   output: OutputStatus;
   board: BoardStatus;
   revert?: { secondsLeft: number };
+}
+
+/** GET /api/settings: every setting of this firmware's milestone, as value text. */
+export interface SettingsResponse {
+  schema: string;
+  values: Record<string, string>;
+  revert?: { secondsLeft: number };
+}
+
+export type SetOutcome =
+  | "applied"
+  | "unchanged"
+  | "invalid"
+  | "unavailable"
+  | "unknown"
+  | "revertArmed";
+
+/** POST /api/settings answer. */
+export interface SettingsResult {
+  results: Record<string, SetOutcome>;
+  revert?: { secondsLeft: number };
+}
+
+export type CommandName = "keep" | "revert" | "calibrate" | "reboot" | "factoryReset";
+
+export interface CommandResult {
+  ok: boolean;
+  reason?: string;
+}
+
+export type WifiMode = "joining" | "joined" | "setup";
+
+/** GET /api/wifi */
+export interface WifiStatus {
+  mode: WifiMode;
+  ssid: string;
+  ip: string;
+  rssi: number;
+  hostname: string;
+  ap: { active: boolean; ssid: string; ip: string };
+}
+
+/** GET /api/wifi/scan: polled until `scanning` is false. */
+export interface ScanResult {
+  scanning: boolean;
+  networks?: { ssid: string; rssi: number; secure: boolean }[];
 }
