@@ -197,6 +197,7 @@ void fitPalVertical(Ops& ops, const PathContext& ctx) {
         {0x12, 576}, // 1280x1024: 1024 × 576 / 1024; was 512
         {0x11, 614}, // 1280x960: 1024 × 576 / 960; was 585
         {0x13, 0},   // 1280x720: 819 already shows 576 lines; only the capture start moves
+        {0x14, 0},   // 576p: 1:1 already; the capture started at 42, cutting the top (M2)
     };
     constexpr uint16_t kFirstActiveLine = 16; // IF_VB_ST; the stop is two lines later
     for (const Fit& f : kFits) {

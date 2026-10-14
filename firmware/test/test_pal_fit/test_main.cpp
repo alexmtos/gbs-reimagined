@@ -50,14 +50,22 @@ TEST_CASE("each measured PAL program gets its own scale; 720p keeps its scale") 
     CHECK(c.chip.get(IF_VB_ST) == 16);
 }
 
-TEST_CASE("NTSC, unmeasured PAL programs and the bypass are left alone") {
+TEST_CASE("576p keeps its 1:1 scale and starts at the first active line") {
+    Rig r(video::Standard::Pal, 0x14);
+    video::fitPalVertical(r.ops, r.ctx);
+    CHECK(r.chip.get(VDS_VSCALE) == 512); // untouched
+    CHECK(r.chip.get(IF_VB_ST) == 16);
+    CHECK(r.chip.get(IF_VB_SP) == 18);
+}
+
+TEST_CASE("NTSC, the unmeasured 15 kHz PAL program and the bypass are left alone") {
     Rig ntsc(video::Standard::Ntsc, 0x05);
     video::fitPalVertical(ntsc.ops, ntsc.ctx);
     CHECK(ntsc.chip.get(VDS_VSCALE) == 512);
     CHECK(ntsc.chip.get(IF_VB_ST) == 38);
-    Rig pal576(video::Standard::Pal, 0x14);
-    video::fitPalVertical(pal576.ops, pal576.ctx);
-    CHECK(pal576.chip.get(IF_VB_ST) == 38);
+    Rig pal15k(video::Standard::Pal, 0x16);
+    video::fitPalVertical(pal15k.ops, pal15k.ctx);
+    CHECK(pal15k.chip.get(IF_VB_ST) == 38);
     Rig bypass(video::Standard::Pal, 0x15);
     bypass.ctx.hdBypass = true;
     video::fitPalVertical(bypass.ops, bypass.ctx);

@@ -44,8 +44,8 @@ void updateClampPosition(Ops& ops, Sense& sense, PathContext& ctx);
 // PAL 15 kHz sources show all 576 lines (user decision 2026-10-13). The community programs scale
 // by whole numbers and capture 520-548 of them, cutting the top and bottom of the picture; this
 // sets the vertical scale that fits 576 lines into the visible height and starts the capture at
-// the first active line. Values measured per program with a PAL PS2 (docs/bench/M1.md). Leaves
-// programs that were not measured as they are.
+// the first active line. Values measured per program with a PAL PS2 (docs/bench/M1.md; 576p in
+// docs/bench/M2.md). Leaves the 15 kHz program, not measured, as it is.
 void fitPalVertical(Ops& ops, const PathContext& ctx);
 
 // Lowers the SOG slicer from its maximum until sync holds; one level per step (≤ ~70 ms each).
