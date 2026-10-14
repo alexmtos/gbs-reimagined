@@ -121,6 +121,7 @@ private:
     void goLowPower();
 
     // Loader
+    OutputMode effectiveMode(Standard standard) const;
     tv5725::ProgramId chooseProgram(Standard standard) const;
     void beginLoad(Standard standard);
     void runLoad();

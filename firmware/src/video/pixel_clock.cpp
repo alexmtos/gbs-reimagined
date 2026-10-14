@@ -110,6 +110,11 @@ bool PixelClock::adopted() {
     return ops_.chip().get(PLL648_CONTROL_01) == kExternalClockCode;
 }
 
+void PixelClock::measure(bool csync) {
+    sourceMilliHz_ = sense_.sourceFieldRateMilliHz(false, csync);
+    outputMilliHz_ = sense_.outputFrameRateMilliHz();
+}
+
 PixelClock::SyncResult PixelClock::syncToSource(bool csync) {
     if (!present() || ops_.chip().get(PAD_CKIN_ENZ) != 0 || !adopted()) {
         return SyncResult::NotReady;

@@ -128,6 +128,8 @@ void Console::handleLine(char* line) {
     } else if (strcasecmp(cmd, "revert") == 0) {
         Serial.println(ctl_.revertPending() ? F("reverting") : F("nothing to revert"));
         ctl_.revert();
+    } else if (strcasecmp(cmd, "wifi") == 0) {
+        cmdWifi(rest);
     } else if (strcasecmp(cmd, "calibrate") == 0) {
         Serial.println(ctl_.calibrateLevels()
                            ? F("calibrating levels: keep a white screen showing for a few seconds")
@@ -169,8 +171,27 @@ void Console::help() {
     Serial.println(F("input <port>            auto rgb component"));
     Serial.println(F("keep | revert           answer a pending revert"));
     Serial.println(F("calibrate               set input levels from a white screen"));
+    Serial.println(F("wifi [<ssid> [password]] show the network, or join one"));
     Serial.println(F("reboot | factory-reset"));
     Serial.println(F("expert on|off           reg <FIELD> [value], dump <seg>, levels r|g|b [n]"));
+}
+
+void Console::cmdWifi(char* args) {
+    const char* ssid = nextWord(args);
+    if (ssid[0] != '\0') {
+        const char* password = nextWord(args);
+        Serial.println(wifi_.join(ssid, password, millis()) ? F("joining") : F("invalid network"));
+        return;
+    }
+    static const char* const kMode[] = {"joining", "joined", "setup"};
+    const uint32_t ip = wifi_.stationIp();
+    Serial.printf_P(PSTR("wifi %s, network \"%s\", address %u.%u.%u.%u (gbs.local), rssi %d\r\n"),
+                    kMode[static_cast<uint8_t>(wifi_.mode())], wifi_.ssid(), ip & 0xFF,
+                    ip >> 8 & 0xFF, ip >> 16 & 0xFF, ip >> 24, wifi_.rssi());
+    if (wifi_.apActive()) {
+        Serial.printf_P(PSTR("setup access point \"%s\", password \"%s\", http://192.168.4.1\r\n"),
+                        wifi_.apSsid(), net::Wifi::kApPassword);
+    }
 }
 
 void Console::cmdGet(char* args) {

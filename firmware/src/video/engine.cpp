@@ -449,15 +449,18 @@ void Engine::detectFound(bool ypbpr) {
 // ------------------------------------------------------------------------------------------------
 // Loader
 
+OutputMode Engine::effectiveMode(Standard standard) const {
+    if (outputPref_ != OutputMode::Auto) {
+        return outputPref_;
+    }
+    // 960 is an exact 4x of 240p and 2x of 480i; PAL's 288p fits 1024 better.
+    return isPalFamily(standard) ? OutputMode::R1024p : OutputMode::R960p;
+}
+
 tv5725::ProgramId Engine::chooseProgram(Standard standard) const {
     using P = tv5725::ProgramId;
     const bool pal = isPalFamily(standard);
-    OutputMode mode = outputPref_;
-    if (mode == OutputMode::Auto) {
-        // 960 is an exact 4x of 240p and 2x of 480i; PAL's 288p fits 1024 better.
-        mode = pal ? OutputMode::R1024p : OutputMode::R960p;
-    }
-    switch (mode) {
+    switch (effectiveMode(standard)) {
     case OutputMode::R1080p:
         return pal ? P::Pal1080p : P::Ntsc1080p;
     case OutputMode::R1024p:
@@ -525,6 +528,7 @@ void Engine::runLoad() {
     loadedProgram_ = program;
     status_.loads++;
     status_.lastLoadMs = nowMs();
+    status_.outputMode = effectiveMode(standard);
     stableCounter_ = 0;
     newModeCounter_ = 0;
     ctx_.noSyncCounter = 0;
@@ -994,6 +998,8 @@ void Engine::loopLevel() {
         if (clock_.present() && frameLockOn_ && ctx_.standard != Standard::RgbhvScaled) {
             clock_.adopt();
             lockFrameRate();
+        } else {
+            clock_.measure(ctx_.syncCsync); // rates for the status
         }
         doneStagePending_ = false;
         gNotAdoptedSinceMs = nowMs();

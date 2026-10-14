@@ -47,6 +47,8 @@ public:
 
     // Measure source and output rates and retune so they match (ADR 0006).
     SyncResult syncToSource(bool csync);
+    // Measure both rates for the status only (frame lock off, or no generator).
+    void measure(bool csync);
 
     // The clock the last measurement asked for, even when refused.
     uint32_t requiredHz() const { return requiredHz_; }
