@@ -13,5 +13,10 @@ export const warn = (text: string): Notice => ({ text, tone: "warn" });
 export const bad = (text: string): Notice => ({ text, tone: "bad" });
 
 export function Note({ notice }: { notice: Notice | null }) {
-  return notice ? <p class={`setting-note ${notice.tone}`}>{notice.text}</p> : null;
+  // role=status: screen readers announce it politely when it appears or changes.
+  return notice ? (
+    <p class={`setting-note ${notice.tone}`} role="status">
+      {notice.text}
+    </p>
+  ) : null;
 }

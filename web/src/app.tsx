@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals";
-import { RevertBanner, SafeModeBanner } from "./components/banners";
+import { RevertBanner, SafeModeBanner, SetupBanner } from "./components/banners";
 import type { MessageKey } from "./i18n";
 import { LOCALES, locale, settingText, t } from "./i18n";
 import { NetworkPage } from "./pages/network-page";
@@ -10,14 +10,15 @@ import { chooseLanguage } from "./state/settings";
 import { connection } from "./state/status";
 
 type PageId = "status" | "picture" | "output" | "input" | "profiles" | "system" | "network";
+// The board's menu order (Output, Input, Picture, Profiles, Network, System), after Status.
 const PAGES: readonly PageId[] = [
   "status",
-  "picture",
   "output",
   "input",
+  "picture",
   "profiles",
-  "system",
   "network",
+  "system",
 ];
 
 function pageFromHash(): PageId {
@@ -65,6 +66,7 @@ export function App() {
         ))}
       </nav>
       <SafeModeBanner />
+      {current !== "network" && <SetupBanner />}
       <RevertBanner />
       <main>
         {current === "status" ? (

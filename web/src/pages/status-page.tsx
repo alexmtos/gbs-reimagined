@@ -35,6 +35,22 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** "1 h 02 min", "3 min 20 s" or "45 s". */
+export function uptimeText(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const sec = seconds % 60;
+  if (h > 0) return t("status.uptimeHours", { h, m: String(m).padStart(2, "0") });
+  if (m > 0) return t("status.uptimeMinutes", { m, s: String(sec).padStart(2, "0") });
+  return t("status.uptimeSeconds", { s: sec });
+}
+
+const SYNC_KEY: Readonly<Record<string, MessageKey>> = {
+  hv: "sync.hv",
+  csync: "sync.csync",
+  sog: "sync.sog",
+};
+
 export function StatusPage() {
   const s = status.value;
   if (!s) {
@@ -50,6 +66,10 @@ export function StatusPage() {
               ? (`status.lockReason.${s.output.frameLockReason}` as MessageKey)
               : "common.unknown",
           );
+  // With no signal there is nothing to measure: a dash, not "0.00 kHz".
+  const dash = t("common.unknown");
+  const source = s.source.port !== "none";
+  const sync = SYNC_KEY[s.source.sync];
   return (
     <section>
       <h1 class={`headline headline-${s.headline}`}>{headline(s, values.value["input.port"])}</h1>
@@ -62,24 +82,49 @@ export function StatusPage() {
       <div class="cards">
         <dl class="card">
           <h2>{t("status.source")}</h2>
-          <Row label={t("status.lines")} value={s.source.lines ? String(s.source.lines) : "—"} />
-          <Row label={t("status.hfreq")} value={`${formatNumber(s.source.hFreqKHz, 2)} kHz`} />
-          <Row label={t("status.vfreq")} value={`${formatNumber(s.source.vFreqHz, 3)} Hz`} />
+          <Row
+            label={t("status.input")}
+            value={source ? valueLabel("input.port", s.source.port) : dash}
+          />
+          <Row label={t("status.sync")} value={source && sync ? t(sync) : dash} />
+          <Row label={t("status.standard")} value={s.source.standard || dash} />
+          <Row label={t("status.lines")} value={s.source.lines ? String(s.source.lines) : dash} />
+          <Row
+            label={t("status.hfreq")}
+            value={s.source.hFreqKHz ? `${formatNumber(s.source.hFreqKHz, 2)} kHz` : dash}
+          />
+          <Row
+            label={t("status.vfreq")}
+            value={s.source.vFreqHz ? `${formatNumber(s.source.vFreqHz, 3)} Hz` : dash}
+          />
         </dl>
         <dl class="card">
           <h2>{t("status.output")}</h2>
           <Row
-            label={t("status.pixelClock")}
-            value={`${formatNumber(s.output.pixelClockMHz, 3)} MHz`}
+            label={t("status.mode")}
+            value={s.output.mode !== "auto" ? valueLabel("output.resolution", s.output.mode) : dash}
           />
-          <Row label={t("status.vfreq")} value={`${formatNumber(s.output.rateHz, 3)} Hz`} />
+          <Row
+            label={t("status.pixelClock")}
+            value={s.output.pixelClockMHz ? `${formatNumber(s.output.pixelClockMHz, 3)} MHz` : dash}
+          />
+          <Row
+            label={t("status.vfreq")}
+            value={s.output.rateHz ? `${formatNumber(s.output.rateHz, 3)} Hz` : dash}
+          />
           <Row label={t("status.frameLock")} value={lock} />
         </dl>
         <dl class="card">
           <h2>{t("status.board")}</h2>
           <Row label={t("status.version")} value={s.board.version} />
+          <Row label={t("status.ip")} value={s.board.ip} />
+          <Row label={t("status.rssi")} value={s.board.rssi ? `${s.board.rssi} dBm` : dash} />
+          <Row
+            label={t("status.clockGen")}
+            value={s.board.clockGen ? t("status.present") : t("status.absent")}
+          />
           <Row label={t("status.heap")} value={`${formatNumber(s.board.heapFree)} B`} />
-          <Row label={t("status.uptime")} value={`${formatNumber(s.board.uptimeS)} s`} />
+          <Row label={t("status.uptime")} value={uptimeText(s.board.uptimeS)} />
         </dl>
       </div>
     </section>

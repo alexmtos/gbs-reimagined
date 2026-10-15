@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
-import { exportProfile, fetchBackup } from "../api/endpoints";
-import type { BackupDocument, ProfileContent, ProfileSummary } from "../api/types";
+import { exportProfile } from "../api/endpoints";
+import type { ProfileContent, ProfileSummary } from "../api/types";
 import { bad, info, Note, type Notice, warn } from "../components/note";
 import { downloadJson } from "../download";
 import { SETTINGS } from "../gen/settings.gen";
@@ -10,11 +10,9 @@ import {
   describeSource,
   firstFreeSlot,
   loadProfiles,
-  parseBackupFile,
   parseProfileFile,
   profiles,
   reasonKey,
-  restoreBackup,
   runProfile,
   SLOTS,
 } from "../state/profiles";
@@ -185,7 +183,40 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
   );
 }
 
-/** Save the current settings into a slot, or import a profile file into it. */
+/** The slot to write into; with every slot used, none is preselected: replacing must be a choice. */
+function SlotSelect({ chosen, onChoose }: { chosen: number; onChoose: (slot: number) => void }) {
+  const list = profiles.value;
+  if (!list) return null;
+  return (
+    <label>
+      {t("profiles.slot")}
+      <select
+        value={chosen}
+        onChange={(e) => onChoose(Number(e.currentTarget.value))}
+        aria-label={t("profiles.slot")}
+      >
+        {chosen === 0 && (
+          <option value={0} disabled>
+            {t("profiles.chooseSlot")}
+          </option>
+        )}
+        {Array.from({ length: SLOTS }, (_, i) => i + 1).map((n) => {
+          const used = list.profiles.find((p) => p.slot === n);
+          return (
+            <option key={n} value={n}>
+              {used ? `${n} · ${used.name}` : t("profiles.slotFree", { slot: n })}
+            </option>
+          );
+        })}
+      </select>
+    </label>
+  );
+}
+
+const replacing = (slot: number, name: string) =>
+  warn(t("profiles.replaceConfirm", { name: `${slot} · ${name}` }));
+
+/** Save the current settings into a slot; a slot in use is replaced only after a second press. */
 function SaveForm() {
   const list = profiles.value;
   const [slot, setSlot] = useState(0);
@@ -193,11 +224,9 @@ function SaveForm() {
   const [forSource, setForSource] = useState(false);
   const [note, setNote] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
-  // With every slot used, nothing is preselected: replacing one must be a choice.
+  const [armed, setArmed] = useState(false);
   const chosen = slot || firstFreeSlot();
   const existing = list?.profiles.find((p) => p.slot === chosen);
-  const [armed, setArmed] = useState<"save" | "import" | null>(null);
-  const [pendingImport, setPendingImport] = useState<ProfileContent | null>(null);
 
   // A slot that loads by itself keeps doing so unless the box is cleared.
   useEffect(() => {
@@ -207,86 +236,36 @@ function SaveForm() {
   if (!list) return null;
   const full = firstFreeSlot() === 0;
 
-  const replacing = () =>
-    warn(t("profiles.replaceConfirm", { name: `${chosen} · ${existing?.name ?? ""}` }));
-
   const save = async (e: Event) => {
     e.preventDefault();
-    if (existing && armed !== "save") {
-      setArmed("save");
-      setNote(replacing());
+    if (existing && !armed) {
+      setArmed(true);
+      setNote(replacing(chosen, existing.name));
       return;
     }
-    setArmed(null);
+    setArmed(false);
     setBusy(true);
     // Without a source now, a slot that loads by itself keeps the source it has.
-    const source = forSource ? (list?.source ? "this" : "keep") : "none";
+    const source = forSource ? (list.source ? "this" : "keep") : "none";
     const a = await runProfile({ action: "save", slot: chosen, name: name.trim(), source });
     setNote(a.ok ? info(t("profiles.saved")) : bad(t(reasonKey(a))));
     if (a.ok) setName("");
     setBusy(false);
   };
 
-  const runImport = async (content: ProfileContent) => {
-    setArmed(null);
-    setPendingImport(null);
-    setBusy(true);
-    const a = await runProfile({ action: "import", slot: chosen, profile: content });
-    setNote(
-      !a.ok
-        ? bad(t(reasonKey(a)))
-        : a.skipped?.length
-          ? warn(t("profiles.importedSkipped", { ids: a.skipped.join(", ") }))
-          : info(t("profiles.imported")),
-    );
-    setBusy(false);
-  };
-
-  const importFile = async (file: File) => {
-    const content = parseProfileFile(await file.text());
-    if (!content) {
-      setNote(bad(t("profiles.notProfile")));
-    } else if (existing) {
-      setPendingImport(content);
-      setArmed("import");
-      setNote(replacing());
-    } else {
-      await runImport(content);
-    }
-  };
-
   return (
-    <div class="setting">
+    <li class="setting">
       <h2 class="setting-label">{t("profiles.saveTitle")}</h2>
       {full && <p class="setting-help">{t("profiles.full")}</p>}
       <form class="join" onSubmit={save}>
-        <label>
-          {t("profiles.slot")}
-          <select
-            value={chosen}
-            onChange={(e) => {
-              setSlot(Number(e.currentTarget.value));
-              setArmed(null);
-              setPendingImport(null);
-              setNote(null);
-            }}
-            aria-label={t("profiles.slot")}
-          >
-            {chosen === 0 && (
-              <option value={0} disabled>
-                {t("profiles.chooseSlot")}
-              </option>
-            )}
-            {Array.from({ length: SLOTS }, (_, i) => i + 1).map((n) => {
-              const used = list.profiles.find((p) => p.slot === n);
-              return (
-                <option key={n} value={n}>
-                  {used ? `${n} · ${used.name}` : t("profiles.slotFree", { slot: n })}
-                </option>
-              );
-            })}
-          </select>
-        </label>
+        <SlotSelect
+          chosen={chosen}
+          onChoose={(n) => {
+            setSlot(n);
+            setArmed(false);
+            setNote(null);
+          }}
+        />
         <label>
           {t("profiles.name")}
           <input
@@ -306,89 +285,69 @@ function SaveForm() {
           {t("profiles.forSource")}
         </label>
         <button type="submit" class="primary" disabled={busy || chosen === 0}>
-          {armed === "save" ? t("profiles.replace") : t("profiles.save")}
+          {armed ? t("profiles.replace") : t("profiles.save")}
         </button>
-        <label>
-          {t("profiles.import")}
+      </form>
+      <Note notice={note} />
+    </li>
+  );
+}
+
+/** Import a profile file (from Export, on this board or another) into a slot. */
+function ImportForm() {
+  const list = profiles.value;
+  const [slot, setSlot] = useState(0);
+  const [note, setNote] = useState<Notice | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<ProfileContent | null>(null);
+  const chosen = slot || firstFreeSlot();
+  const existing = list?.profiles.find((p) => p.slot === chosen);
+  if (!list) return null;
+
+  const run = async (content: ProfileContent) => {
+    setPending(null);
+    setBusy(true);
+    const a = await runProfile({ action: "import", slot: chosen, profile: content });
+    setNote(
+      !a.ok
+        ? bad(t(reasonKey(a)))
+        : a.skipped?.length
+          ? warn(t("profiles.importedSkipped", { ids: a.skipped.join(", ") }))
+          : info(t("profiles.imported")),
+    );
+    setBusy(false);
+  };
+
+  const choose = async (file: File) => {
+    const content = parseProfileFile(await file.text());
+    if (!content) {
+      setNote(bad(t("profiles.notProfile")));
+    } else if (existing) {
+      setPending(content);
+      setNote(replacing(chosen, existing.name));
+    } else {
+      await run(content);
+    }
+  };
+
+  return (
+    <li class="setting">
+      <h2 class="setting-label">{t("profiles.importTitle")}</h2>
+      <div class="join">
+        <SlotSelect
+          chosen={chosen}
+          onChoose={(n) => {
+            setSlot(n);
+            setPending(null);
+            setNote(null);
+          }}
+        />
+        <label class="file">
+          {t("profiles.importFile")}
           <input
             type="file"
             accept="application/json,.json"
             disabled={busy || chosen === 0}
-            onChange={(e) => {
-              const file = e.currentTarget.files?.[0];
-              e.currentTarget.value = "";
-              if (file) void importFile(file);
-            }}
-          />
-        </label>
-        {pendingImport && (
-          <button type="button" class="primary" onClick={() => void runImport(pendingImport)}>
-            {t("profiles.replace")}
-          </button>
-        )}
-      </form>
-      <Note notice={note} />
-    </div>
-  );
-}
-
-/** Download a backup; restore one after a second press, saying what did not come back. */
-function Backup() {
-  const [note, setNote] = useState<Notice | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<BackupDocument | null>(null);
-  const choose = async (file: File) => {
-    const backup = parseBackupFile(await file.text());
-    if (!backup) {
-      setPending(null);
-      setNote(bad(t("profiles.backup.notBackup")));
-      return;
-    }
-    setPending(backup);
-    setNote(warn(t("profiles.backup.confirm", { count: Object.keys(backup.profiles).length })));
-  };
-  const restore = async (backup: BackupDocument) => {
-    setPending(null);
-    setBusy(true);
-    const report = await restoreBackup(backup);
-    if (!report) {
-      setNote(bad(t("action.failed")));
-    } else {
-      const parts = [t("profiles.backup.restored", { count: report.profiles })];
-      if (report.refused.length) {
-        parts.push(t("profiles.backup.refused", { ids: report.refused.join(", ") }));
-      }
-      if (report.revertArmed) parts.push(t("profiles.backup.keep"));
-      const text = parts.join(" ");
-      setNote(report.refused.length || report.revertArmed ? warn(text) : info(text));
-    }
-    setBusy(false);
-  };
-  return (
-    <div class="setting">
-      <h2 class="setting-label">{t("profiles.backup")}</h2>
-      <p class="setting-help">{t("profiles.backup.help")}</p>
-      <div class="actions">
-        <button
-          type="button"
-          disabled={busy}
-          onClick={async () => {
-            try {
-              const backup = await fetchBackup();
-              downloadJson("gbs-backup.json", backup);
-            } catch {
-              setNote(bad(t("action.failed")));
-            }
-          }}
-        >
-          {t("profiles.backup.download")}
-        </button>
-        <label class="file">
-          {t("profiles.backup.restore")}
-          <input
-            type="file"
-            accept="application/json,.json"
-            disabled={busy}
             onChange={(e) => {
               const file = e.currentTarget.files?.[0];
               e.currentTarget.value = "";
@@ -397,13 +356,13 @@ function Backup() {
           />
         </label>
         {pending && (
-          <button type="button" class="primary" onClick={() => void restore(pending)}>
-            {t("profiles.backup.restoreNow")}
+          <button type="button" class="primary" onClick={() => void run(pending)}>
+            {t("profiles.replace")}
           </button>
         )}
       </div>
       <Note notice={note} />
-    </div>
+    </li>
   );
 }
 
@@ -443,9 +402,11 @@ export function ProfilesPage() {
             ))}
           </ul>
         )}
-        <SaveForm />
+        <ul class="settings">
+          <SaveForm />
+          <ImportForm />
+        </ul>
         <StartupProfile />
-        <Backup />
       </fieldset>
     </section>
   );
