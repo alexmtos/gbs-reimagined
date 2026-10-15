@@ -1,6 +1,6 @@
 {
   "name": "gbs-reimagined-web",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Web UI for GBS Reimagined, embedded into the firmware image (ADR 0008, 0009)",
   "license": "GPL-3.0-only",
