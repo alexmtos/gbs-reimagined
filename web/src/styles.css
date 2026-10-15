@@ -250,6 +250,9 @@ input[type="checkbox"] {
 .setting-note {
   margin: 6px 0 0;
   font-size: 0.85rem;
+  color: var(--text);
+}
+.setting-note.warn {
   color: var(--warn);
 }
 .setting-note.bad {
