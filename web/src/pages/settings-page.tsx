@@ -155,18 +155,30 @@ const LEVELS_NOTICE: Readonly<Record<string, () => Notice>> = {
   aborted: () => bad(t("action.calibrate.aborted")),
 };
 
+// A refused calibration can end between two polls (bench: under 1.5 s), so the page may never see
+// it running. Past this, it reports whatever the board says last.
+const CALIBRATE_SEEN_MS = 5000;
+
 /**
  * "Calibrate levels", then the board's verdict. The status keeps the last outcome, so after a press
- * the page waits to see this run start before it reports one.
+ * the page waits for this run: seen running, an outcome other than the one before the press, or a
+ * few seconds.
  */
-function InputActions() {
+export function InputActions() {
   const [phase, setPhase] = useState<"idle" | "asked" | "running" | "finished">("idle");
+  const [before, setBefore] = useState<string>("none");
   const [refusal, setRefusal] = useState<Notice | null>(null);
   const outcome = status.value?.levels ?? "none";
   useEffect(() => {
     if (phase === "asked" && outcome === "running") setPhase("running");
+    else if (phase === "asked" && outcome !== before) setPhase("finished");
     if (phase === "running" && outcome !== "running") setPhase("finished");
-  }, [phase, outcome]);
+  }, [phase, outcome, before]);
+  useEffect(() => {
+    if (phase !== "asked") return;
+    const timer = setTimeout(() => setPhase("finished"), CALIBRATE_SEEN_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
   const busy = phase === "asked" || phase === "running";
   const notice =
     refusal ??
@@ -184,6 +196,7 @@ function InputActions() {
           disabled={busy}
           onClick={async () => {
             setRefusal(null);
+            setBefore(outcome);
             const r = await runCommand("calibrate");
             if (r.ok) {
               setPhase("asked");
