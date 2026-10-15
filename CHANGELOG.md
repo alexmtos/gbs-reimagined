@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.3](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.2...v1.0.3) (2026-10-15)
+
+### Fixes
+
+* **One language for the board:** the language list at the top of the web page now sets the language of the page and of the board's screen together ([#17](https://github.com/alexmtos/gbs-reimagined/pull/17)).
+* **The web page shows what the board is doing:**
+  * it reloads itself after a firmware update;
+  * it follows changes made with the knob, the console, a switcher or a profile that loads by itself;
+  * it says "No signal" plainly and why frame lock is inactive;
+  * it shows the result of "Calibrate levels" and shows "Auto" on sliders.
+* **Nothing is lost by accident:** replacing a profile, restoring a backup and restarting the board ask for a second press. A restore also says what it could not put back.
+* **Clearer texts:**
+  * help that matches what each setting does;
+  * the same names on the web page, the board's screen and the console;
+  * unnamed profiles named in the board's language;
+  * quoted network names and passwords in the serial console.
+
 ## [1.0.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.1...v1.0.2) (2026-10-15)
 
 
