@@ -13,6 +13,7 @@
 #include "hal/esp_i2c_bus.h"
 #include "hal/pulse_timer.h"
 #include "hal/si5351.h"
+#include "net/improv_wifi.h"
 #include "net/web.h"
 #include "net/wifi.h"
 #include "platform/storage_esp.h"
@@ -34,6 +35,11 @@ constexpr uint32_t kSplashMs = 1500;
 constexpr uint32_t kSafeModeHoldMs = 5000;
 constexpr uint32_t kSaverMinutes[] = {0, 1, 3, 5, 10}; // system.oledSaver
 
+// What the browser installer shows; the name must match the one in its manifests.
+constexpr char kFirmwareName[] PROGMEM = "GBS Reimagined";
+constexpr char kFirmwareVersion[] PROGMEM = GBSR_VERSION;
+constexpr char kChipName[] PROGMEM = "ESP8266";
+
 hal::EspI2cBus bus;
 tv5725::Chip chip(bus);
 hal::Si5351 clockGen(bus, hal::board().clockGenXtalHz);
@@ -53,7 +59,9 @@ core::StatusModel statusModel;
 net::Wifi wifi(files);
 net::Web web(controller, statusModel, wifi);
 ui::LoopStats loopStats;
-ui::Console console(controller, engine, chip, wifi, loopStats);
+net::ImprovWifi improvWifi(wifi);
+core::ImprovSerial improv(improvWifi, {kFirmwareName, kFirmwareVersion, kChipName, wifi.apSsid()});
+ui::Console console(controller, engine, chip, wifi, improv, loopStats);
 hal::EspEncoder encoder(hal::board().pinEncoderA, hal::board().pinEncoderB,
                         hal::board().pinEncoderButton, hal::board().encoderClockwiseNegative);
 ui::Knob knob;
@@ -202,6 +210,7 @@ void loop() {
     console.poll();
     const uint32_t now = millis();
     wifi.tick(now);
+    improv.tick(now);
     web.tick();
     controller.tick(now);
     if (now - lastStatusMs >= kStatusEveryMs) {

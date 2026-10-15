@@ -24,7 +24,7 @@ For contributors. The map of the firmware and its companions; the reasons are in
 | `web/` | Web UI, embedded into the firmware image | pnpm, Vite (ADR 0009) |
 | `schema/` | Single sources of truth: registers, programs, settings, translations | — (ADR 0005) |
 | `tools/` | Code generation, bench verification, board helpers, size budgets | uv / Python 3.12 |
-| `installer/` | Browser installer site (ESP Web Tools) | static (ADR 0012) |
+| `installer/` | Browser installer site (ESP Web Tools, Improv) | static page built with Vite (ADR 0012) |
 | `docs/` | Research, ADRs, design, hardware, user guide (EN + pt-BR), generated references | — |
 | `.claude/` | Claude Code configuration: rules, skills, agents, hooks | — |
 

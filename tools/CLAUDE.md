@@ -7,7 +7,8 @@ Python 3.12 managed by uv from the root `pyproject.toml`; run everything as
 |---|---|---|
 | `codegen/` | nothing | `generate.py` (all derived files, `--check` for CI), one-time importers with provenance |
 | `size/` | a firmware build | `pio_size_report.py` (PlatformIO post-script), `check_budget.py` |
-| `board/` | the board on USB | flash backup/restore and upload helpers (esptool) |
+| `board/` | the board on USB | flash backup/restore and upload helpers (esptool), Improv probe |
+| `release/` | a build, or `gh` for releases | update file (`ota_image.py`), installer site staging from a build (`installer_site.py`) or from the releases (`release_site.py`) |
 | `bench/` | board + capture card | picture verification on the NZXT Signal HD60 |
 | `datasheets.py` | network | fetch and verify the vendor PDFs |
 

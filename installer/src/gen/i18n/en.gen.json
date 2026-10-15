@@ -1,0 +1,33 @@
+{
+  "locale": "en",
+  "name": "English",
+  "strings": {
+    "title": "Install GBS Reimagined",
+    "lead": "Install the firmware on a RetroScaler GBS-C from this page and connect the board to your Wi-Fi. You need Chrome or Edge on a computer and a USB data cable.",
+    "language": "Language",
+    "channel": "Version",
+    "stable": "Stable {version}",
+    "beta": "Beta {version}",
+    "notes": "What is new",
+    "none": "This site has no firmware to install yet. To serve your own build, run uv run tools/release/installer_site.py --build, then build the site again.",
+    "install": "Install",
+    "unsupported": "This browser cannot use the computer's serial ports. Open this page in Chrome or Edge on a computer: phones and tablets cannot install.",
+    "notAllowed": "The installer only works over HTTPS or from this computer (localhost).",
+    "steps": "Installing",
+    "step1": "Plug the board's micro-USB port into the computer with a USB data cable.",
+    "step2": "Click Install, choose the board's port (named USB-SERIAL CH340 or similar) and click Connect.",
+    "step3": "Choose \"Install GBS Reimagined\". The first time, tick \"Erase device\", so that nothing from the previous firmware is left behind, then choose \"Next\" and \"Install\". A board that already runs GBS Reimagined is offered \"Update GBS Reimagined\" instead, which keeps its settings, profiles and Wi-Fi.",
+    "step4": "When \"Installation complete!\" appears, choose \"Next\". After an erase, the dialog asks for your Wi-Fi network: choose it, type its password and choose \"Connect\". Once the board has joined, \"Visit Device\" opens the board's page.",
+    "step5": "To set up Wi-Fi later, choose \"Skip\" on that form: the board opens its own network, named GBS- and four characters, password qqqqqqqq. Join it and open http://192.168.4.1.",
+    "update": "Updating",
+    "updateBody": "A board on your Wi-Fi updates from its own page: System, Firmware update. This page can also update it over USB, keeping its settings.",
+    "trouble": "If something goes wrong",
+    "troubleNoPort": "No port in the list: try another cable (some only charge) and another USB port. On Windows, the board's USB chip, a WCH CH340, may need the maker's driver.",
+    "troubleBusy": "\"Failed to open serial port\": close every other program that uses the port (Arduino IDE, PlatformIO, a serial monitor), then try again.",
+    "troubleWifi": "The board does not join the network: check the password, and that the network is 2.4 GHz (the board has no 5 GHz radio). To try again, click Install: the dialog finds the running board and offers \"Connect to Wi-Fi\" or \"Change Wi-Fi\".",
+    "troubleStopped": "The installation stopped halfway: click Install and start again. The chip's own loader, which the installer talks to, is never written, so an install over USB can always be repeated.",
+    "guide": "User guide",
+    "source": "Source code and releases",
+    "licence": "GBS Reimagined is free software under the GPL-3.0. This page uses ESP Web Tools (Apache-2.0)."
+  }
+}

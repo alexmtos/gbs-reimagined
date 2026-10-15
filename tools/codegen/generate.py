@@ -12,6 +12,7 @@ Sources and what they produce:
     schema/settings.yaml,        -> firmware/src/core/settings.gen.{h,cpp}
     schema/i18n/*.yaml              firmware/src/ui/strings.gen.cpp
                                     web/src/gen/settings.gen.ts, web/src/gen/i18n/*.gen.json
+                                    installer/src/gen/i18n/*.gen.json
                                     docs/reference/settings.md
 
 Generated files carry a header naming their source; never edit them by hand.

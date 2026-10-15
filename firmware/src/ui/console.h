@@ -4,6 +4,7 @@
 
 #include "chip/tv5725.h"
 #include "core/controller.h"
+#include "core/improv_serial.h"
 #include "net/wifi.h"
 #include "video/engine.h"
 
@@ -16,18 +17,20 @@ struct LoopStats {
 
 // The serial console (docs/design/ux.md, "Serial console"): line-based, case-insensitive, English.
 // Settings go through the controller like every other front end; raw chip access is an expert
-// tool behind `expert on`.
+// tool behind `expert on`. Received bytes pass through Improv first (ADR 0011): the installer's
+// packets share the port.
 class Console {
 public:
     Console(core::Controller& ctl, video::Engine& engine, tv5725::Chip& chip, net::Wifi& wifi,
-            const LoopStats& loop)
-        : ctl_(ctl), engine_(engine), chip_(chip), wifi_(wifi), loop_(loop) {}
+            core::ImprovSerial& improv, const LoopStats& loop)
+        : ctl_(ctl), engine_(engine), chip_(chip), wifi_(wifi), improv_(improv), loop_(loop) {}
 
     // Reads pending serial bytes and runs complete lines; reports revert outcomes.
     void poll();
     void printStatus();
 
 private:
+    void take(char c);
     void handleLine(char* line);
     void cmdGet(char* args);
     void cmdSet(char* args);
@@ -46,6 +49,7 @@ private:
     video::Engine& engine_;
     tv5725::Chip& chip_;
     net::Wifi& wifi_;
+    core::ImprovSerial& improv_;
     const LoopStats& loop_;
     char line_[96] = {};
     uint8_t len_ = 0;

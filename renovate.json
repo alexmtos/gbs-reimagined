@@ -25,6 +25,11 @@
   "packageRules": [
     { "matchDatasources": ["custom.platformio"], "groupName": "platformio libraries" },
     { "matchManagers": ["npm"], "groupName": "web toolchain" },
+    {
+      "description": "It installs boards: its updates get their own pull request and a bench check",
+      "matchPackageNames": ["esp-web-tools"],
+      "groupName": "esp-web-tools"
+    },
     { "matchManagers": ["github-actions"], "groupName": "github actions" }
   ]
 }
