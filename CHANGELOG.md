@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.3...v1.1.0) (2026-10-15)
+
+
+### Features
+
+* UI improvements after the audit, phone, accessibility, sections, Status ([#19](https://github.com/alexmtos/gbs-reimagined/issues/19)) ([18925cc](https://github.com/alexmtos/gbs-reimagined/commit/18925cc20d6c27c9235da81901cc7827392a7074))
+
 ## [1.0.3](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.2...v1.0.3) (2026-10-15)
 
 ### Fixes
