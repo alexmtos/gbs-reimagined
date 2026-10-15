@@ -1,9 +1,13 @@
 #include "net/web.h"
 
+#include <Updater.h>
+
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 
 #include "core/settings.gen.h"
+#include "core/update_check.h"
+#include "hal/board.h"
 #include "net/ui_bundle.gen.h"
 #include "version.h"
 
@@ -56,6 +60,9 @@ void Web::begin() {
     server_.on(F("/api/svs"), HTTP_POST, [this] { handleSwitcher(); });
     server_.on(F("/api/backup"), HTTP_GET, [this] { handleBackup(); });
     server_.on(F("/api/levels"), HTTP_POST, [this] { handleLevels(); });
+    server_.on(
+        F("/api/update"), HTTP_POST, [this] { handleUpdateDone(); },
+        [this] { handleUpdateUpload(); });
     server_.onNotFound([this] { handleNotFound(); });
     server_.begin();
 }
@@ -203,6 +210,98 @@ void Web::handleLevels() {
     ChunkSink sink(server_);
     const String& body = server_.arg(F("plain"));
     core::postLevels(ctl_, body.c_str(), body.length(), sink);
+}
+
+void Web::handleUpdateUpload() {
+    HTTPUpload& up = server_.upload();
+    switch (up.status) {
+    case UPLOAD_FILE_START:
+        update_ = sameOrigin() ? UpdateState::Receiving : UpdateState::Failed;
+        updateReason_ = update_ == UpdateState::Failed ? PSTR("refused") : nullptr;
+        updateVersion_[0] = '\0';
+        updateHeapLow_ = ESP.getFreeHeap();
+        break;
+    case UPLOAD_FILE_WRITE:
+        if (update_ != UpdateState::Receiving) {
+            break;
+        }
+        if (!Update.isRunning()) {
+            // The first piece carries the header: nothing is written for a wrong file.
+            core::UpdateHeader h;
+            const core::UpdateVerdict v =
+                core::checkUpdateHead(up.buf, up.currentSize, hal::board().id, h);
+            if (v != core::UpdateVerdict::Accept) {
+                update_ = UpdateState::Failed;
+                updateReason_ = core::updateReason(v);
+                break;
+            }
+            strncpy(updateVersion_, h.version, sizeof updateVersion_ - 1);
+            const uint32_t space = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+            if (!Update.begin(space)) {
+                update_ = UpdateState::Failed;
+                updateReason_ = PSTR("noSpace");
+                break;
+            }
+            Serial.printf_P(PSTR("update: receiving %s\r\n"), updateVersion_);
+        }
+        if (Update.write(up.buf, up.currentSize) != up.currentSize) {
+            update_ = UpdateState::Failed;
+            updateReason_ = PSTR("writeFailed");
+            Update.end(); // not finished: discarded
+        }
+        if (ESP.getFreeHeap() < updateHeapLow_) {
+            updateHeapLow_ = ESP.getFreeHeap();
+        }
+        break;
+    case UPLOAD_FILE_END:
+        if (update_ == UpdateState::Receiving) {
+            if (Update.end(true)) {
+                update_ = UpdateState::Done;
+            } else {
+                update_ = UpdateState::Failed;
+                updateReason_ = PSTR("verifyFailed");
+            }
+        }
+        Serial.printf_P(PSTR("update: %lu bytes, %s, free heap low %lu\r\n"),
+                        static_cast<unsigned long>(up.totalSize),
+                        update_ == UpdateState::Done ? "ok" : "refused",
+                        static_cast<unsigned long>(updateHeapLow_));
+        break;
+    case UPLOAD_FILE_ABORTED:
+        // The client went away; the answer handler will not run.
+        if (update_ == UpdateState::Done) {
+            // The new image is complete and staged: install it now, as asked, rather than at
+            // some later power cycle.
+            rebootRequested_ = true;
+        } else if (Update.isRunning()) {
+            Update.end(); // not finished: discarded
+        }
+        update_ = UpdateState::Idle;
+        updateReason_ = nullptr;
+        break;
+    }
+}
+
+void Web::handleUpdateDone() {
+    // A plain answer with its length: the restart that follows a good update must not cut it.
+    char body[96];
+    if (update_ == UpdateState::Done) {
+        snprintf_P(body, sizeof body, PSTR("{\"ok\":true,\"version\":\"%s\"}"), updateVersion_);
+        sendJson(200, body);
+        rebootRequested_ = true; // the bootloader copies the new image on the way up
+    } else {
+        // Idle: the request carried no file part at all.
+        const char* reason = update_ == UpdateState::Idle || updateReason_ == nullptr
+                                 ? PSTR("noFile")
+                                 : updateReason_;
+        char word[16];
+        strncpy_P(word, reason, sizeof word - 1);
+        word[sizeof word - 1] = '\0';
+        snprintf_P(body, sizeof body, PSTR("{\"ok\":false,\"reason\":\"%s\"}"), word);
+        sendJson(strcmp(word, "refused") == 0 ? 403 : 400, body);
+    }
+    update_ = UpdateState::Idle;
+    updateReason_ = nullptr;
 }
 
 void Web::handleWifi() {

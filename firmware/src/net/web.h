@@ -36,6 +36,8 @@ private:
     void handleSwitcher();
     void handleBackup();
     void handleLevels();
+    void handleUpdateUpload();
+    void handleUpdateDone();
     void handleNotFound();
     bool sameOrigin();
     void sendJson(int code, const char* body);
@@ -45,6 +47,13 @@ private:
     const core::StatusModel& status_;
     Wifi& wifi_;
     bool rebootRequested_ = false;
+    // The firmware upload in progress (ADR 0012): refused before any flash write unless the
+    // file's header names this board.
+    enum class UpdateState : uint8_t { Idle, Receiving, Done, Failed };
+    UpdateState update_ = UpdateState::Idle;
+    const char* updateReason_ = nullptr; // flash text
+    char updateVersion_[32] = {};
+    uint32_t updateHeapLow_ = 0;
 };
 
 } // namespace gbsr::net

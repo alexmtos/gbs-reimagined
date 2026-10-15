@@ -1,6 +1,7 @@
 import { signal } from "@preact/signals";
 import { useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
+import { FirmwareUpdate } from "../components/firmware-update";
 import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
@@ -239,6 +240,7 @@ export function SettingsPage({ group }: { group: SettingGroup }) {
           );
         })}
         {group === "input" && showAdvanced.value && <InputActions />}
+        {group === "system" && <FirmwareUpdate />}
         {group === "system" && <SystemActions />}
       </ul>
       <label class="toggle">

@@ -112,7 +112,7 @@ longest loop pass; both are visible in diagnostics. A "video busy" predicate (OR
 | `/api/levels` | POST | a backup's level calibration put back |
 | `/api/events`, `/api/journal` | GET | diagnostics rings |
 | `/api/wifi/scan`, `/api/wifi` | GET/POST | provisioning |
-| `/api/update` | POST | firmware image upload (OTA) |
+| `/api/update` | POST | an update file (`.ota.bin.gz`, multipart), checked before any write: gzip naming this board ([ADR 0012](../adr/0012-distribution-and-releases.md), `core/update_check.*`) |
 
 Cross-site requests are refused (`Sec-Fetch-Site` / `Origin` check); the API is not authenticated,
 like every device on a home network, and says so in the user guide.

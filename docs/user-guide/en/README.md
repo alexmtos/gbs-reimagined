@@ -221,6 +221,28 @@ all profiles. There are 16 slots.
   `curl -d "remote prof3" http://gbs.local/api/svs`. Wiring a switcher straight to the board's
   internal serial pins is not supported: that line also carries the board's own messages.
 
+## Updating the firmware
+
+New versions keep your settings, profiles, level calibration and Wi-Fi. On the web page, open
+**System** → **Firmware update**:
+
+- **Check for updates** looks for a newer version on the project's site, downloads it, makes sure
+  it arrived intact and installs it. The computer or phone showing the page must be online. Tick
+  **Include beta versions** to be offered test versions too. (The site opens with the first
+  public release; until then, update from a file.)
+- Or install from a file: download the file ending in **.ota.bin.gz** from a release, choose it
+  under **Update from a file** and press **Install**. The other file, ending in plain **.bin**, is
+  for the browser installer and the board refuses it here.
+
+Sending takes a few seconds. The board then restarts by itself, and the picture and the page are
+back in about 20 seconds. Keep the board powered meanwhile: if the power goes out while it copies
+the new version, it may need to be installed again from the browser over USB (choose the same
+version and do not erase the board, so your settings stay).
+
+Before writing anything, the board checks that the file was made for it, and refuses one meant for
+another board. **Check for updates** also refuses a download that arrived damaged. If an update
+does not go through, the board keeps the version it had.
+
 ## Serial console (advanced)
 
 Connect the board's USB port to a computer and open a serial terminal at **115200 baud**. Type
@@ -244,4 +266,4 @@ Connect the board's USB port to a computer and open a serial terminal at **11520
 2. Choosing the output resolution for your display
 3. Picture settings
 4. Troubleshooting, by the message the board shows
-5. Updating and restoring
+5. Restoring a backup

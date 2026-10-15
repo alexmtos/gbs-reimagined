@@ -27,6 +27,7 @@ jobs:
       - run: uv sync
       - run: uv run tools/codegen/generate.py --check
       - run: uv run ruff check tools
+      - run: uv run pytest tools -q
 
   web:
     name: Web UI
@@ -96,7 +97,10 @@ jobs:
           ver="${{ inputs.release_tag }}"; ver="${ver:-dev-${GITHUB_SHA::7}}"
           cd firmware/.pio/build/gbsc
           cp firmware.bin "gbs-reimagined-${ver}-gbsc.bin"
-          gzip -9 -k -c firmware.bin > "gbs-reimagined-${ver}-gbsc.ota.bin.gz"
+          # The update file names its board in the gzip header; the board checks it (ADR 0012).
+          tool="$GITHUB_WORKSPACE/tools/release/ota_image.py"
+          uv run --project "$GITHUB_WORKSPACE" "$tool" firmware.bin --version "${ver#v}" \
+            --board gbsc --out "gbs-reimagined-${ver}-gbsc.ota.bin.gz"
           sha256sum gbs-reimagined-* > SHA256SUMS
       - uses: actions/upload-artifact@v7
         with:
