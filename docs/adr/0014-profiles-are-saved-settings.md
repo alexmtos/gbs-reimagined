@@ -87,8 +87,9 @@ details added to the others came up while building it; the user approved them th
 - Profiles reuse the settings machinery (records, hashes, text forms, the controller's apply path);
   a renamed id resets that value in old profiles exactly as it does in `/settings.bin`.
 - A profile that changes the output resolution, loaded automatically, makes the source load twice
-  the first time it appears (the engine loads before the controller sees the settled signature).
-  Measure it; if it matters, the signature can be evaluated at detection instead.
+  the first time it appears (the engine loads before the controller sees the settled signature):
+  measured on the bench, two loads within 2 s per swap ([bench M2](../bench/M2.md), profiles). If
+  it matters, the signature can be evaluated at detection instead.
 - Profiles cannot tell two consoles with identical timing apart; SVS or a manual load is the answer,
   and the user guide says so.
 - SVS over the USB serial port works from a computer or a bridge; a switcher wired directly to the
