@@ -3,8 +3,8 @@
 Para quem tem uma RetroScaler GBS-C e quer jogar seus consoles em uma TV moderna ou em um monitor.
 Não é preciso saber programar.
 
-> **Este firmware ainda não está pronto para instalar.** Este guia cresce a cada etapa; a primeira
-> versão instalável chega com a etapa M1 ([roadmap, em inglês](../../roadmap.md)).
+> Instale pelo navegador em **https://alexmtos.github.io/gbs-reimagined/**: veja
+> [Instalando pelo navegador](#instalando-pelo-navegador).
 
 ## O que a placa faz
 
@@ -12,13 +12,58 @@ A GBS-C recebe o vídeo analógico de um console ou computador e o transforma em
 tela aceita: HDMI para TVs modernas, ou VGA / RGBS para monitores e CRTs. O GBS Reimagined é o
 software que roda no pequeno computador da placa e decide como essa conversão é feita.
 
-Você poderá controlá-lo de três formas:
+Você pode controlá-lo de três formas:
 
 - **Pelo celular ou computador** na mesma rede Wi-Fi, em uma página web com todas as opções
   explicadas.
 - **Pelo botão giratório e pela telinha** da própria placa — isso sempre funciona, mesmo quando a TV
   não mostra nada.
 - **Por um terminal serial USB**, para usuários avançados e chaveadores de consoles.
+
+## Instalando pelo navegador
+
+Você precisa da placa, de um computador com **Chrome** ou **Edge** (celulares e tablets não
+instalam) e de um cabo USB que transmita dados (alguns cabos só carregam). A instalação substitui o
+firmware que a placa tem agora, por exemplo o GBS-Control; os ajustes dele não passam para o novo.
+
+1. Ligue a placa como de costume e conecte a porta micro-USB dela ao computador. A telinha acende
+   como sempre.
+2. Abra **https://alexmtos.github.io/gbs-reimagined/** e clique em **Instalar**. Escolha a
+   porta chamada **USB-SERIAL CH340** (ou parecida) e clique em **Conectar**. A janela do instalador abre e
+   oferece **Install GBS Reimagined**. Se nenhuma porta aparecer, veja
+   [Se a instalação não funcionar](#se-a-instalação-não-funcionar).
+3. A janela do instalador é em inglês. Escolha **Install GBS Reimagined** (instalar). Na primeira
+   vez, marque **Erase device** (apagar o dispositivo), para não sobrar nada do firmware anterior,
+   e escolha **Next** (próximo) e **Install**. Uma barra de progresso avança; não desconecte a
+   placa até a janela dizer **Installation complete!** (instalação concluída).
+4. Escolha **Next**. Se você marcou **Erase device**, a janela agora pede o seu Wi-Fi: escolha a sua
+   rede, digite a senha e escolha **Connect** (conectar). A senha vai direto do navegador para a
+   placa. Quando a placa entra na rede, o formulário fecha e aparece **Visit Device** (visitar o
+   dispositivo), que abre a página da placa. Para fazer isso depois, escolha **Skip** (pular) e
+   siga [Conectando ao seu Wi-Fi](#conectando-ao-seu-wi-fi). Se a janela não pedir, a placa
+   manteve a rede que já conhecia, ou veja [Conectando ao seu Wi-Fi](#conectando-ao-seu-wi-fi).
+5. Conecte o console a uma das entradas de vídeo da placa (SCART, as entradas RGBS, VGA ou
+   componente) e a tela à saída HDMI dela, e depois ligue os dois. A placa procura o console em
+   todas as entradas sozinha. Em alguns segundos a telinha diz **Escalando** e a tela mostra o
+   jogo. A placa começa na resolução **Auto**: 1280x960 para consoles de 60 Hz, 1280x1024 para os
+   de 50 Hz. Se a tela não mostrar nada, veja [Quando algo está errado](troubleshooting.md).
+
+### Se a instalação não funcionar
+
+- **Nenhuma porta na lista:** tente outro cabo e outra porta USB. No Windows, o chip USB da placa,
+  um WCH CH340, pode precisar de driver: ele se chama CH341SER e vem do fabricante do chip, a WCH
+  (wch-ic.com).
+- **"Failed to open serial port"** (falha ao abrir a porta serial): feche todos os outros programas
+  que usam a porta (Arduino IDE, PlatformIO, um monitor serial) e tente de novo.
+- **A instalação parou no meio:** clique em **Instalar** e comece de novo. O carregador do próprio
+  chip, com quem o instalador conversa, nunca é gravado, então uma instalação pela USB sempre pode
+  ser repetida.
+- **A placa não entra na sua rede:** confira a senha e se a rede é de 2,4 GHz. Clique em
+  **Instalar** de novo; a janela encontra a placa e oferece **Connect to Wi-Fi** (conectar ao
+  Wi-Fi) ou **Change Wi-Fi** (trocar o Wi-Fi).
+- **A janela não pediu o seu Wi-Fi:** clique em **Instalar** de novo; a janela encontra a placa e
+  oferece **Connect to Wi-Fi** (conectar ao Wi-Fi). Ou use a rede própria da placa, como em
+  [Conectando ao seu Wi-Fi](#conectando-ao-seu-wi-fi).
 
 ## O botão giratório e a telinha
 
@@ -62,7 +107,9 @@ console nas entradas RGBS da frente, saída HDMI):
 
 ## Conectando ao seu Wi-Fi
 
-Na primeira vez, a placa não conhece a sua rede, então ela abre uma rede própria.
+O instalador pede a sua rede logo depois de instalar. Se você pulou essa etapa, ou se a placa não
+alcança a rede que conhece, ela abre uma rede própria. A placa só usa redes de 2,4 GHz: o chip de
+Wi-Fi dela, um ESP8266, não tem rádio de 5 GHz.
 
 1. Ligue a placa. Ela abre uma rede Wi-Fi chamada **GBS-** seguida de quatro letras e números
    únicos da sua placa (por exemplo `GBS-EAC4`). A senha é **`qqqqqqqq`** (oito letras q) — a
@@ -79,6 +126,9 @@ Na primeira vez, a placa não conhece a sua rede, então ela abre uma rede próp
 Se a placa não conseguir falar com a sua rede por 30 segundos (roteador desligado, ou você trocou
 a senha), ela abre a rede própria de novo para você corrigir, e continua tentando a sua rede a cada
 dois minutos enquanto ninguém estiver conectado nela.
+
+Para trocar de rede depois, use a aba **Rede**, ou a página do instalador: clique em **Instalar**,
+escolha a porta da placa e depois **Change Wi-Fi** (trocar o Wi-Fi).
 
 ## Mudanças que pedem confirmação
 
@@ -234,11 +284,12 @@ Versões novas mantêm seus ajustes, perfis, calibração de níveis e Wi-Fi. Na
 
 - **Procurar atualizações** procura uma versão mais nova no site do projeto, baixa, confere se
   chegou inteira e instala. O computador ou celular que mostra a página precisa estar na internet.
-  Marque **Incluir versões beta** para receber também versões de teste. (O site abre com a
-  primeira versão pública; até lá, atualize a partir de um arquivo.)
+  Marque **Incluir versões beta** para receber também versões de teste.
 - Ou instale a partir de um arquivo: baixe o arquivo terminado em **.ota.bin.gz** de uma versão
   publicada, escolha-o em **Atualizar a partir de um arquivo** e toque em **Instalar**. O outro
   arquivo, terminado só em **.bin**, é para o instalador pelo navegador, e a placa o recusa aqui.
+- Ou pela USB, na página do instalador: clique em **Instalar**, escolha a porta da placa e depois
+  **Update GBS Reimagined** (atualizar). Isso também mantém tudo.
 
 O envio leva alguns segundos. Depois a placa reinicia sozinha, e a imagem e a página voltam em
 cerca de 20 segundos. Deixe a placa ligada nesse tempo: se faltar energia enquanto ela copia a nova
@@ -248,6 +299,12 @@ apague a placa, para manter seus ajustes).
 Antes de gravar qualquer coisa, a placa confere se o arquivo foi feito para ela, e recusa um feito
 para outra placa. **Procurar atualizações** também recusa um download que chegou danificado. Se
 uma atualização não for concluída, a placa continua com a versão que tinha.
+
+## Quando algo está errado
+
+A placa sempre diz o que está fazendo: na telinha dela, na aba **Status** e no `status` do
+console. [Quando algo está errado](troubleshooting.md) lista cada mensagem com o que tentar, da
+causa mais provável para a menos provável.
 
 ## Console serial (avançado)
 
@@ -268,8 +325,5 @@ Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 
 
 ## Em breve neste guia
 
-1. Instalando o GBS Reimagined pelo navegador
-2. Escolhendo a resolução de saída para a sua tela
-3. Ajustes de imagem
-4. Solução de problemas, pela mensagem que a placa mostra
-5. Restaurando uma cópia
+1. Escolhendo a resolução de saída para a sua tela
+2. Ajustes de imagem

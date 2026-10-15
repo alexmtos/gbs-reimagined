@@ -3,8 +3,8 @@
 For people who own a RetroScaler GBS-C and want to play their consoles on a modern TV or a
 monitor. No programming knowledge needed.
 
-> **This firmware is not ready to install yet.** This guide grows with each milestone; the first
-> installable version arrives with milestone M1 ([roadmap](../../roadmap.md)).
+> Install it from your browser at **https://alexmtos.github.io/gbs-reimagined/**: see
+> [Installing from your browser](#installing-from-your-browser).
 
 ## What the board does
 
@@ -12,12 +12,57 @@ The GBS-C takes the analogue video of a console or computer and turns it into a 
 display accepts: HDMI for modern TVs, or VGA / RGBS for monitors and CRTs. GBS Reimagined is the
 software that runs on the board's small computer and decides how that conversion is done.
 
-You will be able to control it three ways:
+You can control it three ways:
 
 - **From a phone or computer** on the same Wi-Fi, in a web page with every option explained.
 - **With the knob and the small screen** on the board itself — this always works, even when the TV
   shows nothing.
 - **From a USB serial terminal**, for advanced users and console switchers.
+
+## Installing from your browser
+
+You need the board, a computer with **Chrome** or **Edge** (phones and tablets cannot install) and
+a USB cable that carries data (some cables only charge). Installing replaces the firmware the board
+has now, for example GBS-Control; its settings do not carry over.
+
+1. Power the board as usual and plug its micro-USB port into the computer. Its screen lights up as
+   it always does.
+2. Open **https://alexmtos.github.io/gbs-reimagined/** and click **Install**. Choose the port named
+   **USB-SERIAL CH340** (or similar) and click **Connect**. The installer's window opens and
+   offers **Install GBS Reimagined**. If no port is listed, see
+   [If the installation does not work](#if-the-installation-does-not-work).
+3. The installer's window is in English. Choose **Install GBS Reimagined**. The first time, tick
+   **Erase device**, so that nothing from the previous firmware is left behind, then choose
+   **Next** and **Install**. A progress bar advances; do not unplug the board until the window
+   says **Installation complete!**
+4. Choose **Next**. If you ticked **Erase device**, the window now asks for your Wi-Fi: choose your
+   network, type its password and choose **Connect**. The password goes straight from your browser
+   to the board. When the board has joined, the form closes and **Visit Device** appears; it opens
+   the board's page. To do this later, choose **Skip** and follow
+   [Joining your Wi-Fi](#joining-your-wi-fi). If the window does not ask, the board kept the
+   network it knew, or see [Joining your Wi-Fi](#joining-your-wi-fi).
+5. Connect the console to one of the board's video inputs (SCART, the RGBS jacks, VGA or
+   component) and the display to its HDMI output, then switch both on. The board looks for the
+   console on every input by itself. After a few seconds its screen says **Scaling** and the
+   display shows the game. The board starts at the **Auto** resolution: 1280x960 for 60 Hz
+   consoles, 1280x1024 for 50 Hz ones. If the display shows nothing, see
+   [When something is wrong](troubleshooting.md).
+
+### If the installation does not work
+
+- **No port in the list:** try another cable and another USB port. On Windows, the board's USB
+  chip, a WCH CH340, may need its driver: it is called CH341SER and comes from the chip's maker,
+  WCH (wch-ic.com).
+- **"Failed to open serial port":** close every other program that uses the port (Arduino IDE,
+  PlatformIO, a serial monitor), then try again.
+- **The installation stopped halfway:** click **Install** and start again. The chip's own loader,
+  which the installer talks to, is never written, so an install over USB can always be repeated.
+- **The board does not join your network:** check the password, and that the network is 2.4 GHz.
+  Click **Install** again; the window finds the board and offers **Connect to Wi-Fi** or **Change
+  Wi-Fi**.
+- **The window did not ask for your Wi-Fi:** click **Install** again; the window finds the board
+  and offers **Connect to Wi-Fi**. Or use the board's own network, as in
+  [Joining your Wi-Fi](#joining-your-wi-fi).
 
 ## The knob and the small screen
 
@@ -61,7 +106,9 @@ front RGBS inputs, HDMI output):
 
 ## Joining your Wi-Fi
 
-The first time, the board does not know your network, so it opens one of its own.
+The installer asks for your network right after installing. If you skipped that, or the board
+cannot reach the network it knows, it opens one of its own. The board uses 2.4 GHz networks only:
+its Wi-Fi chip, an ESP8266, has no 5 GHz radio.
 
 1. Power the board. It opens a Wi-Fi network called **GBS-** followed by four letters and digits
    that are unique to your board (for example `GBS-EAC4`). The password is **`qqqqqqqq`** (eight
@@ -78,6 +125,9 @@ The first time, the board does not know your network, so it opens one of its own
 If the board cannot reach your network for 30 seconds (the router is off, or you changed its
 password), it opens its own network again so you can fix it, and keeps trying your network every
 two minutes while nobody is connected to it.
+
+To change the network later, use the **Network** page, or the installer page: click **Install**,
+choose the board's port, then **Change Wi-Fi**.
 
 ## Changes that need your confirmation
 
@@ -228,11 +278,12 @@ New versions keep your settings, profiles, level calibration and Wi-Fi. On the w
 
 - **Check for updates** looks for a newer version on the project's site, downloads it, makes sure
   it arrived intact and installs it. The computer or phone showing the page must be online. Tick
-  **Include beta versions** to be offered test versions too. (The site opens with the first
-  public release; until then, update from a file.)
+  **Include beta versions** to be offered test versions too.
 - Or install from a file: download the file ending in **.ota.bin.gz** from a release, choose it
   under **Update from a file** and press **Install**. The other file, ending in plain **.bin**, is
   for the browser installer and the board refuses it here.
+- Or over USB, from the installer page: click **Install**, choose the board's port, then **Update
+  GBS Reimagined**. This also keeps everything.
 
 Sending takes a few seconds. The board then restarts by itself, and the picture and the page are
 back in about 20 seconds. Keep the board powered meanwhile: if the power goes out while it copies
@@ -242,6 +293,12 @@ version and do not erase the board, so your settings stay).
 Before writing anything, the board checks that the file was made for it, and refuses one meant for
 another board. **Check for updates** also refuses a download that arrived damaged. If an update
 does not go through, the board keeps the version it had.
+
+## When something is wrong
+
+The board always says what it is doing: on its own screen, on the **Status** page and in the
+console's `status`. [When something is wrong](troubleshooting.md) lists each message with what to
+try, most likely first.
 
 ## Serial console (advanced)
 
@@ -262,8 +319,5 @@ Connect the board's USB port to a computer and open a serial terminal at **11520
 
 ## Coming in this guide
 
-1. Installing GBS Reimagined from your browser
-2. Choosing the output resolution for your display
-3. Picture settings
-4. Troubleshooting, by the message the board shows
-5. Restoring a backup
+1. Choosing the output resolution for your display
+2. Picture settings
