@@ -132,6 +132,9 @@ antiga 1024x768. Elas são calculadas a partir dos padrões de vídeo, e não ti
 do scaler, e foram experimentadas numa placa e numa TV. Se a sua tela não mostrar nada depois de
 escolher uma delas pela página web ou pelo console serial, a placa volta à resolução anterior se
 você não confirmar (veja [Mudanças que pedem confirmação](#mudanças-que-pedem-confirmação)).
+Com um console PAL esses modos rodam a 50 Hz para manter o movimento suave; a saída HDMI da placa
+pode então mostrar a imagem um pouco estreita e deslocada para a direita. **Forçar 60 Hz** corrige
+a forma (com um pequeno tranco), ou ajuste a posição e o tamanho.
 
 Forçar 60 Hz (na aba **Saída**, ajustes avançados) é para telas que não aceitam 50 Hz: um console
 PAL passa a ser mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá

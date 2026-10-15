@@ -75,6 +75,11 @@ behind an "experimental" label and built on what the bench measures. Forces:
   integer scale, NTSC runs at 129.6 MHz and PAL at 130 MHz.
 - A reduced-blanking mode starts the fetch during the sync, because its back porch is shorter
   than the program's fetch lead. It showed no defect, but has not been watched for long.
+- With a PAL source the modes run at 50 Hz, frame-locked. At 50 Hz they are not VESA timings, and
+  the HDMI converter shows them about 7 % narrower and 2.5 % to the right; the same mode at 60 Hz
+  (Force 60 Hz) is exact ([bench M2](../bench/M2.md), "Computed modes"). The user chose to keep
+  50 Hz and document the remedy (2026-10-15) rather than force 60 Hz or compensate for this
+  converter.
 - Not measured: modes on displays other than the bench TV; the VGA output to a monitor.
 - A display that rejects a mode leaves the screen blank. From the web or the console the timed
   revert brings the previous mode back; on the OLED the change confirms itself, as for every

@@ -131,7 +131,10 @@ monitors and TVs that prefer them, such as a 1920x1200 PC monitor or an old 1024
 are computed from the display standards rather than taken from the scaler's tested set, and have
 been tried on one board and one TV. If your display shows nothing after you choose one on the web
 page or the serial console, the board goes back to the previous resolution unless you confirm (see
-[Changes that need your confirmation](#changes-that-need-your-confirmation)).
+[Changes that need your confirmation](#changes-that-need-your-confirmation)). With a PAL
+console these modes run at 50 Hz to keep motion smooth; the board's HDMI output may then show the
+picture a little narrow and to the right. **Force 60 Hz** fixes the shape (with a small judder), or
+adjust the position and size.
 
 Force 60 Hz (on the **Output** page, advanced settings) is for displays that do not accept 50 Hz:
 a PAL console is then shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little
