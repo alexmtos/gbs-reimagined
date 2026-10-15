@@ -271,7 +271,7 @@ bool Controller::saveProfile(uint8_t slot, const char* name, SaveSource source) 
     } else if (existed) {
         memcpy(p.name, old.name, sizeof p.name);
     } else {
-        snprintf(p.name, sizeof p.name, "Profile %u", static_cast<unsigned>(slot));
+        defaultName(slot, p.name, sizeof p.name);
     }
     if (source == SaveSource::This) {
         p.signature = currentSource_;
@@ -311,13 +311,21 @@ bool Controller::setProfileSource(uint8_t slot, bool forThisSource) {
     return profiles_.write(slot, p);
 }
 
+void Controller::defaultName(uint8_t slot, char* out, size_t cap) const {
+    if (defaultName_ != nullptr) {
+        defaultName_(slot, static_cast<uint8_t>(get(Id::SystemLanguage)), out, cap);
+    } else {
+        snprintf(out, cap, "Profile %u", static_cast<unsigned>(slot));
+    }
+}
+
 bool Controller::importProfile(uint8_t slot, const Profile& p) {
     if (safeMode_ || !validProfileName(p.name)) {
         return false;
     }
     Profile copy = p;
     if (copy.name[0] == '\0') {
-        snprintf(copy.name, sizeof copy.name, "Profile %u", static_cast<unsigned>(slot));
+        defaultName(slot, copy.name, sizeof copy.name);
     }
     if (!profiles_.write(slot, copy)) {
         return false;

@@ -527,3 +527,22 @@ TEST_CASE("a source chosen at detection sets the output once; the settled source
     r.ctl.sourceDetected(kSnes, 4000);
     CHECK(r.ctl.activeProfile() == 1); // the hold covered only the next new source
 }
+
+TEST_CASE("an unnamed profile is named in the board's language, by the front end's strings") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    CHECK(r.ctl.saveProfile(3, "", Save::Keep));
+    core::Profile p;
+    REQUIRE(r.ctl.profiles().read(3, p));
+    CHECK(std::string(p.name) == "Profile 3"); // no front end yet: English
+    r.ctl.setDefaultName([](uint8_t slot, uint8_t language, char* out, size_t cap) {
+        snprintf(out, cap, language == 1 ? "Perfil %u" : "Profile %u", slot);
+    });
+    r.ctl.set(Id::SystemLanguage, 1, Origin::Web, 0); // Brazilian Portuguese
+    CHECK(r.ctl.saveProfile(4, "", Save::Keep));
+    REQUIRE(r.ctl.profiles().read(4, p));
+    CHECK(std::string(p.name) == "Perfil 4");
+    CHECK(r.ctl.saveProfile(3, "", Save::Keep)); // an existing name stays
+    REQUIRE(r.ctl.profiles().read(3, p));
+    CHECK(std::string(p.name) == "Profile 3");
+}

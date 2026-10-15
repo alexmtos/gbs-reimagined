@@ -13,6 +13,16 @@ export type HeadlineCode =
 export type InputPort = "rgb" | "component" | "none";
 export type SyncType = "hv" | "csync" | "sog" | "none";
 export type FrameLockState = "locked" | "inactive" | "off";
+/** Why frame lock is inactive while its setting is on (firmware core::FrameLockReason). */
+export type FrameLockReason =
+  | "noSignal"
+  | "passthrough"
+  | "force60"
+  | "noClockGen"
+  | "outOfRange"
+  | "locking";
+/** The last "calibrate levels" (firmware video::GainCalibrator::Outcome). */
+export type LevelsOutcome = "none" | "running" | "done" | "notWhite" | "tooHot" | "aborted";
 
 export interface SourceStatus {
   port: InputPort;
@@ -37,8 +47,8 @@ export interface OutputStatus {
   pixelClockMHz: number;
   rateHz: number;
   frameLock: FrameLockState;
-  /** Message key explaining why frame lock is inactive, when it is. */
-  frameLockReason?: string;
+  /** Why frame lock is inactive, when it is. */
+  frameLockReason?: FrameLockReason;
 }
 
 export interface BoardStatus {
@@ -58,6 +68,9 @@ export interface Status {
   headline: HeadlineCode;
   /** Booted with defaults; nothing is saved. */
   safeMode?: boolean;
+  /** Moves whenever a setting changes, wherever it was changed: the page reloads its values. */
+  settingsSeq: number;
+  levels: LevelsOutcome;
   source: SourceStatus;
   output: OutputStatus;
   board: BoardStatus;

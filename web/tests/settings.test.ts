@@ -1,10 +1,13 @@
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { runCommand, scanWifi } from "../src/api/endpoints";
+import { locale } from "../src/i18n";
 import { handlers, resetDevice } from "../src/mocks/handlers";
 import {
   changeSetting,
+  chooseLanguage,
   fieldState,
+  followLanguage,
   loadSettings,
   setShowAdvanced,
   showAdvanced,
@@ -87,5 +90,23 @@ describe("commands and network", () => {
     await loadSettings();
     expect(values.value["system.showAdvanced"]).toBe("on");
     expect(showAdvanced.value).toBe(true);
+  });
+
+  it("the language is the board's: the header sets it, and the page follows it", async () => {
+    const stop = followLanguage();
+    try {
+      await loadSettings();
+      expect(values.value["system.language"]).toBe("en");
+      expect(locale.value).toBe("en");
+      expect(await chooseLanguage("pt-BR")).toBe("applied");
+      expect(locale.value).toBe("pt-BR");
+      await loadSettings();
+      expect(values.value["system.language"]).toBe("ptBR");
+      // Set elsewhere (the board's menu, another browser): the page follows on the next load.
+      await changeSetting("system.language", "en");
+      expect(locale.value).toBe("en");
+    } finally {
+      stop();
+    }
   });
 });

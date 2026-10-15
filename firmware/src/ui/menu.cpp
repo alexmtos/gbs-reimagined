@@ -215,17 +215,25 @@ void Menu::valueText(Id id, int16_t v, char* out, size_t cap) const {
             return;
         }
     }
-    if (id == Id::SystemStartupProfile) {
-        char fmt[32];
-        msg(i18n::Msg::ProfilesSlot, fmt, sizeof fmt); // "Profile {n}"
-        char* at = strstr(fmt, "{n}");
-        if (at != nullptr) {
-            *at = '\0';
-            snprintf(out, cap, "%s%d%s", fmt, v, at + 3);
-            return;
-        }
+    if (id == Id::SystemStartupProfile && v > 0) {
+        profileSlotName(static_cast<uint8_t>(v), locale(), out, cap);
+        return;
     }
     snprintf(out, cap, d.min < 0 ? "%+d" : "%d", v);
+}
+
+void profileSlotName(uint8_t slot, uint8_t language, char* out, size_t cap) {
+    const i18n::LocaleTables t = tables(language);
+    char fmt[32];
+    copyText(t.text, pgm_read_word(&t.msg[static_cast<uint8_t>(i18n::Msg::ProfilesSlot)]), fmt,
+             sizeof fmt); // "Profile {n}"
+    char* at = strstr(fmt, "{n}");
+    if (at == nullptr) {
+        snprintf(out, cap, "%u", slot);
+        return;
+    }
+    *at = '\0';
+    snprintf(out, cap, "%s%u%s", fmt, slot, at + 3);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -408,6 +416,15 @@ void Menu::press(uint32_t nowMs) {
             ctl_.set(editId_, editValue_, core::Origin::Oled, nowMs);
         }
         screen_ = Screen::Group;
+        if (editId_ == Id::SystemShowAdvanced) {
+            // The list itself shows more or fewer settings now; stay on this one.
+            openGroup(group_);
+            for (uint8_t i = 0; i < itemCount_; ++i) {
+                if (items_[i].kind == Kind::Setting && items_[i].id == editId_) {
+                    moveCursor(i, itemCount_);
+                }
+            }
+        }
         break;
     case Screen::Confirm:
         if (pending_ == Kind::FactoryReset) {
@@ -830,9 +847,11 @@ void Menu::renderNetwork(Frame& f) const {
         msg(i18n::Msg::NetPassword, text, sizeof text);
         setLine(f, 2, text);
         setLine(f, 3, net_.apPassword);
-        if (net_.failure == 1 || net_.failure == 2) {
-            msg(net_.failure == 1 ? i18n::Msg::NetRefused : i18n::Msg::NetNotFound, text,
-                sizeof text);
+        if (net_.failure >= 1 && net_.failure <= 3) {
+            msg(net_.failure == 1   ? i18n::Msg::NetRefused
+                : net_.failure == 2 ? i18n::Msg::NetNotFound
+                                    : i18n::Msg::NetNoAnswer,
+                text, sizeof text);
             setLine(f, 4, text);
         } else {
             setLine(f, 4, "http://192.168.4.1");

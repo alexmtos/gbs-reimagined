@@ -168,7 +168,8 @@ void refreshStatus(uint32_t now) {
     p.name = controller.profiles().activeName();
     core::buildStatus(statusModel, engine.status(),
                       controller.get(settings::Id::OutputFrameLock) != 0,
-                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p);
+                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p,
+                      controller.sequence());
 }
 
 } // namespace
@@ -198,6 +199,7 @@ void setup() {
     if (safeMode) {
         Serial.println(F("safe mode: saved settings not loaded, nothing will be saved"));
     }
+    controller.setDefaultName(&ui::profileSlotName);
     controller.begin(safeMode, millis());
     engine.setSourceListener(&detectedToProfiles);
     engine.begin(clockGenPresent);

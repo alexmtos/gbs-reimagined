@@ -1,7 +1,7 @@
 # English strings (reference locale). Keys mirror schema/settings.yaml.
 #   label  shown everywhere (keep under 20 characters for the OLED)
 #   hint   OLED bottom line, at most 21 characters
-#   help   one or two sentences for the web UI and the console's `help <setting>`
+#   help   one or two sentences for the web UI
 #   values display names of enum values (and of `special` int values)
 locale: en
 name: English
@@ -156,8 +156,9 @@ settings:
     hint: CRT-style lines
     help: >-
       Darkens the gaps between the console's lines to imitate a CRT. Works on 240p and 288p
-      sources and pauses by itself on 480i and 576i. Even lines need an output that is a whole
-      multiple of the source: 960p, 720p or 480p for 240p.
+      sources and pauses by itself on 480i and 576i; never at 15 kHz or in Passthrough. Even lines
+      need an output that is a whole multiple of the source: 960p, 720p or 480p for 240p, or 1080p
+      with Integer scale.
   picture.scanlineStrength:
     label: Scanline strength
     hint: Line darkness
@@ -175,14 +176,18 @@ settings:
   system.language:
     label: Language
     hint: Menus and web page
-    help: The language of the web page and the display. The serial console is always English.
+    help: >-
+      The language of the web page and of the board's screen. On the web page, choose it at the
+      top. The serial console is always English.
     values:
       en: English
       ptBR: Português (Brasil)
   system.oledSaver:
-    label: Display saver
-    hint: Dim the display
-    help: Turns the display off after a period without use, to protect the OLED from burn-in.
+    label: Screen saver
+    hint: Turns the screen off
+    help: >-
+      Turns the board's own screen off after a time without use, to protect it from burn-in. A
+      turn or press of the knob, or a change of signal, wakes it.
     values:
       "off": "Off"
       m1: 1 min
@@ -195,8 +200,11 @@ settings:
     help: Swaps the direction of the knob.
   system.revertSeconds:
     label: Confirm within
-    hint: Time to keep changes
-    help: How long you have to confirm a change that could leave the screen black before it is undone.
+    hint: For web and console
+    help: >-
+      How long you have to confirm a change made on the web page or the serial console that could
+      leave the screen black, before it is undone. With the knob, such a change applies on the
+      press and is not undone.
     values:
       s10: 10 s
       s20: 20 s
@@ -205,8 +213,9 @@ settings:
     label: Show advanced
     hint: Expert settings
     help: >-
-      Shows the settings for sampling, sync and diagnostics, on the web page and in the board's
-      menu. The switch at the bottom of every page is this same setting.
+      Shows the settings most people never need: sampling and sync, picture size, the
+      deinterlacer, auto gain and a few system options, on the web page and in the board's menu.
+      The switch at the bottom of the Output, Input, Picture and System pages is this same setting.
   system.startupProfile:
     label: Startup profile
     hint: Loaded at power-on
@@ -237,6 +246,17 @@ messages:
   headline.locking: Locking to the source
   headline.scaling: Scaling {source} to {output}
   headline.paused: Output paused
+  headline.noSignalAuto: No signal
+  status.lockReason.noSignal: "Inactive — no signal"
+  status.lockReason.passthrough: "Inactive — passthrough"
+  status.lockReason.force60: "Inactive — Force 60 Hz is on"
+  status.lockReason.noClockGen: "Inactive — no clock generator"
+  status.lockReason.outOfRange: "Inactive — this output cannot follow the source's rate"
+  status.lockReason.locking: "Locking…"
+  action.calibrate.done: "Levels calibrated for this input"
+  action.calibrate.notWhite: "That is not a white screen: nothing was changed"
+  action.calibrate.tooHot: "The signal is too strong even at the lowest gain: nothing was changed"
+  action.calibrate.aborted: "The picture changed during calibration: nothing was changed"
   status.source: Source
   status.output: Output
   status.board: Board
@@ -273,6 +293,15 @@ messages:
   action.factoryReset: "Factory reset"
   action.factoryReset.confirm: "All settings and the level calibration go back to defaults; saved profiles stay. Download a backup first in case you want them back. Press again to confirm."
   action.done: "Done"
+  common.cancel: "Cancel"
+  action.reboot.confirm: "The picture goes away for a few seconds while the board restarts. Press again to confirm."
+  profiles.chooseSlot: "Choose a slot"
+  profiles.replace: "Replace"
+  profiles.replaceConfirm: "This replaces profile {name}. Press Replace to confirm."
+  profiles.backup.confirm: "This replaces every setting, the level calibration and the {count} profiles in the file. Press Restore to confirm."
+  profiles.backup.restoreNow: "Restore"
+  profiles.backup.refused: "Not restored: {ids}."
+  profiles.backup.keep: "The output settings stay only if you press Keep at the top."
   action.failed: "That did not work; try again"
   net.joined: "Joined {ssid} at {ip} — also reachable as http://gbs.local"
   net.joining: "Joining {ssid}…"
@@ -338,13 +367,14 @@ messages:
   oled.net.password: "Password:"
   oled.net.refused: "Password refused"
   oled.net.notFound: "Network not found"
+  oled.net.noAnswer: "Network: no answer"
   oled.reboot: "Restart"
   oled.factoryReset: "Factory reset"
   oled.confirm: "Press again: confirm"
   oled.done: "Done"
   oled.edit.sync: "Sync"
   oled.status.version: "Firmware"
-  oled.status.heap: "Free RAM"
+  oled.status.heap: "Free memory"
   oled.status.lockOn: "frame lock"
   oled.status.lockOff: "free running"
   oled.on: "On"
@@ -362,7 +392,7 @@ messages:
   profiles.load: "Load"
   profiles.saveHere: "Save here"
   profiles.rename: "Rename"
-  profiles.autoOn: "Use for this source"
+  profiles.autoOn: "Load by itself for this source"
   profiles.autoOff: "Stop loading by itself"
   profiles.export: "Export"
   profiles.delete: "Delete"
@@ -408,7 +438,7 @@ messages:
   oled.profiles.new: "Save as new"
   oled.profiles.load: "Load"
   oled.profiles.save: "Save here"
-  oled.profiles.auto: "Auto-load"
+  oled.profiles.auto: "Load by itself"
   oled.profiles.delete: "Delete"
   oled.profiles.manual: "Only when chosen"
   oled.profiles.modified: "Changed, not saved"

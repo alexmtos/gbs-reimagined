@@ -110,7 +110,7 @@ const char* outputModeId(video::OutputMode m) {
 
 void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSetting,
                  uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board,
-                 const ProfileInfo& profile) {
+                 const ProfileInfo& profile, uint16_t settingsSeq) {
     StatusModel next;
     next.headline = e.headline;
     next.scaler = e.state != video::EngineState::NoPower;
@@ -132,10 +132,24 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
     next.frameLock = !frameLockSetting ? FrameLockState::Off
                      : e.frameLocked   ? FrameLockState::Locked
                                        : FrameLockState::Inactive;
+    next.lockReason = FrameLockReason::None;
+    if (next.frameLock == FrameLockState::Inactive) {
+        using video::PixelClock;
+        const bool unreachable =
+            e.lockResult == static_cast<uint8_t>(PixelClock::SyncResult::OutOfRange) ||
+            e.lockResult == static_cast<uint8_t>(PixelClock::SyncResult::NeedsShorterLine);
+        next.lockReason = !source                                 ? FrameLockReason::NoSignal
+                          : e.state == video::EngineState::Bypass ? FrameLockReason::Passthrough
+                          : e.forced60                            ? FrameLockReason::Force60
+                          : !board.clockGen                       ? FrameLockReason::NoClockGen
+                          : unreachable                           ? FrameLockReason::OutOfRange
+                                                                  : FrameLockReason::Locking;
+    }
     next.board = board;
     next.revertSecondsLeft = revertSecondsLeft;
     next.safeMode = safeMode;
     next.levelCalibration = e.levelCalibration;
+    next.settingsSeq = settingsSeq;
     next.profile = profile.slot;
     next.profileModified = profile.slot != 0 && profile.modified;
     if (profile.slot != 0) {
@@ -149,7 +163,8 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
         next.lines != m.lines || next.vMilliHz != m.vMilliHz || next.mode != m.mode ||
         next.sogLevel != m.sogLevel || next.phase != m.phase || next.syncQuality != m.syncQuality ||
         next.pixelClockHz != m.pixelClockHz || next.rateMilliHz != m.rateMilliHz ||
-        next.frameLock != m.frameLock || next.board.ip != m.board.ip ||
+        next.frameLock != m.frameLock || next.lockReason != m.lockReason ||
+        next.settingsSeq != m.settingsSeq || next.board.ip != m.board.ip ||
         next.board.clockGen != m.board.clockGen || next.revertSecondsLeft != m.revertSecondsLeft ||
         next.safeMode != m.safeMode || next.levelCalibration != m.levelCalibration ||
         next.profile != m.profile || next.profileModified != m.profileModified ||
@@ -187,10 +202,30 @@ InputSignature detectedSource(const video::DetectedSource& d) {
 
 size_t statusJson(const StatusModel& m, const char* version, const char* schema, char* buf,
                   size_t cap) {
-    static const char* const kPort[] = {"component", "rgb", "none"};
-    static const char* const kSync[] = {"none", "hv", "csync"};
-    static const char* const kLock[] = {"locked", "inactive", "off"};
+    // The JSON's words, in flash (fixed-width rows), copied out one at a time. Reasons follow
+    // FrameLockReason and levels video::GainCalibrator::Outcome, as the web reads them.
+    static const char kPort[][10] PROGMEM = {"component", "rgb", "none"};
+    static const char kSync[][6] PROGMEM = {"none", "hv", "csync"};
+    static const char kLock[][9] PROGMEM = {"locked", "inactive", "off"};
+    static const char kReason[][12] PROGMEM = {"",           "noSignal",   "passthrough", "force60",
+                                               "noClockGen", "outOfRange", "locking"};
+    static const char kLevels[][9] PROGMEM = {"none",     "running", "done",
+                                              "notWhite", "tooHot",  "aborted"};
     const bool source = m.sync != video::SyncType::None;
+    char port[10];
+    char sync[6];
+    char lock[9];
+    char levels[9];
+    strncpy_P(port, kPort[source ? static_cast<uint8_t>(m.port) % 2 : 2], sizeof port);
+    strncpy_P(sync, kSync[static_cast<uint8_t>(m.sync) % 3], sizeof sync);
+    strncpy_P(lock, kLock[static_cast<uint8_t>(m.frameLock) % 3], sizeof lock);
+    strncpy_P(levels, kLevels[m.levelCalibration % 6], sizeof levels);
+    char reason[40] = "";
+    if (m.lockReason != FrameLockReason::None) {
+        char word[12];
+        strncpy_P(word, kReason[static_cast<uint8_t>(m.lockReason) % 7], sizeof word);
+        snprintf_P(reason, sizeof reason, PSTR(",\"frameLockReason\":\"%s\""), word);
+    }
     char quality[8] = "null";
     if (m.syncQuality <= 100) {
         snprintf(quality, sizeof quality, "%u", m.syncQuality);
@@ -211,26 +246,25 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
     // The format lives in flash: it is the largest string of the firmware.
     const int n = snprintf_P(
         buf, cap,
-        PSTR("{\"seq\":%lu,\"headline\":\"%s\",\"safeMode\":%s,"
+        PSTR("{\"seq\":%lu,\"headline\":\"%s\",\"safeMode\":%s,\"settingsSeq\":%u,"
+             "\"levels\":\"%s\","
              "\"source\":{\"port\":\"%s\",\"sync\":\"%s\",\"standard\":\"%s\",\"lines\":%u,"
              "\"interlaced\":%s,\"hFreqKHz\":%lu.%03lu,\"vFreqHz\":%lu.%03lu,"
              "\"sog\":%u,\"phase\":%u,\"syncQuality\":%s},"
              "\"output\":{\"mode\":\"%s\",\"pixelClockMHz\":%lu.%03lu,\"rateHz\":%lu.%03lu,"
-             "\"frameLock\":\"%s\"},"
+             "\"frameLock\":\"%s\"%s},"
              "\"board\":{\"version\":\"%s\",\"schema\":\"%s\",\"uptimeS\":%lu,\"heapFree\":%lu,"
              "\"heapMin\":%lu,\"rssi\":%d,\"ip\":\"%u.%u.%u.%u\",\"scaler\":%s,\"clockGen\":%s},"
              "\"profile\":%s%s}"),
         static_cast<unsigned long>(m.seq), headlineCode(m.headline), m.safeMode ? "true" : "false",
-        source ? kPort[static_cast<uint8_t>(m.port) % 3] : "none",
-        kSync[static_cast<uint8_t>(m.sync) % 3], standardText(m.standard, m.interlaced), m.lines,
+        m.settingsSeq, levels, port, sync, standardText(m.standard, m.interlaced), m.lines,
         m.interlaced ? "true" : "false", static_cast<unsigned long>(m.hHz / 1000),
         static_cast<unsigned long>(m.hHz % 1000), static_cast<unsigned long>(m.vMilliHz / 1000),
         static_cast<unsigned long>(m.vMilliHz % 1000), m.sogLevel, m.phase, quality,
         outputModeId(m.mode), static_cast<unsigned long>(m.pixelClockHz / 1'000'000),
         static_cast<unsigned long>(m.pixelClockHz / 1000 % 1000),
         static_cast<unsigned long>(m.rateMilliHz / 1000),
-        static_cast<unsigned long>(m.rateMilliHz % 1000),
-        kLock[static_cast<uint8_t>(m.frameLock) % 3], version, schema,
+        static_cast<unsigned long>(m.rateMilliHz % 1000), lock, reason, version, schema,
         static_cast<unsigned long>(m.board.uptimeS), static_cast<unsigned long>(m.board.heapFree),
         static_cast<unsigned long>(m.board.heapMin), m.board.rssi, m.board.ip & 0xFF,
         m.board.ip >> 8 & 0xFF, m.board.ip >> 16 & 0xFF, m.board.ip >> 24,

@@ -109,10 +109,20 @@ describe("profiles", () => {
 
     resetDevice();
     await runProfile({ action: "save", slot: 7, name: "Seven" });
-    expect(await restoreBackup(backup)).toBe(1);
+    expect(await restoreBackup(backup)).toEqual({ profiles: 1, refused: [], revertArmed: false });
     expect(values.value["picture.contrast"]).toBe("4");
     expect(profiles.value?.profiles.map((p) => p.name)).toEqual(["One", "Seven"]);
     expect(parseBackupFile('{"format":"gbsr-profile"}')).toBeNull();
+  });
+
+  it("a restore says what the board refused and what waits for Keep", async () => {
+    const backup = parseBackupFile(JSON.stringify(await fetchBackup()));
+    if (!backup) throw new Error("the backup did not parse");
+    backup.settings["picture.contrast"] = "99"; // out of range: refused
+    backup.settings["output.resolution"] = "r1080p"; // risky: waits for Keep
+    const report = await restoreBackup(backup);
+    expect(report?.refused).toEqual(["picture.contrast"]);
+    expect(report?.revertArmed).toBe(true);
   });
 
   it("a factory reset keeps the profiles", async () => {

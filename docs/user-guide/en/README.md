@@ -19,6 +19,9 @@ You can control it three ways:
   shows nothing.
 - **From a USB serial terminal**, for advanced users and console switchers.
 
+The web page and the board's screen speak English or Brazilian Portuguese. Choose the language at
+the top of the web page, or in **System → Language** on the board's menu; both change together.
+
 ## Installing from your browser
 
 You need the board, a computer with **Chrome** or **Edge** (phones and tablets cannot install) and
@@ -80,7 +83,7 @@ output clock, and the board's address on your network.
 Picture settings change as you turn, so you can watch the TV. The output resolution and frame lock
 change only when you press, so the picture does not jump through every mode on the way. The
 screen goes back home after 30 seconds untouched and turns itself off after the time set in
-**System → Display saver**; any turn or press wakes it, and so does a change of signal.
+**System → Screen saver**; any turn or press wakes it, and so does a change of signal.
 
 **Safe mode.** If a setting ever leaves you without a picture and without the web page, restart the
 board and, **while the first screen shows "Hold knob: safe mode"**, press and hold the knob for
@@ -243,7 +246,8 @@ all profiles. There are 16 slots.
 
 - **Save:** set the picture up for a console, then on the **Profiles** page choose a slot, give it a
   name and press **Save**. Tick **Load it by itself when this source appears** to have the board
-  pick this profile whenever that console comes back.
+  pick this profile whenever that console comes back. Saving over a slot in use asks first: press
+  **Replace** to confirm.
 - **Load:** press **Load** next to a profile, or on the board: hold the knob on the home screen (or
   open **Profiles** in the menu), choose the profile and **Load**.
 - **Changes after loading** stay unsaved: the page and the board's screen show the profile as
@@ -263,8 +267,10 @@ all profiles. There are 16 slots.
 - **Export and import:** **Export** saves one profile as a file; choose a slot and import the file
   there, on this board or another one.
 - **Backup:** **Download a backup** saves every setting, the level calibration and all profiles in
-  one file (never the Wi-Fi password). **Restore a backup** puts back what the file holds; profiles
-  in slots the file does not mention stay as they are. A factory reset keeps the profiles.
+  one file (never the Wi-Fi password). **Restore a backup** asks first, then puts back what the
+  file holds and says what it could not; profiles in slots the file does not mention stay as they
+  are. Restored output settings wait for **Keep**, like any change that could blank the screen. A
+  factory reset keeps the profiles.
 - **Console switchers:** the commands that switchers send to RetroTINK scalers work here too:
   `SVS NEW INPUT=3` or `remote prof3` loads profile 3; `SVS CURRENT INPUT=3` loads it unless it is
   already in use and unchanged. Send them from a computer or a bridge through the board's USB port,

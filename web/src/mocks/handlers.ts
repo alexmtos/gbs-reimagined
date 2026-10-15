@@ -2,6 +2,7 @@ import { HttpResponse, http } from "msw";
 import type {
   BackupDocument,
   Levels,
+  LevelsOutcome,
   ProfileAction,
   ProfileAnswer,
   ProfileContent,
@@ -65,6 +66,7 @@ const device = {
     ap: { active: true, ssid: "GBS-EAC4", ip: "192.168.4.1" },
   } as WifiStatus,
   scanPolls: 0,
+  levelsOutcome: "none" as LevelsOutcome,
 };
 
 /** Back to a fresh board (tests call it between cases). */
@@ -78,6 +80,7 @@ export function resetDevice(): void {
   device.modified = false;
   device.levels = { component: [123, 123, 123], rgb: [123, 123, 123] };
   device.scanPolls = 0;
+  device.levelsOutcome = "none";
   device.wifi = { ...device.wifi, mode: "setup", ssid: "", ip: "0.0.0.0" };
 }
 
@@ -207,12 +210,21 @@ function profileAction(a: ProfileAction) {
   }
 }
 
+/** Like the board's settings sequence: moves whenever a value changes. */
+function settingsSeq(): number {
+  let h = 0;
+  for (const ch of JSON.stringify(device.values)) h = (h * 31 + ch.charCodeAt(0)) & 0xffff;
+  return h;
+}
+
 export function sampleStatus(overrides: Partial<Status> = {}): Status {
   seq += 1;
   const revert = revertLeft();
   return {
     seq,
     headline: "scaling",
+    settingsSeq: settingsSeq(),
+    levels: device.levelsOutcome,
     source: {
       port: "rgb",
       sync: "csync",
@@ -320,6 +332,8 @@ export const handlers = [
         break;
       }
       case "calibrate":
+        device.levelsOutcome = "done";
+        break;
       case "reboot":
         break;
       default:

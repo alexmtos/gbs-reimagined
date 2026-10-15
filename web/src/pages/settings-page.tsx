@@ -1,10 +1,10 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
 import { FirmwareUpdate } from "../components/firmware-update";
+import { bad, info, Note, type Notice, warn } from "../components/note";
 import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
-import type { MessageKey } from "../i18n";
 import { settingText, t, valueLabel } from "../i18n";
 import { profileName } from "../state/profiles";
 import {
@@ -26,7 +26,7 @@ function numberLabel(meta: SettingMeta, n: number): string {
     const name = profileName(n);
     return name ? `${n} · ${name}` : t("profiles.slotFree", { slot: n });
   }
-  return String(n);
+  return (meta.min ?? 0) < 0 && n > 0 ? `+${n}` : String(n);
 }
 
 /** The number behind a value text: a special value's name maps back to its number. */
@@ -77,7 +77,13 @@ export function Control({ meta }: { meta: SettingMeta }) {
           return special
             ? { value: special, label: valueLabel(meta.id, special) }
             : { value: String(n), label: numberLabel(meta, n) };
-        });
+        }).filter(
+          (o) =>
+            meta.id !== "system.startupProfile" ||
+            o.value === value ||
+            !/^\d+$/.test(o.value) ||
+            profileName(Number(o.value)) !== "",
+        );
         return (
           <select
             aria-label={label}
@@ -92,8 +98,10 @@ export function Control({ meta }: { meta: SettingMeta }) {
           </select>
         );
       }
-      // Integers: the number follows the slider while dragging; the board hears the release.
-      const shown = dragging ?? value;
+      // Integers: the number follows the slider while dragging; the board hears the release. A
+      // special number (the left end: Auto) is shown and sent by its name.
+      const named = (raw: string) => meta.special?.[raw] ?? raw;
+      const shown = named(dragging ?? value);
       return (
         <span class="range">
           <input
@@ -106,7 +114,7 @@ export function Control({ meta }: { meta: SettingMeta }) {
             onInput={(e) => setDragging(e.currentTarget.value)}
             onChange={(e) => {
               setDragging(null);
-              void changeSetting(meta.id, e.currentTarget.value);
+              void changeSetting(meta.id, named(e.currentTarget.value));
             }}
           />
           <output>{valueLabel(meta.id, shown)}</output>
@@ -114,27 +122,6 @@ export function Control({ meta }: { meta: SettingMeta }) {
       );
     }
   }
-}
-
-function ActionButton({ label, run }: { label: string; run: () => Promise<MessageKey | null> }) {
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<MessageKey | null>(null);
-  return (
-    <span class="action">
-      <button
-        type="button"
-        disabled={busy}
-        onClick={async () => {
-          setBusy(true);
-          setNote(await run());
-          setBusy(false);
-        }}
-      >
-        {label}
-      </button>
-      {note && <span class="muted">{t(note)}</span>}
-    </span>
-  );
 }
 
 /** Live feedback for the sampling settings: how much of the last second the line PLL held. */
@@ -160,66 +147,135 @@ function SyncQuality() {
   );
 }
 
-function InputActions() {
+const LEVELS_NOTICE: Readonly<Record<string, () => Notice>> = {
+  running: () => info(t("action.calibrate.started")),
+  done: () => info(t("action.calibrate.done")),
+  notWhite: () => bad(t("action.calibrate.notWhite")),
+  tooHot: () => bad(t("action.calibrate.tooHot")),
+  aborted: () => bad(t("action.calibrate.aborted")),
+};
+
+// A refused calibration can end between two polls (bench: under 1.5 s), so the page may never see
+// it running. Past this, it reports whatever the board says last.
+const CALIBRATE_SEEN_MS = 5000;
+
+/**
+ * "Calibrate levels", then the board's verdict. The status keeps the last outcome, so after a press
+ * the page waits for this run: seen running, an outcome other than the one before the press, or a
+ * few seconds.
+ */
+export function InputActions() {
+  const [phase, setPhase] = useState<"idle" | "asked" | "running" | "finished">("idle");
+  const [before, setBefore] = useState<string>("none");
+  const [refusal, setRefusal] = useState<Notice | null>(null);
+  const outcome = status.value?.levels ?? "none";
+  useEffect(() => {
+    if (phase === "asked" && outcome === "running") setPhase("running");
+    else if (phase === "asked" && outcome !== before) setPhase("finished");
+    if (phase === "running" && outcome !== "running") setPhase("finished");
+  }, [phase, outcome, before]);
+  useEffect(() => {
+    if (phase !== "asked") return;
+    const timer = setTimeout(() => setPhase("finished"), CALIBRATE_SEEN_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
+  const busy = phase === "asked" || phase === "running";
+  const notice =
+    refusal ??
+    (busy
+      ? info(t("action.calibrate.started"))
+      : phase === "finished"
+        ? (LEVELS_NOTICE[outcome]?.() ?? null)
+        : null);
   return (
     <li class="setting">
       <div class="setting-head">
         <span class="setting-label">{t("action.calibrate")}</span>
-        <ActionButton
-          label={t("action.calibrate")}
-          run={async () => {
+        <button
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            setRefusal(null);
+            setBefore(outcome);
             const r = await runCommand("calibrate");
-            if (r.ok) return "action.calibrate.started";
-            return r.reason === "noStablePicture" ? "action.calibrate.noPicture" : "action.failed";
+            if (r.ok) {
+              setPhase("asked");
+            } else {
+              setRefusal(
+                bad(
+                  t(
+                    r.reason === "noStablePicture" ? "action.calibrate.noPicture" : "action.failed",
+                  ),
+                ),
+              );
+            }
           }}
-        />
+        >
+          {t("action.calibrate")}
+        </button>
       </div>
       <p class="setting-help">{t("action.calibrate.help")}</p>
+      <Note notice={notice} />
     </li>
   );
 }
 
+/** Restart and factory reset: each asks for a second press, as the board's own menu does. */
 function SystemActions() {
-  const [armed, setArmed] = useState(false);
+  const [armed, setArmed] = useState<"reboot" | "factoryReset" | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
+  const [busy, setBusy] = useState(false);
+  const press = async (what: "reboot" | "factoryReset") => {
+    if (armed !== what) {
+      setArmed(what);
+      setNote(warn(t(what === "reboot" ? "action.reboot.confirm" : "action.factoryReset.confirm")));
+      return;
+    }
+    setArmed(null);
+    setBusy(true);
+    const ok = (await runCommand(what)).ok;
+    setNote(ok ? info(t("action.done")) : bad(t("action.failed")));
+    setBusy(false);
+  };
   return (
     <li class="setting">
       <div class="actions">
-        <ActionButton
-          label={t("action.reboot")}
-          run={async () => ((await runCommand("reboot")).ok ? "action.done" : "action.failed")}
-        />
-        <ActionButton
-          label={t("action.factoryReset")}
-          run={async () => {
-            if (!armed) {
-              setArmed(true);
-              return "action.factoryReset.confirm";
-            }
-            setArmed(false);
-            return (await runCommand("factoryReset")).ok ? "action.done" : "action.failed";
-          }}
-        />
-        {armed && (
-          <ActionButton
-            label={t("profiles.backup.download")}
-            run={async () => {
+        <button type="button" disabled={busy} onClick={() => void press("reboot")}>
+          {t("action.reboot")}
+        </button>
+        <button type="button" disabled={busy} onClick={() => void press("factoryReset")}>
+          {t("action.factoryReset")}
+        </button>
+        {armed === "factoryReset" && (
+          <button
+            type="button"
+            onClick={async () => {
               try {
                 downloadJson("gbs-backup.json", await fetchBackup());
-                return null;
               } catch {
-                return "action.failed";
+                setNote(bad(t("action.failed")));
               }
             }}
-          />
+          >
+            {t("profiles.backup.download")}
+          </button>
         )}
       </div>
+      <Note notice={note} />
     </li>
   );
 }
 
+// Chosen elsewhere on the page: the language in the header.
+const ELSEWHERE: ReadonlySet<string> = new Set(["system.language"]);
+
 export function SettingsPage({ group }: { group: SettingGroup }) {
   const visible = SETTINGS.filter(
-    (m) => m.group === group && m.available && (showAdvanced.value || m.tier === "essential"),
+    (m) =>
+      m.group === group &&
+      m.available &&
+      !ELSEWHERE.has(m.id) &&
+      (showAdvanced.value || m.tier === "essential"),
   );
   if (!loaded.value) {
     return <p class="muted">{t("conn.reconnecting")}</p>;

@@ -760,6 +760,8 @@ void Engine::runLoad() {
     motionAdaptiveActive_ = false;
     maPending_ = 0;
     clock_.unlock();
+    // No verdict yet for this program: the status says "locking", not the last one's reason.
+    status_.lockResult = static_cast<uint8_t>(PixelClock::SyncResult::NotReady);
 
     LoadContext lc;
     lc.standard = standard;
@@ -809,6 +811,7 @@ void Engine::startHdBypass(Standard standard) {
     motionAdaptiveActive_ = false;
     maPending_ = 0;
     clock_.resetForProgram(0x35); // the display clock is not used in bypass
+    status_.lockResult = static_cast<uint8_t>(PixelClock::SyncResult::NotReady);
     enterHdBypass(ops_, sense_, ctx_);
     lpfAuto_ = static_cast<uint8_t>(chip_.get(ADC_FLTR));
     applyLpf();
@@ -837,6 +840,7 @@ void Engine::startRgbhvBypass() {
     motionAdaptiveActive_ = false;
     maPending_ = 0;
     clock_.resetForProgram(0x35);
+    status_.lockResult = static_cast<uint8_t>(PixelClock::SyncResult::NotReady);
     enterRgbhvBypass(ops_, ctx_);
     lpfAuto_ = static_cast<uint8_t>(chip_.get(ADC_FLTR));
     applyLpf();
@@ -1499,6 +1503,7 @@ void Engine::refreshStatus() {
     st.scanlines = scanlinesOn_;
     st.pixelClockHz = clock_.frequency();
     st.frameLocked = clock_.locked();
+    st.forced60 = forced60_;
     st.sourceMilliHz = clock_.lastSourceMilliHz();
     st.outputMilliHz = clock_.lastOutputMilliHz();
     for (uint8_t i = 0; i < 3; ++i) {

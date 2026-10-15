@@ -20,6 +20,9 @@ Você pode controlá-lo de três formas:
   não mostra nada.
 - **Por um terminal serial USB**, para usuários avançados e chaveadores de consoles.
 
+A página web e a telinha da placa falam inglês ou português do Brasil. Escolha o idioma no alto da
+página web, ou em **Sistema → Idioma** no menu da placa; os dois mudam juntos.
+
 ## Instalando pelo navegador
 
 Você precisa da placa, de um computador com **Chrome** ou **Edge** (celulares e tablets não
@@ -198,9 +201,9 @@ Na aba **Imagem**:
 
 - **Scanlines** escurecem o espaço entre as linhas do console, como num CRT. Funcionam em jogos
   240p e 288p e pausam sozinhas enquanto o console manda 480i ou 576i (menus, alguns jogos),
-  voltando quando ele retorna a 240p. A **Intensidade** vai de 1 (suave) a 8 (faixas pretas);
-  linhas mais fortes deixam a imagem mais escura — cerca de um sexto no 4, o padrão, e cerca de
-  dois quintos no 8.
+  voltando quando ele retorna a 240p. A **Força das scanlines** vai de 1 (suave) a 8 (faixas
+  pretas); linhas mais fortes deixam a imagem mais escura — cerca de um sexto no 4, o padrão, e
+  cerca de dois quintos no 8.
 - As linhas ficam perfeitamente iguais quando a saída é um múltiplo inteiro da imagem do console:
   **1280x960**, **720p** ou **480p** para jogos 240p. Em **1080p** as faixas alternam um pouco de
   espessura, o que algumas pessoas notam em telas grandes.
@@ -248,7 +251,8 @@ os perfis. Há 16 posições.
 
 - **Salvar:** ajuste a imagem para um console e, na página **Perfis**, escolha uma posição, dê um
   nome e toque em **Salvar**. Marque **Carregar sozinho quando esta fonte aparecer** para a placa
-  escolher este perfil sempre que esse console voltar.
+  escolher este perfil sempre que esse console voltar. Salvar sobre uma posição ocupada pede
+  confirmação: toque em **Substituir**.
 - **Carregar:** toque em **Carregar** ao lado de um perfil, ou na placa: segure o botão giratório
   na tela inicial (ou abra **Perfis** no menu), escolha o perfil e **Carregar**.
 - **Mudanças depois de carregar** ficam sem salvar: a página e a telinha da placa mostram o perfil
@@ -268,9 +272,10 @@ os perfis. Há 16 posições.
 - **Exportar e importar:** **Exportar** salva um perfil num arquivo; escolha uma posição e importe
   o arquivo nela, nesta placa ou em outra.
 - **Cópia de segurança:** **Baixar uma cópia** salva todos os ajustes, a calibração de níveis e
-  todos os perfis num arquivo (nunca a senha do Wi-Fi). **Restaurar uma cópia** devolve o que o
-  arquivo contém; perfis em posições que o arquivo não menciona ficam como estão. A restauração de
-  fábrica mantém os perfis.
+  todos os perfis num arquivo (nunca a senha do Wi-Fi). **Restaurar uma cópia** pede confirmação,
+  devolve o que o arquivo contém e diz o que não conseguiu; perfis em posições que o arquivo não
+  menciona ficam como estão. Os ajustes de saída restaurados esperam o **Manter**, como qualquer
+  mudança que possa apagar a tela. A restauração de fábrica mantém os perfis.
 - **Seletores de console:** os comandos que seletores mandam para scalers RetroTINK funcionam aqui
   também: `SVS NEW INPUT=3` ou `remote prof3` carrega o perfil 3; `SVS CURRENT INPUT=3` carrega,
   a não ser que ele já esteja em uso e sem alterações. Mande-os de um computador ou de uma ponte pela

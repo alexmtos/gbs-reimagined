@@ -1,12 +1,21 @@
 import type { Status } from "../api/types";
 import type { MessageKey } from "../i18n";
 import { formatNumber, t, valueLabel } from "../i18n";
+import { values } from "../state/settings";
 import { status } from "../state/status";
 
-function headline(s: Status): string {
+/**
+ * The headline sentence. With no signal the board reports no port: the page names the input the
+ * user chose instead, or none when the board watches all of them.
+ */
+export function headline(s: Status, inputSetting: string | undefined): string {
   switch (s.headline) {
-    case "noSignal":
-      return t("headline.noSignal", { input: valueLabel("input.port", s.source.port) });
+    case "noSignal": {
+      const port = s.source.port !== "none" ? s.source.port : inputSetting;
+      return !port || port === "auto"
+        ? t("headline.noSignalAuto")
+        : t("headline.noSignal", { input: valueLabel("input.port", port) });
+    }
     case "scaling":
       return t("headline.scaling", {
         source: s.source.standard || t("common.unknown"),
@@ -36,10 +45,14 @@ export function StatusPage() {
       ? t("common.on")
       : s.output.frameLock === "off"
         ? t("common.off")
-        : t((s.output.frameLockReason as MessageKey | undefined) ?? "common.unknown");
+        : t(
+            s.output.frameLockReason
+              ? (`status.lockReason.${s.output.frameLockReason}` as MessageKey)
+              : "common.unknown",
+          );
   return (
     <section>
-      <h1 class={`headline headline-${s.headline}`}>{headline(s)}</h1>
+      <h1 class={`headline headline-${s.headline}`}>{headline(s, values.value["input.port"])}</h1>
       {s.profile && (
         <p class="muted">
           {t("status.profile")}: {s.profile.slot} · {s.profile.name}

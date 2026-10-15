@@ -1,11 +1,12 @@
 import { signal } from "@preact/signals";
 import { RevertBanner, SafeModeBanner } from "./components/banners";
 import type { MessageKey } from "./i18n";
-import { LOCALES, locale, setLocale, t } from "./i18n";
+import { LOCALES, locale, settingText, t } from "./i18n";
 import { NetworkPage } from "./pages/network-page";
 import { ProfilesPage } from "./pages/profiles-page";
 import { SettingsPage } from "./pages/settings-page";
 import { StatusPage } from "./pages/status-page";
+import { chooseLanguage } from "./state/settings";
 import { connection } from "./state/status";
 
 type PageId = "status" | "picture" | "output" | "input" | "profiles" | "system" | "network";
@@ -45,9 +46,9 @@ export function App() {
         <ConnectionPill />
         <select
           class="lang"
-          aria-label="Language"
+          aria-label={settingText("system.language").label}
           value={locale.value}
-          onChange={(e) => setLocale(e.currentTarget.value as typeof locale.value)}
+          onChange={(e) => void chooseLanguage(e.currentTarget.value as typeof locale.value)}
         >
           {LOCALES.map((l) => (
             <option key={l.id} value={l.id}>
