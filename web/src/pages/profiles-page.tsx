@@ -1,6 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { exportProfile, fetchBackup } from "../api/endpoints";
 import type { ProfileSummary } from "../api/types";
+import { bad, info, Note, type Notice, warn } from "../components/note";
 import { downloadJson } from "../download";
 import { SETTINGS } from "../gen/settings.gen";
 import type { MessageKey } from "../i18n";
@@ -41,28 +42,23 @@ function fileSafe(name: string): string {
   return name.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "profile";
 }
 
-/** A message under a row: the board's answer to the last thing done there. */
-function Note({ note }: { note: string | null }) {
-  return note ? <p class="setting-note">{note}</p> : null;
-}
-
 function ProfileRow({ p }: { p: ProfileSummary }) {
   const list = profiles.value;
   const active = list?.active === p.slot;
   const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
   const [armed, setArmed] = useState<"save" | "delete" | null>(null);
   const [renaming, setRenaming] = useState<string | null>(null);
 
-  const act = async (run: () => Promise<string | null>) => {
+  const act = async (run: () => Promise<Notice | null>) => {
     setBusy(true);
     setNote(await run());
     setBusy(false);
   };
-  const confirmFirst = (what: "save" | "delete", run: () => Promise<string | null>) => {
+  const confirmFirst = (what: "save" | "delete", run: () => Promise<Notice | null>) => {
     if (armed !== what) {
       setArmed(what);
-      setNote(t("profiles.confirm"));
+      setNote(warn(t("profiles.confirm")));
       return;
     }
     setArmed(null);
@@ -83,7 +79,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
           onClick={() =>
             act(async () => {
               const a = await runProfile({ action: "load", slot: p.slot });
-              return a.ok ? t("profiles.loaded") : t(reasonKey(a));
+              return a.ok ? info(t("profiles.loaded")) : bad(t(reasonKey(a)));
             })
           }
         >
@@ -103,7 +99,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
             void act(async () => {
               const a = await runProfile({ action: "rename", slot: p.slot, name: renaming });
               setRenaming(null);
-              return a.ok ? null : t(reasonKey(a));
+              return a.ok ? null : bad(t(reasonKey(a)));
             });
           }}
         >
@@ -125,7 +121,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
             onClick={() =>
               confirmFirst("save", async () => {
                 const a = await runProfile({ action: "save", slot: p.slot, source: "keep" });
-                return a.ok ? t("profiles.saved") : t(reasonKey(a));
+                return a.ok ? info(t("profiles.saved")) : bad(t(reasonKey(a)));
               })
             }
           >
@@ -140,7 +136,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
             onClick={() =>
               act(async () => {
                 const a = await runProfile({ action: "source", slot: p.slot, on: !p.source });
-                return a.ok ? null : t(reasonKey(a));
+                return a.ok ? null : bad(t(reasonKey(a)));
               })
             }
           >
@@ -156,7 +152,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
                   downloadJson(`gbs-profile-${p.slot}-${fileSafe(doc.name)}.json`, doc);
                   return null;
                 } catch {
-                  return t("action.failed");
+                  return bad(t("action.failed"));
                 }
               })
             }
@@ -169,7 +165,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
             onClick={() =>
               confirmFirst("delete", async () => {
                 const a = await runProfile({ action: "delete", slot: p.slot });
-                return a.ok ? null : t(reasonKey(a));
+                return a.ok ? null : bad(t(reasonKey(a)));
               })
             }
           >
@@ -177,7 +173,7 @@ function ProfileRow({ p }: { p: ProfileSummary }) {
           </button>
         </div>
       )}
-      <Note note={note} />
+      <Note notice={note} />
     </li>
   );
 }
@@ -188,7 +184,7 @@ function SaveForm() {
   const [slot, setSlot] = useState(0);
   const [name, setName] = useState("");
   const [forSource, setForSource] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
   const chosen = slot || firstFreeSlot() || 1;
   const existing = list?.profiles.find((p) => p.slot === chosen);
@@ -210,7 +206,7 @@ function SaveForm() {
       name: name.trim(),
       source: forSource ? "this" : "none",
     });
-    setNote(a.ok ? t("profiles.saved") : t(reasonKey(a)));
+    setNote(a.ok ? info(t("profiles.saved")) : bad(t(reasonKey(a))));
     if (a.ok) setName("");
     setBusy(false);
   };
@@ -219,15 +215,15 @@ function SaveForm() {
     setBusy(true);
     const content = parseProfileFile(await file.text());
     if (!content) {
-      setNote(t("profiles.notProfile"));
+      setNote(bad(t("profiles.notProfile")));
     } else {
       const a = await runProfile({ action: "import", slot: chosen, profile: content });
       setNote(
         !a.ok
-          ? t(reasonKey(a))
+          ? bad(t(reasonKey(a)))
           : a.skipped?.length
-            ? t("profiles.importedSkipped", { ids: a.skipped.join(", ") })
-            : t("profiles.imported"),
+            ? warn(t("profiles.importedSkipped", { ids: a.skipped.join(", ") }))
+            : info(t("profiles.imported")),
       );
     }
     setBusy(false);
@@ -290,22 +286,24 @@ function SaveForm() {
           />
         </label>
       </form>
-      <Note note={note} />
+      <Note notice={note} />
     </div>
   );
 }
 
 function Backup() {
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
   const [busy, setBusy] = useState(false);
   const restore = async (file: File) => {
     setBusy(true);
     const backup = parseBackupFile(await file.text());
     if (!backup) {
-      setNote(t("profiles.backup.notBackup"));
+      setNote(bad(t("profiles.backup.notBackup")));
     } else {
       const count = await restoreBackup(backup);
-      setNote(count === null ? t("action.failed") : t("profiles.backup.restored", { count }));
+      setNote(
+        count === null ? bad(t("action.failed")) : info(t("profiles.backup.restored", { count })),
+      );
     }
     setBusy(false);
   };
@@ -322,7 +320,7 @@ function Backup() {
               const backup = await fetchBackup();
               downloadJson("gbs-backup.json", backup);
             } catch {
-              setNote(t("action.failed"));
+              setNote(bad(t("action.failed")));
             }
           }}
         >
@@ -342,7 +340,7 @@ function Backup() {
           />
         </label>
       </div>
-      <Note note={note} />
+      <Note notice={note} />
     </div>
   );
 }

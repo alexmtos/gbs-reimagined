@@ -11,6 +11,7 @@ import {
   type UpdateAnswer,
   uploadFirmware,
 } from "../update/update";
+import { bad, info, Note, type Notice } from "./note";
 
 function reasonKey(answer: UpdateAnswer): MessageKey {
   switch (answer.reason) {
@@ -31,7 +32,7 @@ export function FirmwareUpdate() {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [beta, setBeta] = useState(false);
   const [installed, setInstalled] = useState<string | null>(null);
@@ -43,24 +44,26 @@ export function FirmwareUpdate() {
     setProgress(null);
     if (answer.ok) {
       setInstalled(answer.version ?? "");
-      setNote(t("update.done", { version: answer.version ?? "" }));
+      setNote(info(t("update.done", { version: answer.version ?? "" })));
       setOffer(null);
     } else {
-      setNote(t(reasonKey(answer)));
+      setNote(bad(t(reasonKey(answer))));
     }
     setBusy(false);
   };
 
   const check = async () => {
     setBusy(true);
-    setNote(t("update.checking"));
+    setNote(info(t("update.checking")));
     setOffer(null);
     try {
       const found = pickOffer(await fetchLatest(), version, beta);
       setOffer(found);
-      setNote(found ? t("update.available", { version: found.version }) : t("update.upToDate"));
+      setNote(
+        info(found ? t("update.available", { version: found.version }) : t("update.upToDate")),
+      );
     } catch {
-      setNote(t("update.offline"));
+      setNote(bad(t("update.offline")));
     }
     setBusy(false);
   };
@@ -72,7 +75,7 @@ export function FirmwareUpdate() {
       const blob = await downloadOffer(offer);
       await send(blob, offer.file.ota.split("/").pop() ?? "update.ota.bin.gz");
     } catch (e) {
-      setNote(e instanceof ChecksumError ? t("update.badChecksum") : t("update.offline"));
+      setNote(bad(e instanceof ChecksumError ? t("update.badChecksum") : t("update.offline")));
       setBusy(false);
     }
   };
@@ -134,9 +137,7 @@ export function FirmwareUpdate() {
           </span>
         )}
       </div>
-      {(note || running) && (
-        <p class="setting-note">{running ? t("update.running", { version }) : note}</p>
-      )}
+      <Note notice={running ? info(t("update.running", { version })) : note} />
     </li>
   );
 }
