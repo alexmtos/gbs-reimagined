@@ -20,7 +20,7 @@ describe("settings", () => {
     expect(values.value["output.resolution"]).toBe("auto");
     expect(values.value["picture.sharpness"]).toBe("off");
     expect(values.value["output.aspect"]).toBe("a4x3");
-    expect(values.value["system.startupProfile"]).toBeUndefined(); // M2, pending
+    expect(values.value["system.startupProfile"]).toBe("lastUsed");
   });
 
   it("keeps an accepted change and marks it saved", async () => {

@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "core/profiles.h"
 #include "video/engine.h"
 
 namespace gbsr::core {
@@ -17,6 +18,13 @@ struct BoardInfo {
     int8_t rssi = 0; // 0 when not joined to a network
     uint32_t ip = 0; // IPv4, first octet in the low byte (the ESP8266 convention)
     bool clockGen = false;
+};
+
+// The active profile, as the controller reports it.
+struct ProfileInfo {
+    uint8_t slot = 0; // 0: none
+    bool modified = false;
+    const char* name = "";
 };
 
 // The one status model every front end reads (docs/design/ux.md, "Status"), rebuilt every 250 ms.
@@ -46,15 +54,29 @@ struct StatusModel {
     uint16_t revertSecondsLeft = 0; // 0: nothing pending
     bool safeMode = false;
     uint8_t levelCalibration = 0; // video::GainCalibrator::Outcome of the last "calibrate levels"
+    // profile
+    uint8_t profile = 0; // 0: none
+    bool profileModified = false;
+    char profileName[kProfileNameCap] = {};
 };
 
 // Rebuilds `m` from its inputs; increments m.seq if anything other than the uptime changed.
 void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSetting,
-                 uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board);
+                 uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board,
+                 const ProfileInfo& profile = ProfileInfo{});
+
+// The source's signature once the engine has been running it for a moment (ADR 0014); invalid
+// while there is no source or it is still being loaded.
+InputSignature settledSource(const video::EngineStatus& e);
+// The same for a source the engine has just detected and is about to load.
+InputSignature detectedSource(const video::DetectedSource& d);
 
 // Short words shared by the JSON and the console.
 const char* headlineCode(video::Headline h);
 const char* standardText(video::Standard s, bool interlaced);
+// A standard without its scan: "240p/480i", "288p/576i", otherwise as standardText. For a profile's
+// signature, which covers both scans of a standard.
+const char* standardFamily(video::Standard s);
 const char* outputModeId(video::OutputMode m);
 
 // GET /api/status (web/src/api/types.ts). Returns the length written, or 0 if `cap` is too small.

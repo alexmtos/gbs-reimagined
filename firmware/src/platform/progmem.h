@@ -25,4 +25,5 @@
 #define strcasecmp_P strcasecmp
 #define strlen_P strlen
 #define strncpy_P strncpy
+#define snprintf_P snprintf
 #endif

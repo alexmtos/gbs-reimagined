@@ -41,6 +41,14 @@ hal::EspPulseTimer pulseTimer(hal::board().pinVsyncProbe);
 video::Engine engine(chip, &clockGen, &pulseTimer);
 platform::EspFileStore files;
 core::Controller controller(files, engine);
+
+// New sources reach the profiles before their program is chosen (ADR 0014).
+class DetectedToProfiles : public video::SourceListener {
+public:
+    void sourceDetected(const video::DetectedSource& d) override {
+        controller.sourceDetected(core::detectedSource(d), millis());
+    }
+} detectedToProfiles;
 core::StatusModel statusModel;
 net::Wifi wifi(files);
 net::Web web(controller, statusModel, wifi);
@@ -144,10 +152,15 @@ void refreshStatus(uint32_t now) {
     b.rssi = wifi.rssi();
     b.ip = wifi.stationIp() != 0 ? wifi.stationIp() : wifi.apIp();
     b.clockGen = clockGenPresent;
+    controller.onSource(core::settledSource(engine.status()), now);
     const uint32_t revertMs = controller.revertRemainingMs(now);
+    core::ProfileInfo p;
+    p.slot = controller.activeProfile();
+    p.modified = controller.profileModified();
+    p.name = controller.profiles().activeName();
     core::buildStatus(statusModel, engine.status(),
                       controller.get(settings::Id::OutputFrameLock) != 0,
-                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b);
+                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p);
 }
 
 } // namespace
@@ -178,6 +191,7 @@ void setup() {
         Serial.println(F("safe mode: saved settings not loaded, nothing will be saved"));
     }
     controller.begin(safeMode, millis());
+    engine.setSourceListener(&detectedToProfiles);
     engine.begin(clockGenPresent);
     wifi.begin(millis());
     web.begin();

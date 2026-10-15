@@ -27,4 +27,22 @@ public:
     virtual bool calibrateLevels() = 0;
 };
 
+// A new source, as the engine sees it just before choosing its program.
+struct DetectedSource {
+    InputPort port = InputPort::Rgb;
+    SyncType sync = SyncType::None;
+    Standard standard = Standard::None;
+    uint16_t lines = 0; // the sync processor's count, as EngineStatus::sourceLines
+};
+
+// Told about each new source before its program is chosen, so the settings that choose the program
+// (a profile's output, Force 60 Hz) are in place for the first load instead of a second one
+// (ADR 0014). Called from Engine::tick(): it may call the VideoControl setters and touch the
+// filesystem, and must not block.
+class SourceListener {
+public:
+    virtual ~SourceListener() = default;
+    virtual void sourceDetected(const DetectedSource& source) = 0;
+};
+
 } // namespace gbsr::video

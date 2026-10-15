@@ -37,7 +37,7 @@ enum class Id : uint8_t {
     Count,
 };
 
-inline constexpr char kSchemaHash[] = "7cbe1e84";
+inline constexpr char kSchemaHash[] = "ff651a3a";
 inline constexpr uint8_t kGroupCount = 4;
 // The milestone being built; later milestones' settings are generated but hidden.
 inline constexpr uint8_t kMilestone = 2;

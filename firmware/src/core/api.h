@@ -27,6 +27,9 @@ public:
 
     JsonOut& raw(const char* text);
     JsonOut& str(const char* text); // quoted and escaped
+    // The same for text in flash (PSTR): the fixed JSON of every route stays out of RAM.
+    JsonOut& rawP(const char* text);
+    JsonOut& strP(const char* text);
     JsonOut& num(long value);
     void flush();
 
@@ -55,5 +58,33 @@ enum class Command : uint8_t { None, Keep, Revert, Calibrate, Reboot, FactoryRes
 // caller to carry out after the answer has gone.
 int postCommand(Controller& ctl, const char* body, size_t len, uint32_t nowMs, Sink& out,
                 Command& ran);
+
+// Profiles (ADR 0014). A source signature is {"port", "sync", "standard", "lines"} or null.
+
+// GET /api/profiles: {"active", "modified", "source", "profiles": [{"slot", "name", "source"}]},
+// "active" 0 when none; only the slots in use are listed.
+int getProfiles(const Controller& ctl, Sink& out);
+
+// GET /api/profile?slot=<n>: one profile as an export document
+// {"format": "gbsr-profile", "version", "schema", "name", "source", "values": {id: text}};
+// 404 for an empty slot.
+int getProfile(const Controller& ctl, uint8_t slot, Sink& out);
+
+// POST /api/profile with {"action", "slot", ...}:
+//   load; save ["name"] ["source": "keep" | "this" | "none"]; rename "name"; source "on";
+//   delete; import "profile" (an export document; its format and schema are not checked).
+// Answers {"ok": true, "result"?, "skipped"?: [id], "revert"?} or {"ok": false, "reason"}.
+int postProfile(Controller& ctl, const char* body, size_t len, uint32_t nowMs, Sink& out);
+
+// POST /api/svs with a switcher line as the whole body ("SVS NEW INPUT=3", "remote prof3").
+int postSwitcher(Controller& ctl, const char* body, size_t len, uint32_t nowMs, Sink& out);
+
+// GET /api/backup: {"format": "gbsr-backup", "version", "firmware", "schema", "settings",
+// "levels": {"component": [r, g, b], "rgb": [r, g, b]}, "profiles": {"<slot>": {"name", "source",
+// "values"}}}, streamed. Never any network credential.
+int getBackup(const Controller& ctl, const char* firmware, Sink& out);
+
+// POST /api/levels with {"component": [r, g, b], "rgb": [r, g, b]}: a backup's calibration.
+int postLevels(Controller& ctl, const char* body, size_t len, Sink& out);
 
 } // namespace gbsr::core

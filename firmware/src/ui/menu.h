@@ -38,8 +38,9 @@ struct NetView {
 // renders text lines; host-tested without a display.
 //
 // Gestures: turn = move or change (coarse ×10 while the knob is held down), press = enter or
-// confirm, long press = back. Risky settings apply on the press, so turning through output modes
-// does not reload a program at every detent; picture settings apply while turning.
+// confirm, long press = back (on the home screen: the profiles). Risky settings apply on the
+// press, so turning through output modes does not reload a program at every detent; picture
+// settings apply while turning.
 class Menu {
 public:
     static constexpr uint32_t kHomeAfterMs = 30'000;
@@ -67,8 +68,16 @@ private:
         Status,
         Confirm,
         Action,
-        Revert
+        Revert,
+        Profiles,       // the saved profiles, "Save as new" and Back
+        ProfileItem,    // what to do with one profile
+        ProfileConfirm, // a second press before saving over or deleting it
+        ProfileDone,    // how it went
     };
+    enum class ProfileAct : uint8_t { Load, Save, Delete, New };
+    static constexpr uint8_t kRowNew = 0xFE; // rows_ entries besides slot numbers
+    static constexpr uint8_t kRowBack = 0xFF;
+    static constexpr uint8_t kListRows = 5;
     enum class Kind : uint8_t { Setting, Calibrate, Reboot, FactoryReset, Back };
     struct Item {
         Kind kind;
@@ -80,6 +89,13 @@ private:
     void startEdit(settings::Id id);
     void activate(const Item& item, uint32_t nowMs);
     void moveCursor(int steps, uint8_t count);
+    void leaveToRoot(uint8_t rootIndex);
+    void openProfiles(uint8_t cursorSlot);
+    void loadRowNames();
+    void openProfileItem(uint8_t slot);
+    void profileDone(ProfileAct act, bool ok, i18n::Msg ok_msg);
+    void pressProfiles(uint32_t nowMs);
+    void pressProfileItem(uint32_t nowMs);
 
     void renderHome(Frame& f) const;
     void renderList(Frame& f) const;
@@ -89,6 +105,10 @@ private:
     void renderConfirm(Frame& f) const;
     void renderAction(Frame& f) const;
     void renderRevert(Frame& f, uint32_t nowMs) const;
+    void renderProfiles(Frame& f) const;
+    void renderProfileItem(Frame& f) const;
+    void renderProfileMessage(Frame& f) const;
+    void slotTitle(char* out, size_t cap) const;
 
     uint8_t locale() const;
     void msg(i18n::Msg m, char* out, size_t cap) const;
@@ -113,6 +133,17 @@ private:
     bool revertChoiceKeep_ = true;
     bool rebootRequested_ = false;
     uint32_t lastInputMs_ = 0;
+
+    // Profiles: the list's rows (slot numbers, kRowNew, kRowBack), the names of the visible ones
+    // (read from flash when the list opens or scrolls, not at every frame), and the chosen slot.
+    uint8_t rows_[core::kProfileSlots + 2] = {};
+    uint8_t rowCount_ = 0;
+    char rowNames_[kListRows][core::kProfileNameCap] = {};
+    uint8_t slot_ = 0;
+    char slotName_[core::kProfileNameCap] = {};
+    bool profilesFromHome_ = false;
+    ProfileAct profileAct_ = ProfileAct::Load;
+    i18n::Msg profileMsg_ = i18n::Msg::ProfilesFailed;
 };
 
 } // namespace gbsr::ui

@@ -4,6 +4,7 @@
 
 #include "chip/field_table.h"
 #include "core/settings_store.h"
+#include "core/status.h"
 
 namespace gbsr::ui {
 
@@ -63,6 +64,27 @@ const char* stateName(video::EngineState s) {
     return "?";
 }
 
+// "rgb csync 240p 262 lines", or "-" for no signature.
+void signatureText(const core::InputSignature& s, char* out, size_t cap) {
+    if (!s.valid) {
+        snprintf(out, cap, "-");
+        return;
+    }
+    snprintf(out, cap, "%s %s %s %u lines",
+             s.port == static_cast<uint8_t>(video::InputPort::Rgb) ? "rgb" : "component",
+             s.sync == static_cast<uint8_t>(video::SyncType::Csync) ? "csync" : "hv",
+             core::standardFamily(static_cast<video::Standard>(s.standard)), s.lines);
+}
+
+// A slot number 1..16, or 0.
+uint8_t slotArg(const char* word) {
+    char* end = nullptr;
+    const long n = strtol(word, &end, 10);
+    return end != word && *end == '\0' && n >= 1 && n <= core::kProfileSlots
+               ? static_cast<uint8_t>(n)
+               : 0;
+}
+
 // Splits off the first word of `s` (in place); returns the rest, or an empty string.
 char* nextWord(char*& s) {
     while (*s == ' ') {
@@ -101,6 +123,12 @@ void Console::poll() {
 }
 
 void Console::handleLine(char* line) {
+    uint8_t slot = 0;
+    bool current = false;
+    if (core::parseSwitcherCommand(line, slot, current)) {
+        reportLoad(slot, ctl_.switcherInput(slot, current, millis()));
+        return;
+    }
     char* rest = line;
     char* cmd = nextWord(rest);
     if (strcasecmp(cmd, "factory-reset") != 0) {
@@ -130,6 +158,8 @@ void Console::handleLine(char* line) {
         ctl_.revert();
     } else if (strcasecmp(cmd, "wifi") == 0) {
         cmdWifi(rest);
+    } else if (strcasecmp(cmd, "profile") == 0) {
+        cmdProfile(rest);
     } else if (strcasecmp(cmd, "calibrate") == 0) {
         Serial.println(ctl_.calibrateLevels()
                            ? F("calibrating levels: keep a white screen showing for a few seconds")
@@ -141,7 +171,8 @@ void Console::handleLine(char* line) {
     } else if (strcasecmp(cmd, "factory-reset") == 0) {
         if (!factoryResetAsked_) {
             factoryResetAsked_ = true;
-            Serial.println(F("all settings and the level calibration go back to defaults; type "
+            Serial.println(F("all settings and the level calibration go back to defaults (saved "
+                             "profiles stay; GET /api/backup saves a copy first); type "
                              "factory-reset again to confirm"));
         } else {
             factoryResetAsked_ = false;
@@ -170,6 +201,12 @@ void Console::help() {
     Serial.println(F("output <mode>           auto 1080p 1024p 960p 720p 480p 15khz"));
     Serial.println(F("input <port>            auto rgb component"));
     Serial.println(F("keep | revert           answer a pending revert"));
+    Serial.println(F("profile [list]          saved profiles (* in use)"));
+    Serial.println(F("profile load|delete <n>"));
+    Serial.println(F("profile save <n> [name] current settings into slot n (1-16)"));
+    Serial.println(F("profile rename <n> <name>"));
+    Serial.println(F("profile source <n> on|off  load n by itself for this source, or not"));
+    Serial.println(F("SVS NEW INPUT=<n>, remote prof<n>  switcher: load profile n"));
     Serial.println(F("calibrate               set input levels from a white screen"));
     Serial.println(F("wifi [<ssid> [password]] show the network, or join one"));
     Serial.println(F("reboot | factory-reset"));
@@ -214,6 +251,92 @@ void Console::cmdWifi(char* args) {
     if (wifi_.apActive()) {
         Serial.printf_P(PSTR("setup access point \"%s\", password \"%s\", http://192.168.4.1\r\n"),
                         wifi_.apSsid(), net::Wifi::kApPassword);
+    }
+}
+
+void Console::cmdProfile(char* args) {
+    const char* sub = nextWord(args);
+    if (sub[0] == '\0' || strcasecmp(sub, "list") == 0) {
+        listProfiles();
+        return;
+    }
+    const uint8_t slot = slotArg(nextWord(args));
+    if (slot == 0) {
+        Serial.println(F("which profile? a number from 1 to 16"));
+        return;
+    }
+    while (*args == ' ') {
+        ++args;
+    }
+    for (size_t n = strlen(args); n > 0 && args[n - 1] == ' '; --n) {
+        args[n - 1] = '\0';
+    }
+    if (strcasecmp(sub, "load") == 0) {
+        reportLoad(slot, ctl_.loadProfile(slot, Controller::LoadKind::Manual, millis()));
+    } else if (strcasecmp(sub, "save") == 0) {
+        if (!Controller::validProfileName(args)) {
+            Serial.println(F("names: up to 23 characters, Latin letters only"));
+        } else if (ctl_.saveProfile(slot, args, Controller::SaveSource::Keep)) {
+            Serial.printf_P(PSTR("saved as profile %u\r\n"), slot);
+        } else {
+            Serial.println(ctl_.revertPending() ? F("keep or revert the pending change first")
+                                                : F("not saved"));
+        }
+    } else if (strcasecmp(sub, "rename") == 0) {
+        Serial.println(ctl_.renameProfile(slot, args) ? F("renamed")
+                                                      : F("no such profile, or not a valid name"));
+    } else if (strcasecmp(sub, "source") == 0) {
+        const bool on = strcasecmp(nextWord(args), "on") == 0;
+        if (ctl_.setProfileSource(slot, on)) {
+            Serial.println(on ? F("loads by itself for this source") : F("loads only when asked"));
+        } else {
+            Serial.println(on && ctl_.profiles().exists(slot) ? F("no settled source to use")
+                                                              : F("no such profile"));
+        }
+    } else if (strcasecmp(sub, "delete") == 0) {
+        Serial.println(ctl_.deleteProfile(slot) ? F("deleted") : F("no such profile"));
+    } else {
+        Serial.println(F("profile list|load|save|rename|source|delete"));
+    }
+}
+
+void Console::listProfiles() {
+    char sig[48];
+    bool any = false;
+    for (uint8_t slot = 1; slot <= core::kProfileSlots; ++slot) {
+        core::Profile p;
+        if (!ctl_.profiles().read(slot, p)) {
+            continue;
+        }
+        any = true;
+        signatureText(p.signature, sig, sizeof sig);
+        const bool active = ctl_.activeProfile() == slot;
+        Serial.printf_P(PSTR("%2u%c %-23s %s%s\r\n"), slot, active ? '*' : ' ', p.name, sig,
+                        active && ctl_.profileModified() ? " (modified)" : "");
+    }
+    if (!any) {
+        Serial.println(F("no profiles yet: profile save <n> [name]"));
+    }
+}
+
+void Console::reportLoad(uint8_t slot, Controller::ProfileResult result) {
+    switch (result) {
+    case Controller::ProfileResult::Loaded:
+        Serial.printf_P(PSTR("profile %u loaded\r\n"), slot);
+        break;
+    case Controller::ProfileResult::RevertArmed:
+        Serial.printf_P(PSTR("profile %u loaded; reverts in %lu s unless you type keep\r\n"), slot,
+                        static_cast<unsigned long>(ctl_.revertRemainingMs(millis()) / 1000));
+        break;
+    case Controller::ProfileResult::Unchanged:
+        Serial.printf_P(PSTR("profile %u already in use\r\n"), slot);
+        break;
+    case Controller::ProfileResult::Missing:
+        Serial.printf_P(PSTR("no profile %u\r\n"), slot);
+        break;
+    case Controller::ProfileResult::Refused:
+        Serial.println(F("profiles are off in safe mode"));
+        break;
     }
 }
 
@@ -330,6 +453,10 @@ void Console::printStatus() {
         PSTR("SOG %u, phase SP %u ADC %u, sync quality %s | heap %u, longest tick %lu ms\r\n"),
         st.sogLevel, st.phaseSp, st.phaseAdc, quality, ESP.getFreeHeap(),
         static_cast<unsigned long>(loop_.longestTickMs));
+    if (ctl_.activeProfile() != 0) {
+        Serial.printf_P(PSTR("profile %u %s%s\r\n"), ctl_.activeProfile(),
+                        ctl_.profiles().activeName(), ctl_.profileModified() ? " (modified)" : "");
+    }
     if (ctl_.revertPending()) {
         Serial.printf_P(PSTR("revert pending: %lu s left (keep | revert)\r\n"),
                         static_cast<unsigned long>(ctl_.revertRemainingMs(millis()) / 1000));

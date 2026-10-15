@@ -190,10 +190,9 @@ settings:
     milestone: M1
   system.startupProfile:
     type: int
-    min: -2
-    max: 15
+    min: -1
+    max: 16
     default: -1
     tier: essential
     milestone: M2
-    pending: true
-    special: {-2: autoByInput, -1: lastUsed}
+    special: {-1: lastUsed, 0: autoByInput}

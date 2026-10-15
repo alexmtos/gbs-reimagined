@@ -31,6 +31,11 @@ private:
     void handleCommand();
     void handleWifi();
     void handleScan();
+    void handleProfiles();
+    void handleProfile();
+    void handleSwitcher();
+    void handleBackup();
+    void handleLevels();
     void handleNotFound();
     bool sameOrigin();
     void sendJson(int code, const char* body);

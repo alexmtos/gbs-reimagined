@@ -68,6 +68,7 @@ public:
     // Deterministic bring-up from any prior chip state. `clockGenPresent` from the board probe.
     void begin(bool clockGenPresent);
     void tick();
+    void setSourceListener(SourceListener* listener) { listener_ = listener; }
 
     void setOutputPreference(OutputMode mode) override;
     void setInputPreference(InputPreference pref) override;
@@ -203,6 +204,7 @@ private:
     // Gains a new source starts with, per input (0 component, 1 RGB): calibrated or the preset.
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSequence_ = 0;
+    SourceListener* listener_ = nullptr;
     EngineStatus status_;
 
     OutputMode outputPref_ = OutputMode::Auto;

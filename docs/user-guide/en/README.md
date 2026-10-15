@@ -30,7 +30,7 @@ output clock, and the board's address on your network.
 | Press the knob | open the menu, enter an item, confirm a value |
 | Turn it | move through the menu, or change a value |
 | Turn it while holding it down | change a number ten steps at a time |
-| Hold it for about a second | go back (and, while editing, undo the change) |
+| Hold it for about a second | go back (and, while editing, undo the change); on the home screen, open the profiles |
 
 Picture settings change as you turn, so you can watch the TV. The output resolution and frame lock
 change only when you press, so the picture does not jump through every mode on the way. The
@@ -84,7 +84,9 @@ two minutes while nobody is connected to it.
 Some changes can leave the TV without a picture — the output resolution and frame lock, for
 example. When you make one from the web page or the serial console, a banner asks you to
 **Keep** it. If you do not answer within 20 seconds, the board goes back to how it was: a blank
-TV fixes itself. The waiting time can be changed in **System → Confirm within**.
+TV fixes itself. The waiting time can be changed in **System → Confirm within**. Loading a profile
+that changes one of these settings asks the same way, and a revert brings back everything the
+profile changed.
 
 ## Picture shape, position and size
 
@@ -165,6 +167,43 @@ Some consoles send a brighter signal than the board expects, which makes whites 
 - **Auto gain** — while you play, lowers the input level whenever the brightest parts of the
   picture are clipped. It only ever darkens, and starts again for each new console you connect.
 
+## Profiles
+
+A profile remembers everything on the **Output**, **Input** and **Picture** pages, so each console
+can have its own picture. The System settings, the level calibration and the Wi-Fi are shared by
+all profiles. There are 16 slots.
+
+- **Save:** set the picture up for a console, then on the **Profiles** page choose a slot, give it a
+  name and press **Save**. Tick **Load it by itself when this source appears** to have the board
+  pick this profile whenever that console comes back.
+- **Load:** press **Load** next to a profile, or on the board: hold the knob on the home screen (or
+  open **Profiles** in the menu), choose the profile and **Load**.
+- **Changes after loading** stay unsaved: the page and the board's screen show the profile as
+  *modified* (a `*` after its name on the board) until you press **Save here** on it. Loading it
+  again puts the saved values back.
+- **Loading by itself:** when a new console's picture settles, the board loads the profile marked
+  for it. It looks first for one saved from a console on the same input sending the same kind of
+  picture (for example 240p/480i, or 480p) with the same number of lines, give or take two; then for
+  the same input and kind of picture; then for the same input alone. Switching a console between 240p
+  and 480i (or 288p and 576i) never changes the profile. Two consoles that send exactly the same
+  kind of signal on the same input cannot be told apart: load their profiles by hand, or use a
+  switcher (below).
+- **Startup profile** (on the **Profiles** page and in **System**): *Last used* starts where you
+  left off, unsaved changes included, unless a different console's profile matches the first
+  picture; *Auto by input* always loads the profile that matches; a numbered profile loads that
+  one at power-on.
+- **Export and import:** **Export** saves one profile as a file; choose a slot and import the file
+  there, on this board or another one.
+- **Backup:** **Download a backup** saves every setting, the level calibration and all profiles in
+  one file (never the Wi-Fi password). **Restore a backup** puts back what the file holds; profiles
+  in slots the file does not mention stay as they are. A factory reset keeps the profiles.
+- **Console switchers:** the commands that switchers send to RetroTINK scalers work here too:
+  `SVS NEW INPUT=3` or `remote prof3` loads profile 3; `SVS CURRENT INPUT=3` loads it unless it is
+  already in use and unchanged. Send them from a computer or a bridge through the board's USB port,
+  or over the network to `http://gbs.local/api/svs`, for example
+  `curl -d "remote prof3" http://gbs.local/api/svs`. Wiring a switcher straight to the board's
+  internal serial pins is not supported: that line also carries the board's own messages.
+
 ## Serial console (advanced)
 
 Connect the board's USB port to a computer and open a serial terminal at **115200 baud**. Type
@@ -179,7 +218,8 @@ Connect the board's USB port to a computer and open a serial terminal at **11520
 | `keep` / `revert` | answer a change that waits for confirmation |
 | `wifi` | the network state; `wifi <name> <password>` joins a network |
 | `calibrate` | calibrate levels against a white screen |
-| `factory-reset` | everything back to defaults (type it twice) |
+| `profile` | the saved profiles; `profile load 3`, `profile save 3 Mega Drive`, `profile source 3 on` |
+| `factory-reset` | settings and levels back to defaults, profiles kept (type it twice) |
 
 ## Coming in this guide
 

@@ -76,14 +76,31 @@ exported in a profile, and are changed through the network pages.
 
 ## Profiles (M2)
 
-- Up to 16 named profiles. A profile stores **every** setting, including input and output
-  resolution (a common complaint about competitors, MS §15 C11), and is one action away on every
-  interface.
-- **Auto-load by input signature**, most specific match first: port + sync type + lines + p/i +
-  field rate → port + lines + p/i → port → default. 240p↔480i never reloads (MS §15 C12).
+Specified in [ADR 0014](../adr/0014-profiles-are-saved-settings.md); the points below are the UX side.
+
+- Up to 16 named profiles. A profile stores every setting of the Output, Input and Picture groups,
+  including input and output resolution (a common complaint about competitors, MS §15 C11); System
+  settings and the level calibration stay global. It is one action away on every interface.
+- Loading copies the values; changes afterwards show the profile as *modified* until it is saved.
+  The profile in use shows on the web status page, the OLED home screen (last line, `*` when
+  modified) and the console `status`.
+- **Auto-load by input signature**, for profiles saved with "use for this source", most specific
+  match first: port + sync type + standard + lines → port + standard → port; no match loads
+  nothing. 240p↔480i never reloads (MS §15 C12). A manual load holds until the source changes.
 - **SVS-compatible triggers** on serial and HTTP (`SVS NEW INPUT=<n>`, `remote prof<n>`), so
   existing switchers (Donut Dongle, Extron/gscart bridges) work unchanged (MS §15 C13).
 - Export/import as JSON; a full backup includes all profiles and settings.
+- **Web:** a Profiles page lists the slots in use with Load, Save here, Rename, Use for this source /
+  Stop loading by itself, Export and Delete (saving over and deleting ask for a second press); a form
+  saves the current settings or imports a file into a chosen slot; Backup downloads and restores
+  everything. The startup profile is a list (Last used, Auto by input, each slot by name).
+- **OLED:** *Profiles* in the menu, or a long press on the home screen, lists the profiles (`«` marks
+  the one in use; the bottom line says which source it loads for, "Only when chosen", or "Changed,
+  not saved" for the one in use when it is modified) followed by *Save as new* (first free slot, no
+  signature; shown while a slot is free) and *Back*. A profile opens *Load*, *Save here*,
+  *Auto-load* On/Off (for the current source) and *Delete*; saving over and deleting ask for a
+  second press. Loads from the OLED confirm themselves, like its own changes. Names are given on
+  the web or the console: the OLED has no text entry.
 
 ## Safety
 
@@ -95,7 +112,8 @@ exported in a profile, and are changed through the network pages.
   the ESP8266 boot strap and would enter the bootloader). Safe mode boots with default settings
   and 480p output without touching saved profiles.
 - **Factory reset** asks twice and offers a backup download first (web) or says how to get one
-  (OLED, serial).
+  (OLED, serial). It keeps the saved profiles (none is in use afterwards); they are deleted one by
+  one.
 
 ## Status
 
@@ -155,7 +173,11 @@ set <setting> <value>        e.g. set picture.sharpness medium
 list [prefix]                settings with current values
 output <mode>                shortcut for set output.resolution
 input <auto|rgb|component>
-profile list|load <n>|save <n> [name]
+profile [list]               saved profiles; * marks the one in use
+profile load|delete <n>
+profile save <n> [name]      current settings into slot n (keeps its name and signature)
+profile rename <n> <name>
+profile source <n> on|off    load n by itself for the current source, or only when asked
 wifi <ssid> <password>       join a network
 keep | revert                answer a pending revert
 calibrate                    calibrate levels against a white screen

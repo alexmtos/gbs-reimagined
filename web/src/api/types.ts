@@ -61,7 +61,16 @@ export interface Status {
   source: SourceStatus;
   output: OutputStatus;
   board: BoardStatus;
+  /** The profile in use, null when the settings did not come from one. */
+  profile: ActiveProfile | null;
   revert?: { secondsLeft: number };
+}
+
+export interface ActiveProfile {
+  slot: number;
+  name: string;
+  /** Settings changed since the profile was loaded or saved. */
+  modified: boolean;
 }
 
 /** GET /api/settings: every setting of this firmware's milestone, as value text. */
@@ -110,4 +119,89 @@ export interface WifiStatus {
 export interface ScanResult {
   scanning: boolean;
   networks?: { ssid: string; rssi: number; secure: boolean }[];
+}
+
+// Profiles (ADR 0014)
+
+/** What a settled source looks like; a profile with one loads by itself for that source. */
+export interface ProfileSource {
+  port: "rgb" | "component";
+  sync: "csync" | "hv";
+  /** "ntsc", "pal", "edtv60", "edtv50", "hd720p", "hd1080i", "hd1080p", "medres", "unknown", … */
+  standard: string;
+  lines: number;
+}
+
+export interface ProfileSummary {
+  slot: number;
+  name: string;
+  source: ProfileSource | null;
+}
+
+/** GET /api/profiles: the slots in use, the active one (0: none) and the settled source. */
+export interface ProfilesResponse {
+  active: number;
+  modified: boolean;
+  source: ProfileSource | null;
+  profiles: ProfileSummary[];
+}
+
+/** A profile's content: in an export file, an import, and a backup. */
+export interface ProfileContent {
+  name: string;
+  source: ProfileSource | null;
+  values: Record<string, string>;
+}
+
+/** GET /api/profile?slot=n, and the file a profile exports to. */
+export interface ProfileDocument extends ProfileContent {
+  format: "gbsr-profile";
+  version: number;
+  schema: string;
+}
+
+export type ProfileAction =
+  | { action: "load"; slot: number }
+  | { action: "save"; slot: number; name?: string; source?: "keep" | "this" | "none" }
+  | { action: "rename"; slot: number; name: string }
+  | { action: "source"; slot: number; on: boolean }
+  | { action: "delete"; slot: number }
+  | { action: "import"; slot: number; profile: ProfileContent };
+
+export type ProfileReason =
+  | "invalidSlot"
+  | "invalidName"
+  | "noSource"
+  | "revertPending"
+  | "safeMode"
+  | "noProfile"
+  | "expectedProfile"
+  | "invalidSource"
+  | "unknownAction"
+  | "failed";
+
+/** POST /api/profile answer. */
+export interface ProfileAnswer {
+  ok: boolean;
+  result?: "loaded" | "revertArmed" | "unchanged";
+  reason?: ProfileReason;
+  /** Import: setting ids this firmware did not take. */
+  skipped?: string[];
+  revert?: { secondsLeft: number };
+}
+
+export interface Levels {
+  component: [number, number, number];
+  rgb: [number, number, number];
+}
+
+/** GET /api/backup: everything but the network credentials. */
+export interface BackupDocument {
+  format: "gbsr-backup";
+  version: number;
+  firmware: string;
+  schema: string;
+  settings: Record<string, string>;
+  levels: Levels;
+  profiles: Record<string, ProfileContent>;
 }

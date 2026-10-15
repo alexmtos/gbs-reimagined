@@ -116,6 +116,10 @@ therefore re-runs the discrete-VSYNC probe periodically while classified as csyn
 
 Writes one program and runs the post-load tuning. Input: standard + output preference.
 
+0. **Tell the profiles** (ADR 0014): just before a new source's program is chosen, the engine passes
+   its port, sync type, standard and line count to its `SourceListener`. A profile signed for that
+   source is applied there, so its output resolution and Force 60 Hz take part in this load
+   instead of forcing a second one (bench M2, profiles: one load per console swap, two before).
 1. **Select the program** (§6.1): NTSC programs for standards 1/3/8/9/14, PAL for 2/4; HD bypass for
    5/6/7/13; RGBHV bypass for 15. "Match source" maps NTSC+1024 → 960 and PAL+960 → 1024.
 2. **Blank the output** first: DAC off, sync out off (VP §0 item 9: the HDMI converter must re-lock

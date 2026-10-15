@@ -16,9 +16,30 @@ namespace {
 
 // Setting groups in schema order (schema/settings.yaml `groups`), by id prefix.
 constexpr const char* kGroupPrefix[] = {"output.", "input.", "picture.", "system."};
-constexpr uint8_t kGroups = 4;
-constexpr uint8_t kRootItems = kGroups + 3; // groups, Network, Status, Back
-constexpr uint8_t kRows = 5;                // list rows; the sixth line carries the hint
+constexpr uint8_t kRows = 5; // list rows; the sixth line carries the hint
+
+// The root menu in docs/design/ux.md order: Output, Input, Picture, Profiles, Network, Status,
+// System, then Back.
+enum class RootEntry : uint8_t { Group, Profiles, Network, Status, Back };
+struct RootItem {
+    RootEntry entry;
+    uint8_t group; // for RootEntry::Group
+};
+constexpr RootItem kRoot[] = {
+    {RootEntry::Group, 0},    {RootEntry::Group, 1},   {RootEntry::Group, 2},
+    {RootEntry::Profiles, 0}, {RootEntry::Network, 0}, {RootEntry::Status, 0},
+    {RootEntry::Group, 3},    {RootEntry::Back, 0},
+};
+constexpr uint8_t kRootItems = sizeof kRoot / sizeof kRoot[0];
+
+uint8_t rootIndex(RootEntry entry, uint8_t group = 0) {
+    for (uint8_t i = 0; i < kRootItems; ++i) {
+        if (kRoot[i].entry == entry && (entry != RootEntry::Group || kRoot[i].group == group)) {
+            return i;
+        }
+    }
+    return 0;
+}
 
 // --- UTF-8 text in a fixed number of glyphs ------------------------------------------------------
 
@@ -194,6 +215,16 @@ void Menu::valueText(Id id, int16_t v, char* out, size_t cap) const {
             return;
         }
     }
+    if (id == Id::SystemStartupProfile) {
+        char fmt[32];
+        msg(i18n::Msg::ProfilesSlot, fmt, sizeof fmt); // "Profile {n}"
+        char* at = strstr(fmt, "{n}");
+        if (at != nullptr) {
+            *at = '\0';
+            snprintf(out, cap, "%s%d%s", fmt, v, at + 3);
+            return;
+        }
+    }
     snprintf(out, cap, d.min < 0 ? "%+d" : "%d", v);
 }
 
@@ -261,11 +292,15 @@ void Menu::activate(const Item& item, uint32_t nowMs) {
         screen_ = Screen::Confirm;
         break;
     case Kind::Back:
-        openRoot();
-        cursor_ = group_;
+        leaveToRoot(rootIndex(RootEntry::Group, group_));
         break;
     }
     (void)nowMs;
+}
+
+void Menu::leaveToRoot(uint8_t index) {
+    openRoot();
+    moveCursor(index, kRootItems);
 }
 
 void Menu::turn(int steps, bool coarse, uint32_t nowMs) {
@@ -279,6 +314,17 @@ void Menu::turn(int steps, bool coarse, uint32_t nowMs) {
         break;
     case Screen::Group:
         moveCursor(steps, itemCount_);
+        break;
+    case Screen::Profiles: {
+        const uint8_t top = top_;
+        moveCursor(steps, rowCount_);
+        if (top_ != top) {
+            loadRowNames();
+        }
+        break;
+    }
+    case Screen::ProfileItem:
+        moveCursor(steps, 5);
         break;
     case Screen::Edit: {
         const settings::Def d = settings::def(editId_);
@@ -310,14 +356,48 @@ void Menu::press(uint32_t nowMs) {
         openRoot();
         break;
     case Screen::Root:
-        if (cursor_ < kGroups) {
-            openGroup(cursor_);
-        } else if (cursor_ == kGroups) {
+        switch (kRoot[cursor_].entry) {
+        case RootEntry::Group:
+            openGroup(kRoot[cursor_].group);
+            break;
+        case RootEntry::Profiles:
+            profilesFromHome_ = false;
+            openProfiles(ctl_.activeProfile());
+            break;
+        case RootEntry::Network:
             screen_ = Screen::Network;
-        } else if (cursor_ == kGroups + 1) {
+            break;
+        case RootEntry::Status:
             screen_ = Screen::Status;
-        } else {
+            break;
+        case RootEntry::Back:
             screen_ = Screen::Home;
+            break;
+        }
+        break;
+    case Screen::Profiles:
+        pressProfiles(nowMs);
+        break;
+    case Screen::ProfileItem:
+        pressProfileItem(nowMs);
+        break;
+    case Screen::ProfileConfirm: {
+        bool ok = false;
+        if (profileAct_ == ProfileAct::Save) {
+            ok = ctl_.saveProfile(slot_, "", core::Controller::SaveSource::Keep);
+        } else {
+            ok = ctl_.deleteProfile(slot_);
+        }
+        profileDone(profileAct_, ok,
+                    profileAct_ == ProfileAct::Save ? i18n::Msg::ProfilesSaved
+                                                    : i18n::Msg::ProfilesDeleted);
+        break;
+    }
+    case Screen::ProfileDone:
+        if (profileAct_ == ProfileAct::Load && profileMsg_ == i18n::Msg::ProfilesLoaded) {
+            screen_ = Screen::Home; // to the picture's figures
+        } else {
+            openProfiles(slot_);
         }
         break;
     case Screen::Group:
@@ -365,19 +445,13 @@ void Menu::longPress(uint32_t nowMs) {
         }
         screen_ = Screen::Group;
         break;
-    case Screen::Group: {
-        const uint8_t g = group_;
-        openRoot();
-        cursor_ = g;
+    case Screen::Group:
+        leaveToRoot(rootIndex(RootEntry::Group, group_));
         break;
-    }
     case Screen::Network:
-    case Screen::Status: {
-        const uint8_t back = screen_ == Screen::Network ? kGroups : kGroups + 1;
-        openRoot();
-        cursor_ = back;
+    case Screen::Status:
+        leaveToRoot(rootIndex(screen_ == Screen::Network ? RootEntry::Network : RootEntry::Status));
         break;
-    }
     case Screen::Confirm:
     case Screen::Action:
         screen_ = Screen::Group;
@@ -385,7 +459,134 @@ void Menu::longPress(uint32_t nowMs) {
     case Screen::Root:
         screen_ = Screen::Home;
         break;
+    case Screen::Home:
+        profilesFromHome_ = true;
+        openProfiles(ctl_.activeProfile());
+        break;
+    case Screen::Profiles:
+        if (profilesFromHome_) {
+            screen_ = Screen::Home;
+        } else {
+            leaveToRoot(rootIndex(RootEntry::Profiles));
+        }
+        break;
+    case Screen::ProfileItem:
+    case Screen::ProfileDone:
+        openProfiles(slot_);
+        break;
+    case Screen::ProfileConfirm:
+        openProfileItem(slot_);
+        cursor_ = profileAct_ == ProfileAct::Save ? 1 : 3; // back on the action
+        break;
     default:
+        break;
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Profiles
+
+void Menu::openProfiles(uint8_t cursorSlot) {
+    rowCount_ = 0;
+    bool free = false;
+    uint8_t at = 0;
+    for (uint8_t slot = 1; slot <= core::kProfileSlots; ++slot) {
+        if (ctl_.profiles().exists(slot)) {
+            at = slot == cursorSlot ? rowCount_ : at;
+            rows_[rowCount_++] = slot;
+        } else {
+            free = true;
+        }
+    }
+    if (free) {
+        rows_[rowCount_++] = kRowNew;
+    }
+    rows_[rowCount_++] = kRowBack;
+    screen_ = Screen::Profiles;
+    cursor_ = top_ = 0;
+    moveCursor(at, rowCount_);
+    loadRowNames();
+}
+
+void Menu::loadRowNames() {
+    for (uint8_t row = 0; row < kListRows; ++row) {
+        const uint8_t i = static_cast<uint8_t>(top_ + row);
+        core::Profile p;
+        rowNames_[row][0] = '\0';
+        if (i < rowCount_ && rows_[i] <= core::kProfileSlots && ctl_.profiles().read(rows_[i], p)) {
+            memcpy(rowNames_[row], p.name, sizeof rowNames_[row]);
+        }
+    }
+}
+
+void Menu::openProfileItem(uint8_t slot) {
+    slot_ = slot;
+    core::Profile p;
+    slotName_[0] = '\0';
+    if (ctl_.profiles().read(slot, p)) {
+        memcpy(slotName_, p.name, sizeof slotName_);
+    }
+    screen_ = Screen::ProfileItem;
+    cursor_ = top_ = 0;
+}
+
+void Menu::profileDone(ProfileAct act, bool ok, i18n::Msg okMsg) {
+    profileAct_ = act;
+    profileMsg_ = ok ? okMsg : i18n::Msg::ProfilesFailed;
+    screen_ = Screen::ProfileDone;
+}
+
+void Menu::pressProfiles(uint32_t nowMs) {
+    const uint8_t row = rows_[cursor_];
+    if (row == kRowBack) {
+        longPress(nowMs);
+        return;
+    }
+    if (row != kRowNew) {
+        openProfileItem(row);
+        return;
+    }
+    uint8_t slot = 1;
+    while (slot <= core::kProfileSlots && ctl_.profiles().exists(slot)) {
+        ++slot;
+    }
+    slot_ = slot;
+    const bool ok = slot <= core::kProfileSlots &&
+                    ctl_.saveProfile(slot, "", core::Controller::SaveSource::None);
+    profileDone(ProfileAct::New, ok, i18n::Msg::ProfilesSaved);
+    if (slot > core::kProfileSlots) {
+        profileMsg_ = i18n::Msg::ProfilesFull;
+    }
+}
+
+void Menu::pressProfileItem(uint32_t nowMs) {
+    switch (cursor_) {
+    case 0: {
+        const auto r = ctl_.loadProfile(slot_, core::Controller::LoadKind::Oled, nowMs);
+        profileDone(ProfileAct::Load, r == core::Controller::ProfileResult::Loaded,
+                    i18n::Msg::ProfilesLoaded);
+        break;
+    }
+    case 1:
+        profileAct_ = ProfileAct::Save;
+        screen_ = Screen::ProfileConfirm;
+        break;
+    case 2: {
+        const bool on = !ctl_.profiles().signature(slot_).valid;
+        if (!ctl_.setProfileSource(slot_, on)) {
+            profileDone(ProfileAct::Save, false, i18n::Msg::ProfilesFailed);
+            if (on && !ctl_.currentSource().valid) {
+                profileMsg_ = i18n::Msg::ProfilesNoSource;
+            }
+        }
+        break;
+    }
+    case 3:
+        profileAct_ = ProfileAct::Delete;
+        screen_ = Screen::ProfileConfirm;
+        break;
+    default:
+        openProfiles(slot_);
         break;
     }
 }
@@ -439,6 +640,16 @@ void Menu::render(Frame& f, uint32_t nowMs) const {
     case Screen::Revert:
         renderRevert(f, nowMs);
         break;
+    case Screen::Profiles:
+        renderProfiles(f);
+        break;
+    case Screen::ProfileItem:
+        renderProfileItem(f);
+        break;
+    case Screen::ProfileConfirm:
+    case Screen::ProfileDone:
+        renderProfileMessage(f);
+        break;
     }
 }
 
@@ -486,7 +697,12 @@ void Menu::renderHome(Frame& f) const {
         msg(i18n::Msg::NetJoining, a, sizeof a);
         setLine(f, 4, a);
     }
-    msg(s.safeMode ? i18n::Msg::SafeMode : i18n::Msg::MenuOpen, a, sizeof a);
+    if (!s.safeMode && s.profile != 0) {
+        // The profile in use; "*" as editors mark unsaved changes.
+        snprintf(a, sizeof a, "%u %s%s", s.profile, s.profileName, s.profileModified ? "*" : "");
+    } else {
+        msg(s.safeMode ? i18n::Msg::SafeMode : i18n::Msg::MenuOpen, a, sizeof a);
+    }
     setLine(f, 5, a);
     if (s.safeMode) {
         f.inverted |= 1u << 5;
@@ -502,13 +718,22 @@ void Menu::renderList(Frame& f) const {
     for (uint8_t row = 0; row < kRows && top_ + row < count; ++row) {
         const uint8_t i = static_cast<uint8_t>(top_ + row);
         if (root) {
-            if (i < kGroups) {
-                copyText(t.text, pgm_read_word(&t.group[i]), label, sizeof label);
-            } else {
-                msg(i == kGroups       ? i18n::Msg::MenuNetwork
-                    : i == kGroups + 1 ? i18n::Msg::MenuStatus
-                                       : i18n::Msg::MenuBack,
-                    label, sizeof label);
+            switch (kRoot[i].entry) {
+            case RootEntry::Group:
+                copyText(t.text, pgm_read_word(&t.group[kRoot[i].group]), label, sizeof label);
+                break;
+            case RootEntry::Profiles:
+                msg(i18n::Msg::MenuProfiles, label, sizeof label);
+                break;
+            case RootEntry::Network:
+                msg(i18n::Msg::MenuNetwork, label, sizeof label);
+                break;
+            case RootEntry::Status:
+                msg(i18n::Msg::MenuStatus, label, sizeof label);
+                break;
+            case RootEntry::Back:
+                msg(i18n::Msg::MenuBack, label, sizeof label);
+                break;
             }
             setLine(f, row, label);
         } else {
@@ -698,6 +923,83 @@ void Menu::renderAction(Frame& f) const {
         setLine(f, 2, text);
     }
     f.inverted |= 1u;
+    msg(i18n::Msg::MenuHintBack, text, sizeof text);
+    setLine(f, 5, text);
+}
+
+void Menu::slotTitle(char* out, size_t cap) const {
+    snprintf(out, cap, "%u %s", slot_, slotName_);
+}
+
+void Menu::renderProfiles(Frame& f) const {
+    char text[64];
+    for (uint8_t row = 0; row < kRows && top_ + row < rowCount_; ++row) {
+        const uint8_t i = static_cast<uint8_t>(top_ + row);
+        if (rows_[i] == kRowNew || rows_[i] == kRowBack) {
+            msg(rows_[i] == kRowNew ? i18n::Msg::ProfilesNew : i18n::Msg::MenuBack, text,
+                sizeof text);
+            setLine(f, row, text);
+        } else {
+            snprintf(text, sizeof text, "%u %s", rows_[i], rowNames_[row]);
+            // "«" marks the profile in use.
+            twoColumns(f, row, text, rows_[i] == ctl_.activeProfile() ? "\xC2\xAB" : "");
+        }
+        if (i == cursor_) {
+            f.inverted |= static_cast<uint8_t>(1u << row);
+        }
+    }
+    // Bottom line: what the highlighted profile answers to, or how to go back.
+    const uint8_t slot = rows_[cursor_];
+    if (slot > core::kProfileSlots) {
+        msg(i18n::Msg::MenuHintBack, text, sizeof text);
+    } else if (slot == ctl_.activeProfile() && ctl_.profileModified()) {
+        msg(i18n::Msg::ProfilesModified, text, sizeof text);
+    } else if (ctl_.profiles().signature(slot).valid) {
+        const core::InputSignature& s = ctl_.profiles().signature(slot);
+        snprintf(text, sizeof text, "%s %s %u",
+                 s.port == static_cast<uint8_t>(video::InputPort::Component) ? "YPbPr" : "RGB",
+                 core::standardFamily(static_cast<video::Standard>(s.standard)), s.lines);
+    } else {
+        msg(i18n::Msg::ProfilesManual, text, sizeof text);
+    }
+    setLine(f, 5, text);
+}
+
+void Menu::renderProfileItem(Frame& f) const {
+    static constexpr i18n::Msg kItems[] = {i18n::Msg::ProfilesLoad, i18n::Msg::ProfilesSave,
+                                           i18n::Msg::ProfilesAuto, i18n::Msg::ProfilesDelete,
+                                           i18n::Msg::MenuBack};
+    char text[64];
+    char value[24];
+    for (uint8_t row = 0; row < 5; ++row) {
+        msg(kItems[row], text, sizeof text);
+        if (row == 2) {
+            msg(ctl_.profiles().signature(slot_).valid ? i18n::Msg::On : i18n::Msg::Off, value,
+                sizeof value);
+            twoColumns(f, row, text, value);
+        } else {
+            setLine(f, row, text);
+        }
+    }
+    f.inverted |= static_cast<uint8_t>(1u << cursor_);
+    slotTitle(text, sizeof text);
+    setLine(f, 5, text);
+}
+
+void Menu::renderProfileMessage(Frame& f) const {
+    char text[64];
+    slotTitle(text, sizeof text);
+    setLine(f, 0, text);
+    f.inverted |= 1u;
+    if (screen_ == Screen::ProfileConfirm) {
+        msg(profileAct_ == ProfileAct::Save ? i18n::Msg::ProfilesSave : i18n::Msg::ProfilesDelete,
+            text, sizeof text);
+        setLine(f, 1, text);
+        msg(i18n::Msg::Confirm, text, sizeof text);
+    } else {
+        msg(profileMsg_, text, sizeof text);
+    }
+    setLine(f, 2, text);
     msg(i18n::Msg::MenuHintBack, text, sizeof text);
     setLine(f, 5, text);
 }

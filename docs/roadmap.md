@@ -42,7 +42,9 @@ Research, documentation, repository structure, Claude Code configuration, CI.
   output, 2026-10-14; scanlines, the deinterlacer choice and the sampling controls (SOG threshold,
   ADC phase, input filter, live sync quality) and Force 60 Hz verified the same day
   ([bench M2](bench/M2.md)). Gain is M1's calibrate levels and auto gain; "blank on mode change"
-  was dropped (user decision).
+  was dropped (user decision). Profiles (ADR 0014) verified the same day: save/load, auto-load
+  across two consoles, switcher lines on serial and HTTP, revert, startup modes, export/import and
+  backup.
 
 ## M3 — Distribution
 

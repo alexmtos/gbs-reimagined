@@ -1,6 +1,7 @@
 import { render } from "preact";
 import { App } from "./app";
 import { locale } from "./i18n";
+import { followProfiles } from "./state/profiles";
 import { followReverts, loadSettings } from "./state/settings";
 import { startPolling } from "./state/status";
 import "./styles.css";
@@ -17,6 +18,7 @@ async function start(): Promise<void> {
   if (root) render(<App />, root);
   startPolling();
   followReverts();
+  followProfiles();
   void loadSettings();
 }
 

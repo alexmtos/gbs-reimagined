@@ -239,7 +239,8 @@ def generate(root: Path, banner) -> dict[Path, str]:
             kind = "Type::Bool"
         else:
             vmin, vmax, vdef = s["min"], s["max"], s["default"]
-            value_list = ""
+            # An integer's list holds the names of its special values, in `special` order.
+            value_list = "".join(f"{name}\0" for _, name in special_ids(s))
             kind = "Type::Int"
         specials = special_ids(s)
         sp = [str(v) for v, _ in specials] + ["kNoSpecial"] * (2 - len(specials))

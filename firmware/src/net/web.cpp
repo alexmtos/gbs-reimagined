@@ -12,6 +12,9 @@ namespace gbsr::net {
 namespace {
 
 const char* kCollected[] = {"Origin", "Sec-Fetch-Site", "If-None-Match", "Host"};
+// One profile import is about 0.6 KB of JSON (bench M2, backup run); anything far larger is not
+// a profile and would only cost heap.
+constexpr unsigned kMaxProfileBody = 4096;
 
 // Streams an API answer as HTTP chunks: the status line goes out when the API announces it.
 class ChunkSink : public core::Sink {
@@ -48,6 +51,11 @@ void Web::begin() {
     server_.on(F("/api/command"), HTTP_POST, [this] { handleCommand(); });
     server_.on(F("/api/wifi"), [this] { handleWifi(); });
     server_.on(F("/api/wifi/scan"), HTTP_GET, [this] { handleScan(); });
+    server_.on(F("/api/profiles"), HTTP_GET, [this] { handleProfiles(); });
+    server_.on(F("/api/profile"), [this] { handleProfile(); });
+    server_.on(F("/api/svs"), HTTP_POST, [this] { handleSwitcher(); });
+    server_.on(F("/api/backup"), HTTP_GET, [this] { handleBackup(); });
+    server_.on(F("/api/levels"), HTTP_POST, [this] { handleLevels(); });
     server_.onNotFound([this] { handleNotFound(); });
     server_.begin();
 }
@@ -146,6 +154,55 @@ void Web::handleCommand() {
     if (ran == core::Command::Reboot) {
         rebootRequested_ = true;
     }
+}
+
+void Web::handleProfiles() {
+    ChunkSink sink(server_);
+    core::getProfiles(ctl_, sink);
+}
+
+void Web::handleProfile() {
+    if (server_.method() == HTTP_GET) {
+        ChunkSink sink(server_);
+        const long slot = server_.arg(F("slot")).toInt();
+        core::getProfile(ctl_, slot >= 1 && slot <= core::kProfileSlots ? slot : 0, sink);
+    } else if (server_.method() == HTTP_POST && sameOrigin()) {
+        const String& body = server_.arg(F("plain"));
+        if (body.length() > kMaxProfileBody) {
+            sendJson(413, "{\"ok\":false,\"reason\":\"tooLarge\"}");
+            return;
+        }
+        ChunkSink sink(server_);
+        core::postProfile(ctl_, body.c_str(), body.length(), millis(), sink);
+    } else {
+        sendJson(403, "{\"error\":\"refused\"}");
+    }
+}
+
+void Web::handleSwitcher() {
+    if (!sameOrigin()) {
+        sendJson(403, "{\"error\":\"refused\"}");
+        return;
+    }
+    ChunkSink sink(server_);
+    const String& body = server_.arg(F("plain"));
+    core::postSwitcher(ctl_, body.c_str(), body.length(), millis(), sink);
+}
+
+void Web::handleBackup() {
+    server_.sendHeader(F("Content-Disposition"), F("attachment; filename=\"gbs-backup.json\""));
+    ChunkSink sink(server_);
+    core::getBackup(ctl_, GBSR_VERSION, sink);
+}
+
+void Web::handleLevels() {
+    if (!sameOrigin()) {
+        sendJson(403, "{\"error\":\"refused\"}");
+        return;
+    }
+    ChunkSink sink(server_);
+    const String& body = server_.arg(F("plain"));
+    core::postLevels(ctl_, body.c_str(), body.length(), sink);
 }
 
 void Web::handleWifi() {

@@ -77,9 +77,10 @@ void formatValue(Id id, int16_t value, char* out, size_t cap) {
     if (d.type == Type::Enum && listItem(kValueIds, d.valuesOffset, value, out, cap)) {
         return;
     }
-    for (int16_t s : d.special) {
-        if (s != kNoSpecial && s == value) {
-            snprintf(out, cap, "auto"); // the only special name in the schema so far
+    // An integer's value list names its special values, in the order of `special`.
+    for (int16_t k = 0; k < 2; ++k) {
+        if (d.type == Type::Int && d.special[k] != kNoSpecial && d.special[k] == value &&
+            listItem(kValueIds, d.valuesOffset, k, out, cap)) {
             return;
         }
     }
@@ -114,14 +115,16 @@ bool parseValue(Id id, const char* text, int16_t& out) {
             }
         }
     }
-    if (equalsIgnoreCase(text, "auto")) {
-        for (int16_t s : d.special) {
-            if (s != kNoSpecial) {
-                out = s;
+    if (d.type == Type::Int) {
+        char item[24];
+        for (int16_t k = 0; k < 2; ++k) {
+            if (d.special[k] != kNoSpecial &&
+                listItem(kValueIds, d.valuesOffset, k, item, sizeof item) &&
+                equalsIgnoreCase(item, text)) {
+                out = d.special[k];
                 return true;
             }
         }
-        return false;
     }
     char* end = nullptr;
     const long v = strtol(text, &end, 10);

@@ -39,3 +39,25 @@ export async function postJson<T>(
   }
   return (await response.json()) as T;
 }
+
+/**
+ * Like postJson, but a refusal that carries a JSON body (a reason) is an answer, not an error.
+ * Throws only when the board does not answer or answers something that is not JSON.
+ */
+export async function postForAnswer<T>(
+  path: string,
+  body: unknown,
+  timeoutMs = REQUEST_TIMEOUT_MS,
+): Promise<T> {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  try {
+    return (await response.json()) as T;
+  } catch {
+    throw new ApiError(`${path}: HTTP ${response.status}`, response.status);
+  }
+}
