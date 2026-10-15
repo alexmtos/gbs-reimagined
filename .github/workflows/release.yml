@@ -43,3 +43,14 @@ jobs:
           gh release upload "${{ needs.release-please.outputs.tag }}"
           out/gbs-reimagined-* out/SHA256SUMS
           --repo "$GITHUB_REPOSITORY"
+
+  # Pages needs a public repository on this plan: while it is private, the site is not published
+  # (run the pages workflow by hand once it is public).
+  site:
+    needs: publish
+    if: ${{ !github.event.repository.private }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml

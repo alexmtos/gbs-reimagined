@@ -58,8 +58,10 @@ Research, documentation, repository structure, Claude Code configuration, CI.
   the release step's update file) verified 2026-10-15 ([bench M3](bench/M3.md)); "Check for
   updates" works once the installer site is public. Browser installer (`installer/`, ESP Web
   Tools 10.4.0) with Improv Wi-Fi Serial in the firmware: served locally, the board updated over
-  USB and given its Wi-Fi from Chrome, 2026-10-15 ([bench M3](bench/M3.md)). First public
-  release: 1.0.0 once the gate passes (user decision, 2026-10-15).
+  USB and given its Wi-Fi from Chrome, 2026-10-15 ([bench M3](bench/M3.md)). The *pages*
+  workflow publishes the site with the released firmware and `latest.json` after each release,
+  once the repository is public. First public release: 1.0.0 once the gate passes (user
+  decision, 2026-10-15).
 
 ## Open items that need the bench
 

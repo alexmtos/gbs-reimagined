@@ -1,0 +1,55 @@
+name: pages
+
+# The installer site on GitHub Pages (ADR 0012): the page from this commit and the firmware of the
+# newest release (stable) and of the newest prerelease above it (beta), with latest.json for the
+# board's "Check for updates". Runs after each release, and by hand (Actions, pages, Run workflow),
+# for example once the repository is public. Pages must be set to deploy from GitHub Actions.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the installer site
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: installer/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: installer/pnpm-lock.yaml
+      - name: Stage the released firmware
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run tools/release/release_site.py --repo "$GITHUB_REPOSITORY"
+      - run: pnpm -C installer install --frozen-lockfile
+      - run: pnpm -C installer build
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: installer/dist
+
+  deploy:
+    name: Publish on GitHub Pages
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

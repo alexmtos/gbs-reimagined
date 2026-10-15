@@ -51,5 +51,17 @@ install over USB is tested without erasing the board.
   board reports (`GBS Reimagined`, `GBSR_VERSION`) with the manifest's `name` and `version`.
 - The Wi-Fi password typed in the dialog goes from the browser to the board only.
 
-Publishing on GitHub Pages and building the site from release assets belong to the release
-workflow (ADR 0012).
+## Publishing
+
+`.github/workflows/pages.yml` builds the site and publishes it on GitHub Pages, at
+`https://alexmtos.github.io/gbs-reimagined/` (`UPDATE_SITE` in `web/src/update/update.ts`):
+
+- the page from the commit it runs on;
+- `tools/release/release_site.py` stages the firmware of the newest release (stable) and of the
+  newest prerelease above it (beta), downloaded with `gh` and checked against the release's
+  `SHA256SUMS`.
+
+The release workflow runs it after attaching the binaries to a release, unless the repository is
+private (Pages needs a public repository on this plan). Run it by hand (Actions, *pages*, *Run
+workflow*) after making the repository public, or to rebuild the site. The first time, set
+Settings, Pages, *Build and deployment*, Source to *GitHub Actions*.
