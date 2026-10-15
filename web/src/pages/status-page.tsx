@@ -40,6 +40,12 @@ export function StatusPage() {
   return (
     <section>
       <h1 class={`headline headline-${s.headline}`}>{headline(s)}</h1>
+      {s.profile && (
+        <p class="muted">
+          {t("status.profile")}: {s.profile.slot} · {s.profile.name}
+          {s.profile.modified && ` — ${t("profiles.modified")}`}
+        </p>
+      )}
       <div class="cards">
         <dl class="card">
           <h2>{t("status.source")}</h2>

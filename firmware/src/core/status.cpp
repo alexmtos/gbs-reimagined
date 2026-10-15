@@ -1,11 +1,42 @@
 #include "core/status.h"
 
 #include <stdio.h>
+#include <string.h>
+
+#include "platform/progmem.h"
 
 namespace gbsr::core {
 
 using video::Headline;
 using video::Standard;
+
+namespace {
+
+// A JSON string body: quotes, backslashes and control characters escaped; UTF-8 passes through.
+void jsonEscape(const char* in, char* out, size_t cap) {
+    size_t n = 0;
+    for (; *in != '\0'; ++in) {
+        const unsigned char c = static_cast<unsigned char>(*in);
+        char piece[8];
+        if (c == '"' || c == '\\') {
+            snprintf(piece, sizeof piece, "\\%c", c);
+        } else if (c < 0x20) {
+            snprintf(piece, sizeof piece, "\\u%04x", c);
+        } else {
+            piece[0] = static_cast<char>(c);
+            piece[1] = '\0';
+        }
+        const size_t len = strlen(piece);
+        if (n + len >= cap) {
+            break;
+        }
+        memcpy(out + n, piece, len);
+        n += len;
+    }
+    out[n] = '\0';
+}
+
+} // namespace
 
 const char* headlineCode(Headline h) {
     switch (h) {
@@ -57,6 +88,17 @@ const char* standardText(Standard s, bool interlaced) {
     return "";
 }
 
+const char* standardFamily(Standard s) {
+    switch (s) {
+    case Standard::Ntsc:
+        return "240p/480i";
+    case Standard::Pal:
+        return "288p/576i";
+    default:
+        return standardText(s, false);
+    }
+}
+
 const char* outputModeId(video::OutputMode m) {
     // The value ids of output.resolution (schema/settings.yaml).
     static const char* const kIds[] = {"auto",  "r1080p", "r1024p", "r960p",
@@ -66,7 +108,8 @@ const char* outputModeId(video::OutputMode m) {
 }
 
 void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSetting,
-                 uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board) {
+                 uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board,
+                 const ProfileInfo& profile) {
     StatusModel next;
     next.headline = e.headline;
     next.scaler = e.state != video::EngineState::NoPower;
@@ -92,6 +135,11 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
     next.revertSecondsLeft = revertSecondsLeft;
     next.safeMode = safeMode;
     next.levelCalibration = e.levelCalibration;
+    next.profile = profile.slot;
+    next.profileModified = profile.slot != 0 && profile.modified;
+    if (profile.slot != 0) {
+        strncpy(next.profileName, profile.name, sizeof next.profileName - 1);
+    }
 
     // Uptime, heap and signal strength move on every rebuild; they do not count as a change.
     const bool changed =
@@ -102,9 +150,26 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
         next.pixelClockHz != m.pixelClockHz || next.rateMilliHz != m.rateMilliHz ||
         next.frameLock != m.frameLock || next.board.ip != m.board.ip ||
         next.board.clockGen != m.board.clockGen || next.revertSecondsLeft != m.revertSecondsLeft ||
-        next.safeMode != m.safeMode || next.levelCalibration != m.levelCalibration;
+        next.safeMode != m.safeMode || next.levelCalibration != m.levelCalibration ||
+        next.profile != m.profile || next.profileModified != m.profileModified ||
+        strcmp(next.profileName, m.profileName) != 0;
     next.seq = changed ? m.seq + 1 : m.seq;
     m = next;
+}
+
+InputSignature settledSource(const video::EngineStatus& e) {
+    InputSignature s;
+    // 10 ticks (200 ms) of a stable running program: the same bar "calibrate levels" waits for.
+    s.valid = e.state == video::EngineState::Running && e.stableCounter >= 10 &&
+              e.noSyncCounter == 0 && e.sync != video::SyncType::None &&
+              e.standard != Standard::None && e.sourceLines != 0;
+    if (s.valid) {
+        s.port = static_cast<uint8_t>(e.input);
+        s.sync = static_cast<uint8_t>(e.sync);
+        s.standard = static_cast<uint8_t>(e.standard);
+        s.lines = static_cast<uint16_t>(e.sourceLines + 1); // as the status reports them
+    }
+    return s;
 }
 
 size_t statusJson(const StatusModel& m, const char* version, const char* schema, char* buf,
@@ -119,18 +184,29 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
     }
     char revert[40] = "";
     if (m.revertSecondsLeft != 0) {
-        snprintf(revert, sizeof revert, ",\"revert\":{\"secondsLeft\":%u}", m.revertSecondsLeft);
+        snprintf_P(revert, sizeof revert, PSTR(",\"revert\":{\"secondsLeft\":%u}"),
+                   m.revertSecondsLeft);
     }
-    const int n = snprintf(
+    // "null", or {"slot":16,"name":"<23 bytes, each escaped to at most 6>","modified":false}
+    char profile[200] = "null";
+    if (m.profile != 0) {
+        char name[kProfileNameCap * 6];
+        jsonEscape(m.profileName, name, sizeof name);
+        snprintf_P(profile, sizeof profile, PSTR("{\"slot\":%u,\"name\":\"%s\",\"modified\":%s}"),
+                   m.profile, name, m.profileModified ? "true" : "false");
+    }
+    // The format lives in flash: it is the largest string of the firmware.
+    const int n = snprintf_P(
         buf, cap,
-        "{\"seq\":%lu,\"headline\":\"%s\",\"safeMode\":%s,"
-        "\"source\":{\"port\":\"%s\",\"sync\":\"%s\",\"standard\":\"%s\",\"lines\":%u,"
-        "\"interlaced\":%s,\"hFreqKHz\":%lu.%03lu,\"vFreqHz\":%lu.%03lu,"
-        "\"sog\":%u,\"phase\":%u,\"syncQuality\":%s},"
-        "\"output\":{\"mode\":\"%s\",\"pixelClockMHz\":%lu.%03lu,\"rateHz\":%lu.%03lu,"
-        "\"frameLock\":\"%s\"},"
-        "\"board\":{\"version\":\"%s\",\"schema\":\"%s\",\"uptimeS\":%lu,\"heapFree\":%lu,"
-        "\"heapMin\":%lu,\"rssi\":%d,\"ip\":\"%u.%u.%u.%u\",\"scaler\":%s,\"clockGen\":%s}%s}",
+        PSTR("{\"seq\":%lu,\"headline\":\"%s\",\"safeMode\":%s,"
+             "\"source\":{\"port\":\"%s\",\"sync\":\"%s\",\"standard\":\"%s\",\"lines\":%u,"
+             "\"interlaced\":%s,\"hFreqKHz\":%lu.%03lu,\"vFreqHz\":%lu.%03lu,"
+             "\"sog\":%u,\"phase\":%u,\"syncQuality\":%s},"
+             "\"output\":{\"mode\":\"%s\",\"pixelClockMHz\":%lu.%03lu,\"rateHz\":%lu.%03lu,"
+             "\"frameLock\":\"%s\"},"
+             "\"board\":{\"version\":\"%s\",\"schema\":\"%s\",\"uptimeS\":%lu,\"heapFree\":%lu,"
+             "\"heapMin\":%lu,\"rssi\":%d,\"ip\":\"%u.%u.%u.%u\",\"scaler\":%s,\"clockGen\":%s},"
+             "\"profile\":%s%s}"),
         static_cast<unsigned long>(m.seq), headlineCode(m.headline), m.safeMode ? "true" : "false",
         source ? kPort[static_cast<uint8_t>(m.port) % 3] : "none",
         kSync[static_cast<uint8_t>(m.sync) % 3], standardText(m.standard, m.interlaced), m.lines,
@@ -145,7 +221,7 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
         static_cast<unsigned long>(m.board.uptimeS), static_cast<unsigned long>(m.board.heapFree),
         static_cast<unsigned long>(m.board.heapMin), m.board.rssi, m.board.ip & 0xFF,
         m.board.ip >> 8 & 0xFF, m.board.ip >> 16 & 0xFF, m.board.ip >> 24,
-        m.scaler ? "true" : "false", m.board.clockGen ? "true" : "false", revert);
+        m.scaler ? "true" : "false", m.board.clockGen ? "true" : "false", profile, revert);
     return n > 0 && static_cast<size_t>(n) < cap ? static_cast<size_t>(n) : 0;
 }
 

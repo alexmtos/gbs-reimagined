@@ -36,6 +36,9 @@ private:
     void cmdDump(const char* args);
     void cmdLevels(char* args);
     void cmdWifi(char* args);
+    void cmdProfile(char* args);
+    void listProfiles();
+    void reportLoad(uint8_t slot, core::Controller::ProfileResult result);
     void reportSet(const char* name, core::Controller::Outcome outcome);
     void help();
 

@@ -68,7 +68,7 @@ const char kText_en[] PROGMEM =
     "Expert settings\0"
     "Startup profile\0"
     "Loaded at power-on\0"
-    "Auto by input\037Last used\0"
+    "Last used\037Auto by input\0"
     "Output\0"
     "Picture\0"
     "System\0"
@@ -113,12 +113,27 @@ const char kText_en[] PROGMEM =
     "free running\0"
     "On\0"
     "Off\0"
-    "Signal too strong\0";
+    "Signal too strong\0"
+    "Profiles\0"
+    "Save as new\0"
+    "Load\0"
+    "Save here\0"
+    "Auto-load\0"
+    "Delete\0"
+    "Only when chosen\0"
+    "Changed, not saved\0"
+    "Profile loaded\0"
+    "Profile saved\0"
+    "Profile deleted\0"
+    "No source now\0"
+    "No free slot\0"
+    "Did not work\0"
+    "Profile {n}\0";
 const uint16_t kLabel_en[] PROGMEM = {0, 118, 147, 180, 222, 260, 293, 326, 357, 428, 465, 496, 525, 592, 615, 636, 664, 711, 737, 769, 818, 874, 933, 966, 1017, 1047};
 const uint16_t kHint_en[] PROGMEM = {18, 129, 159, 187, 242, 278, 309, 340, 363, 443, 480, 506, 535, 603, 624, 647, 674, 721, 755, 782, 827, 888, 946, 981, 1031, 1063};
 const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 201, 65535, 65535, 65535, 65535, 384, 460, 460, 65535, 557, 65535, 65535, 65535, 691, 65535, 65535, 798, 846, 904, 65535, 1002, 65535, 1082};
 const uint16_t kGroup_en[] PROGMEM = {1106, 357, 1113, 1121};
-const uint16_t kMsg_en[] PROGMEM = {1128, 1149, 1159, 1173, 1196, 1218, 1226, 1240, 1259, 1267, 1274, 1281, 1298, 1303, 1310, 1327, 1346, 1356, 1377, 1394, 1414, 1429, 1447, 1466, 1484, 1500, 1517, 1532, 1542, 1559, 1577, 1585, 1599, 1620, 1625, 1630, 1639, 1648, 1659, 1672, 1675, 1679};
+const uint16_t kMsg_en[] PROGMEM = {1128, 1149, 1159, 1173, 1196, 1218, 1226, 1240, 1259, 1267, 1274, 1281, 1298, 1303, 1310, 1327, 1346, 1356, 1377, 1394, 1414, 1429, 1447, 1466, 1484, 1500, 1517, 1532, 1542, 1559, 1577, 1585, 1599, 1620, 1625, 1630, 1639, 1648, 1659, 1672, 1675, 1679, 1697, 1706, 1718, 1723, 1733, 1743, 1750, 1767, 1786, 1801, 1815, 1831, 1845, 1858, 1871};
 
 const char kText_ptBR[] PROGMEM =
     "Resolução de saída\0"
@@ -183,7 +198,7 @@ const char kText_ptBR[] PROGMEM =
     "Ajustes técnicos\0"
     "Perfil inicial\0"
     "Carregado ao ligar\0"
-    "Auto pela entrada\037Último usado\0"
+    "Último usado\037Auto pela entrada\0"
     "Saída\0"
     "Imagem\0"
     "Sistema\0"
@@ -228,12 +243,27 @@ const char kText_ptBR[] PROGMEM =
     "sem frame lock\0"
     "Ligado\0"
     "Desligado\0"
-    "Sinal forte demais\0";
+    "Sinal forte demais\0"
+    "Perfis\0"
+    "Salvar como novo\0"
+    "Carregar\0"
+    "Salvar aqui\0"
+    "Automático\0"
+    "Apagar\0"
+    "Só quando escolhido\0"
+    "Alterado, não salvo\0"
+    "Perfil carregado\0"
+    "Perfil salvo\0"
+    "Perfil apagado\0"
+    "Sem fonte agora\0"
+    "Sem posição livre\0"
+    "Não funcionou\0"
+    "Perfil {n}\0";
 const uint16_t kLabel_ptBR[] PROGMEM = {0, 119, 152, 187, 237, 276, 314, 344, 369, 443, 477, 515, 554, 626, 649, 676, 710, 763, 791, 825, 874, 929, 1001, 1032, 1079, 1115};
 const uint16_t kHint_ptBR[] PROGMEM = {22, 130, 166, 199, 258, 295, 322, 351, 377, 458, 496, 533, 573, 633, 659, 688, 718, 773, 803, 842, 881, 948, 1017, 1045, 1097, 1130};
 const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 217, 65535, 65535, 65535, 65535, 398, 472, 472, 65535, 591, 65535, 65535, 65535, 735, 65535, 65535, 859, 901, 966, 65535, 1064, 65535, 1149};
 const uint16_t kGroup_ptBR[] PROGMEM = {1181, 369, 1188, 1195};
-const uint16_t kMsg_ptBR[] PROGMEM = {1203, 1224, 1234, 1256, 1288, 1314, 1324, 1339, 1358, 1363, 1370, 1379, 1394, 1401, 1410, 1429, 1445, 1457, 1477, 1494, 1513, 1527, 1546, 1566, 1586, 1602, 1622, 1646, 1653, 1668, 1689, 1699, 1718, 1737, 1743, 1748, 1757, 1767, 1778, 1793, 1800, 1810};
+const uint16_t kMsg_ptBR[] PROGMEM = {1203, 1224, 1234, 1256, 1288, 1314, 1324, 1339, 1358, 1363, 1370, 1379, 1394, 1401, 1410, 1429, 1445, 1457, 1477, 1494, 1513, 1527, 1546, 1566, 1586, 1602, 1622, 1646, 1653, 1668, 1689, 1699, 1718, 1737, 1743, 1748, 1757, 1767, 1778, 1793, 1800, 1810, 1829, 1836, 1853, 1862, 1874, 1886, 1893, 1914, 1935, 1952, 1965, 1980, 1996, 2016, 2031};
 
 const LocaleTables kLocales[] PROGMEM = {
     {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en, kMsg_en},

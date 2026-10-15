@@ -21,7 +21,7 @@ constexpr uint8_t kFlagPending = 0x40;
 struct Def {
     uint32_t hash;         // FNV-1a of the id; the key used in persisted files
     uint16_t idOffset;     // into kIdNames
-    uint16_t valuesOffset; // into kValueIds, or 0xFFFF
+    uint16_t valuesOffset; // into kValueIds (enum values, or an int's special names), or 0xFFFF
     int16_t min;
     int16_t max;
     int16_t def;

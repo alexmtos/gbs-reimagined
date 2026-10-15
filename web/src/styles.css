@@ -311,3 +311,21 @@ input[type="checkbox"] {
   gap: 4px;
   color: var(--muted);
 }
+
+.profile-active {
+  outline: 1px solid var(--accent);
+}
+h2.setting-label {
+  display: block;
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+.settings + .setting,
+.setting + .setting {
+  margin-top: 8px;
+}
+.file {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+}

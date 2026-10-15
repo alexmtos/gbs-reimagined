@@ -104,7 +104,12 @@ longest loop pass; both are visible in diagnostics. A "video busy" predicate (OR
 | `/api/status` | GET | status model (polled every 1.5 s) |
 | `/api/settings` | GET | all values + schema hash |
 | `/api/settings` | POST | set one or more values (answers *accepted*; risky ones arm the revert) |
-| `/api/command` | POST | run a named command (`keep`, `revert`, `reboot`, `profile.load`…) |
+| `/api/command` | POST | run a named command (`keep`, `revert`, `calibrate`, `reboot`, `factoryReset`) |
+| `/api/profiles` | GET | the profiles in use, the active one and the settled source (ADR 0014) |
+| `/api/profile` | GET/POST | export one profile (`?slot=n`); load, save, rename, re-sign, delete, import |
+| `/api/svs` | POST | a switcher line as the body (`SVS NEW INPUT=3`, `remote prof3`) |
+| `/api/backup` | GET | settings, level calibration and every profile, streamed |
+| `/api/levels` | POST | a backup's level calibration put back |
 | `/api/events`, `/api/journal` | GET | diagnostics rings |
 | `/api/wifi/scan`, `/api/wifi` | GET/POST | provisioning |
 | `/api/update` | POST | firmware image upload (OTA) |

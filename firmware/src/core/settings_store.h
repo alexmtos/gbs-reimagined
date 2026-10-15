@@ -17,7 +17,7 @@ void idName(Id id, char* out, size_t cap);
 bool findId(const char* name, Id& out);
 
 // Text form of a value, shared by the console and the web API: the enum value id ("r1080p"),
-// "on"/"off", a special name ("auto"), or the integer.
+// "on"/"off", a special value's name ("auto", "lastUsed"), or the integer.
 void formatValue(Id id, int16_t value, char* out, size_t cap);
 // Accepts what formatValue produces, plus 1/0, true/false and a bare enum index.
 bool parseValue(Id id, const char* text, int16_t& out);

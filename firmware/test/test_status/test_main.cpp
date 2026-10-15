@@ -110,6 +110,68 @@ TEST_CASE("the sequence moves on content changes, not on uptime or heap") {
     CHECK(has(json(m), "\"standard\":\"480i\""));
 }
 
+TEST_CASE("the active profile is reported with its name escaped, and moves the sequence") {
+    core::StatusModel m;
+    core::buildStatus(m, scaling240p(), true, 0, false, core::BoardInfo{});
+    CHECK(has(json(m), "\"profile\":null"));
+    const uint32_t first = m.seq;
+    core::ProfileInfo p;
+    p.slot = 3;
+    p.name = "\"Mega\" \\ S\xC3\xA3o";
+    core::buildStatus(m, scaling240p(), true, 0, false, core::BoardInfo{}, p);
+    CHECK(has(
+        json(m),
+        "\"profile\":{\"slot\":3,\"name\":\"\\\"Mega\\\" \\\\ S\xC3\xA3o\",\"modified\":false}"));
+    CHECK(m.seq == first + 1);
+    p.modified = true;
+    core::buildStatus(m, scaling240p(), true, 0, false, core::BoardInfo{}, p);
+    CHECK(has(json(m), "\"modified\":true}"));
+    CHECK(m.seq == first + 2);
+}
+
+TEST_CASE("the largest status still fits the web server's 768-byte buffer") {
+    core::StatusModel m;
+    core::BoardInfo b;
+    b.uptimeS = 4'000'000'000u;
+    b.heapFree = 4'000'000'000u;
+    b.heapMin = 4'000'000'000u;
+    b.rssi = -100;
+    b.ip = 0xFFFFFFFF;
+    video::EngineStatus e = scaling240p();
+    e.sourceMilliHz = 4'000'000'000u;
+    e.outputMilliHz = 4'000'000'000u;
+    e.pixelClockHz = 4'000'000'000u;
+    e.sourceLines = 65534;
+    e.sogLevel = e.phaseAdc = 255;
+    e.syncQuality = 100;
+    core::ProfileInfo p;
+    p.slot = 16;
+    p.modified = true;
+    p.name = "\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+             "\x01\x01"; // 23 bytes that each take six to escape
+    core::buildStatus(m, e, false, 65535, false, b, p);
+    char buf[768];
+    CHECK(core::statusJson(m, "0.1.0-beta.12+abcdef0", "f838c797", buf, sizeof buf) > 0);
+}
+
+TEST_CASE("a source counts as settled after 10 stable ticks of a running program") {
+    video::EngineStatus e = scaling240p();
+    e.stableCounter = 9;
+    CHECK_FALSE(core::settledSource(e).valid);
+    e.stableCounter = 10;
+    const core::InputSignature s = core::settledSource(e);
+    CHECK(s.valid);
+    CHECK(s.port == static_cast<uint8_t>(video::InputPort::Rgb));
+    CHECK(s.sync == static_cast<uint8_t>(video::SyncType::Csync));
+    CHECK(s.standard == static_cast<uint8_t>(video::Standard::Ntsc));
+    CHECK(s.lines == 262); // as the status shows them
+    e.noSyncCounter = 1;
+    CHECK_FALSE(core::settledSource(e).valid);
+    e.noSyncCounter = 0;
+    e.state = video::EngineState::Settling;
+    CHECK_FALSE(core::settledSource(e).valid);
+}
+
 TEST_CASE("a buffer too small yields nothing rather than a truncated object") {
     core::StatusModel m;
     char buf[64];

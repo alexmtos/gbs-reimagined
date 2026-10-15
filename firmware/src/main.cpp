@@ -144,10 +144,15 @@ void refreshStatus(uint32_t now) {
     b.rssi = wifi.rssi();
     b.ip = wifi.stationIp() != 0 ? wifi.stationIp() : wifi.apIp();
     b.clockGen = clockGenPresent;
+    controller.onSource(core::settledSource(engine.status()), now);
     const uint32_t revertMs = controller.revertRemainingMs(now);
+    core::ProfileInfo p;
+    p.slot = controller.activeProfile();
+    p.modified = controller.profileModified();
+    p.name = controller.profiles().activeName();
     core::buildStatus(statusModel, engine.status(),
                       controller.get(settings::Id::OutputFrameLock) != 0,
-                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b);
+                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p);
 }
 
 } // namespace

@@ -31,7 +31,7 @@ clock de saída e o endereço da placa na sua rede.
 | Aperte o botão | abrir o menu, entrar num item, confirmar um valor |
 | Gire | andar pelo menu ou mudar um valor |
 | Gire segurando o botão apertado | mudar um número de dez em dez |
-| Segure por cerca de um segundo | voltar (e, editando, desfazer a mudança) |
+| Segure por cerca de um segundo | voltar (e, editando, desfazer a mudança); na tela inicial, abrir os perfis |
 
 Os ajustes de imagem mudam enquanto você gira, para você acompanhar na TV. A resolução de saída e
 o frame lock só mudam quando você aperta, para a imagem não passar por todos os modos no caminho.
@@ -86,6 +86,8 @@ Algumas mudanças podem deixar a TV sem imagem — a resolução de saída e o f
 Quando você faz uma delas pela página web ou pelo console serial, um aviso pede que você
 toque em **Manter**. Se você não responder em 20 segundos, a placa volta ao que era antes: uma
 TV apagada se resolve sozinha. O tempo de espera pode ser mudado em **Sistema → Confirmar em**.
+Carregar um perfil que muda um desses ajustes pede confirmação do mesmo jeito, e desfazer devolve
+tudo o que o perfil mudou.
 
 ## Formato, posição e tamanho da imagem
 
@@ -169,6 +171,44 @@ Alguns consoles mandam um sinal mais forte do que a placa espera, o que deixa os
 - **Ganho automático** — durante o jogo, reduz o nível da entrada sempre que as partes mais claras
   da imagem estouram. Só escurece, e recomeça a cada novo console conectado.
 
+## Perfis
+
+Um perfil guarda tudo o que está nas páginas **Saída**, **Entrada** e **Imagem**, para cada console
+ter a sua imagem. Os ajustes de Sistema, a calibração de níveis e o Wi-Fi são os mesmos para todos
+os perfis. Há 16 posições.
+
+- **Salvar:** ajuste a imagem para um console e, na página **Perfis**, escolha uma posição, dê um
+  nome e toque em **Salvar**. Marque **Carregar sozinho quando esta fonte aparecer** para a placa
+  escolher este perfil sempre que esse console voltar.
+- **Carregar:** toque em **Carregar** ao lado de um perfil, ou na placa: segure o botão giratório
+  na tela inicial (ou abra **Perfis** no menu), escolha o perfil e **Carregar**.
+- **Mudanças depois de carregar** ficam sem salvar: a página e a telinha da placa mostram o perfil
+  como *alterado* (um `*` depois do nome, na placa) até você tocar em **Salvar aqui** nele.
+  Carregá-lo de novo devolve os valores salvos.
+- **Carregar sozinho:** quando a imagem de um novo console se firma, a placa carrega o perfil
+  marcado para ele. Ela procura primeiro um salvo de um console na mesma entrada mandando o mesmo
+  tipo de imagem (por exemplo 240p/480i, ou 480p) com o mesmo número de linhas, com folga de duas;
+  depois com a mesma entrada e tipo de imagem; depois só com a mesma entrada. Um console que alterna
+  entre 240p e 480i (ou 288p e 576i) nunca muda de perfil. Dois consoles que mandam exatamente o
+  mesmo tipo de sinal na mesma entrada não podem ser distinguidos: carregue os perfis deles à mão ou
+  use um seletor (abaixo).
+- **Perfil inicial** (na página **Perfis** e em **Sistema**): *Último usado* começa de onde você
+  parou, com as mudanças não salvas, a não ser que o perfil de outro console combine com a primeira
+  imagem; *Auto pela entrada* sempre carrega o perfil que combina; um perfil numerado é carregado
+  ao ligar.
+- **Exportar e importar:** **Exportar** salva um perfil num arquivo; escolha uma posição e importe
+  o arquivo nela, nesta placa ou em outra.
+- **Cópia de segurança:** **Baixar uma cópia** salva todos os ajustes, a calibração de níveis e
+  todos os perfis num arquivo (nunca a senha do Wi-Fi). **Restaurar uma cópia** devolve o que o
+  arquivo contém; perfis em posições que o arquivo não menciona ficam como estão. A restauração de
+  fábrica mantém os perfis.
+- **Seletores de console:** os comandos que seletores mandam para scalers RetroTINK funcionam aqui
+  também: `SVS NEW INPUT=3` ou `remote prof3` carrega o perfil 3; `SVS CURRENT INPUT=3` carrega,
+  a não ser que ele já esteja em uso e sem alterações. Mande-os de um computador ou de uma ponte pela
+  porta USB da placa, ou pela rede para `http://gbs.local/api/svs`, por exemplo
+  `curl -d "remote prof3" http://gbs.local/api/svs`. Ligar um seletor direto nos pinos seriais
+  internos da placa não é suportado: essa linha também leva as mensagens da própria placa.
+
 ## Console serial (avançado)
 
 Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 baud**. Digite
@@ -183,7 +223,8 @@ Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 
 | `keep` / `revert` | responde a uma mudança que espera confirmação |
 | `wifi` | o estado da rede; `wifi <nome> <senha>` conecta a uma rede |
 | `calibrate` | calibra os níveis com uma tela branca |
-| `factory-reset` | tudo volta ao padrão (digite duas vezes) |
+| `profile` | os perfis salvos; `profile load 3`, `profile save 3 Mega Drive`, `profile source 3 on` |
+| `factory-reset` | ajustes e níveis voltam ao padrão, os perfis ficam (digite duas vezes) |
 
 ## Em breve neste guia
 

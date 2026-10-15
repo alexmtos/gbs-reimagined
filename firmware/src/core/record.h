@@ -13,6 +13,7 @@ uint32_t crc32(const uint8_t* data, size_t len);
 // payload (4 bytes), then the payload. A record that fails any check reads as absent, so a
 // half-written or foreign file can never be mistaken for data.
 constexpr size_t kRecordHeader = 11;
+constexpr uint16_t kMaxRecordPayload = 512;
 
 bool saveRecord(platform::FileStore& fs, const char* path, uint32_t magic, uint8_t version,
                 const uint8_t* payload, uint16_t len);

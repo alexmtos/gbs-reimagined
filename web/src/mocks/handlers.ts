@@ -1,5 +1,13 @@
 import { HttpResponse, http } from "msw";
 import type {
+  BackupDocument,
+  Levels,
+  ProfileAction,
+  ProfileAnswer,
+  ProfileContent,
+  ProfileDocument,
+  ProfileSource,
+  ProfilesResponse,
   ScanResult,
   SetOutcome,
   SettingsResponse,
@@ -31,10 +39,22 @@ function freshValues(): Record<string, string> {
   );
 }
 
+/** The settled 240p source the mock board is scaling. */
+const SOURCE: ProfileSource = { port: "rgb", sync: "csync", standard: "ntsc", lines: 262 };
+const NAME_OK = /^[\x20-\x7e\u00a0-\u00ff]{0,23}$/;
+
+const inProfile = (id: string) => !id.startsWith("system.");
+
 const device = {
   values: freshValues(),
   snapshot: null as Record<string, string> | null,
+  /** The profile state a pending revert puts back. */
+  snapshotProfile: null as { active: number; modified: boolean } | null,
   revertAt: 0,
+  profiles: new Map<number, ProfileContent>(),
+  active: 0,
+  modified: false,
+  levels: { component: [123, 123, 123], rgb: [123, 123, 123] } as Levels,
   wifi: {
     mode: "setup",
     ssid: "",
@@ -51,7 +71,12 @@ const device = {
 export function resetDevice(): void {
   device.values = freshValues();
   device.snapshot = null;
+  device.snapshotProfile = null;
   device.revertAt = 0;
+  device.profiles = new Map();
+  device.active = 0;
+  device.modified = false;
+  device.levels = { component: [123, 123, 123], rgb: [123, 123, 123] };
   device.scanPolls = 0;
   device.wifi = { ...device.wifi, mode: "setup", ssid: "", ip: "0.0.0.0" };
 }
@@ -60,11 +85,20 @@ function revertLeft(): { secondsLeft: number } | undefined {
   if (!device.snapshot) return undefined;
   const left = device.revertAt - Date.now();
   if (left <= 0) {
-    device.values = device.snapshot;
-    device.snapshot = null;
+    revertNow();
     return undefined;
   }
   return { secondsLeft: Math.ceil(left / 1000) };
+}
+
+function revertNow(): void {
+  if (device.snapshot) device.values = device.snapshot;
+  if (device.snapshotProfile) {
+    device.active = device.snapshotProfile.active;
+    device.modified = device.snapshotProfile.modified;
+  }
+  device.snapshot = null;
+  device.snapshotProfile = null;
 }
 
 function validate(id: string, raw: unknown): string | null {
@@ -73,8 +107,104 @@ function validate(id: string, raw: unknown): string | null {
   const text = typeof raw === "boolean" ? (raw ? "on" : "off") : String(raw);
   if (meta.type === "bool") return text === "on" || text === "off" ? text : null;
   if (meta.type === "enum") return meta.values?.includes(text) ? text : null;
+  if (meta.special && Object.values(meta.special).includes(text)) return text;
   const n = Number(text);
-  return Number.isInteger(n) && n >= (meta.min ?? 0) && n <= (meta.max ?? 0) ? text : null;
+  if (!Number.isInteger(n) || n < (meta.min ?? 0) || n > (meta.max ?? 0)) return null;
+  return meta.special?.[String(n)] ?? text;
+}
+
+function answer(body: ProfileAnswer, status = 200) {
+  return HttpResponse.json(body, { status });
+}
+
+function profileAction(a: ProfileAction) {
+  if (a.action === "load") {
+    const p = device.profiles.get(a.slot);
+    if (!p) return answer({ ok: false, reason: "noProfile" }, 404);
+    const before = { ...device.values };
+    let risky = false;
+    for (const [id, text] of Object.entries(p.values)) {
+      const meta = SETTINGS.find((m) => m.id === id);
+      if (!meta?.available || device.values[id] === text) continue;
+      device.values = { ...device.values, [id]: text };
+      risky ||= meta.risky;
+    }
+    if (risky) {
+      device.snapshot ??= before;
+      device.snapshotProfile ??= { active: device.active, modified: device.modified };
+      device.revertAt = Date.now() + REVERT_MS;
+    }
+    device.active = a.slot;
+    device.modified = false;
+    const revert = revertLeft();
+    return answer({
+      ok: true,
+      result: risky ? "revertArmed" : "loaded",
+      ...(revert ? { revert } : {}),
+    });
+  }
+  if (!Number.isInteger(a.slot) || a.slot < 1 || a.slot > 16) {
+    return answer({ ok: false, reason: "invalidSlot" }, 400);
+  }
+  const existing = device.profiles.get(a.slot);
+  switch (a.action) {
+    case "save": {
+      const name = a.name ?? "";
+      if (device.snapshot) return answer({ ok: false, reason: "revertPending" }, 409);
+      if (!NAME_OK.test(name)) return answer({ ok: false, reason: "invalidName" }, 400);
+      const source =
+        a.source === "this" ? SOURCE : a.source === "none" ? null : (existing?.source ?? null);
+      device.profiles.set(a.slot, {
+        name: name || existing?.name || `Profile ${a.slot}`,
+        source,
+        values: Object.fromEntries(Object.entries(device.values).filter(([id]) => inProfile(id))),
+      });
+      device.active = a.slot;
+      device.modified = false;
+      return answer({ ok: true });
+    }
+    case "rename":
+      if (!existing) return answer({ ok: false, reason: "noProfile" }, 404);
+      if (!a.name || !NAME_OK.test(a.name))
+        return answer({ ok: false, reason: "invalidName" }, 400);
+      existing.name = a.name;
+      return answer({ ok: true });
+    case "source":
+      if (!existing) return answer({ ok: false, reason: "noProfile" }, 404);
+      existing.source = a.on ? SOURCE : null;
+      return answer({ ok: true });
+    case "delete":
+      if (!existing) return answer({ ok: false, reason: "noProfile" }, 404);
+      device.profiles.delete(a.slot);
+      if (device.active === a.slot) {
+        device.active = 0;
+        device.modified = false;
+      }
+      return answer({ ok: true });
+    case "import": {
+      const p = a.profile;
+      if (typeof p?.values !== "object")
+        return answer({ ok: false, reason: "expectedProfile" }, 400);
+      if (!NAME_OK.test(p.name ?? "")) return answer({ ok: false, reason: "invalidName" }, 400);
+      const values: Record<string, string> = {};
+      const skipped: string[] = [];
+      for (const [id, raw] of Object.entries(p.values)) {
+        const text = inProfile(id) ? validate(id, raw) : null;
+        if (text === null) skipped.push(id);
+        else values[id] = text;
+      }
+      device.profiles.set(a.slot, {
+        name: p.name || `Profile ${a.slot}`,
+        source: p.source ?? null,
+        values,
+      });
+      if (device.active === a.slot) {
+        device.active = 0;
+        device.modified = false;
+      }
+      return answer({ ok: true, skipped });
+    }
+  }
 }
 
 export function sampleStatus(overrides: Partial<Status> = {}): Status {
@@ -107,6 +237,14 @@ export function sampleStatus(overrides: Partial<Status> = {}): Status {
       scaler: true,
       clockGen: true,
     },
+    profile:
+      device.active === 0
+        ? null
+        : {
+            slot: device.active,
+            name: device.profiles.get(device.active)?.name ?? "",
+            modified: device.modified,
+          },
     ...(revert ? { revert } : {}),
     ...overrides,
   };
@@ -155,6 +293,9 @@ export const handlers = [
         device.values = { ...device.values, [id]: text };
         results[id] = "applied";
       }
+      if (results[id] !== "unchanged" && device.active !== 0 && inProfile(id)) {
+        device.modified = true;
+      }
     }
     const revert = revertLeft();
     const answer: SettingsResult = { results, ...(revert ? { revert } : {}) };
@@ -166,14 +307,18 @@ export const handlers = [
     switch (name) {
       case "keep":
         device.snapshot = null;
+        device.snapshotProfile = null;
         break;
       case "revert":
-        if (device.snapshot) device.values = device.snapshot;
-        device.snapshot = null;
+        revertNow();
         break;
-      case "factoryReset":
+      case "factoryReset": {
+        // Like the board: settings and levels to defaults, the profiles stay, none in use.
+        const kept = device.profiles;
         resetDevice();
+        device.profiles = kept;
         break;
+      }
       case "calibrate":
       case "reboot":
         break;
@@ -181,6 +326,80 @@ export const handlers = [
         return HttpResponse.json({ ok: false, reason: "unknownCommand" }, { status: 404 });
     }
     return HttpResponse.json({ ok: true });
+  }),
+
+  http.get("/api/profiles", () => {
+    const body: ProfilesResponse = {
+      active: device.active,
+      modified: device.modified,
+      source: SOURCE,
+      profiles: [...device.profiles.entries()]
+        .sort(([a], [b]) => a - b)
+        .map(([slot, p]) => ({ slot, name: p.name, source: p.source })),
+    };
+    return HttpResponse.json(body);
+  }),
+
+  http.get("/api/profile", ({ request }) => {
+    const slot = Number(new URL(request.url).searchParams.get("slot"));
+    const p = device.profiles.get(slot);
+    if (!p) return answer({ ok: false, reason: "noProfile" }, 404);
+    const doc: ProfileDocument = { format: "gbsr-profile", version: 1, schema: SCHEMA_HASH, ...p };
+    return HttpResponse.json(doc);
+  }),
+
+  http.post("/api/profile", async ({ request }) => {
+    const body = (await request.json()) as ProfileAction;
+    if (typeof body?.action !== "string") {
+      return HttpResponse.json({ ok: false, reason: "expectedAction" }, { status: 400 });
+    }
+    return profileAction(body) ?? answer({ ok: false, reason: "unknownAction" }, 404);
+  }),
+
+  http.get("/api/backup", () => {
+    const doc: BackupDocument = {
+      format: "gbsr-backup",
+      version: 1,
+      firmware: "0.1.0-mock",
+      schema: SCHEMA_HASH,
+      settings: device.values,
+      levels: device.levels,
+      profiles: Object.fromEntries(
+        [...device.profiles.entries()].map(([slot, p]) => [String(slot), p]),
+      ),
+    };
+    return HttpResponse.json(doc);
+  }),
+
+  http.post("/api/levels", async ({ request }) => {
+    const body = (await request.json()) as Levels;
+    const ok = [body?.component, body?.rgb].every(
+      (g) =>
+        Array.isArray(g) &&
+        g.length === 3 &&
+        g.every((v) => Number.isInteger(v) && v >= 0 && v <= 255),
+    );
+    if (!ok) return HttpResponse.json({ ok: false, reason: "expectedLevels" }, { status: 400 });
+    device.levels = body;
+    return HttpResponse.json({ ok: true });
+  }),
+
+  http.post("/api/svs", async ({ request }) => {
+    const line = (await request.text()).trim();
+    const m = /^(?:SVS (NEW|CURRENT) INPUT=|remote prof)(\d+)$/i.exec(line);
+    const slot = Number(m?.[2]);
+    if (!m || slot < 1 || slot > 16) {
+      return HttpResponse.json({ ok: false, reason: "expectedSwitcherLine" }, { status: 400 });
+    }
+    if (m[1]?.toUpperCase() === "CURRENT" && device.active === slot && !device.modified) {
+      return HttpResponse.json({ ok: true, result: "unchanged" });
+    }
+    if (!device.profiles.has(slot)) return answer({ ok: false, reason: "noProfile" }, 404);
+    const p = device.profiles.get(slot) as ProfileContent;
+    device.values = { ...device.values, ...p.values };
+    device.active = slot;
+    device.modified = false;
+    return HttpResponse.json({ ok: true, result: "loaded" });
   }),
 
   http.get("/api/wifi", () => HttpResponse.json(device.wifi)),

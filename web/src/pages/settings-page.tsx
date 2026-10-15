@@ -1,17 +1,37 @@
 import { signal } from "@preact/signals";
 import { useState } from "preact/hooks";
-import { runCommand } from "../api/endpoints";
+import { fetchBackup, runCommand } from "../api/endpoints";
+import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
 import type { MessageKey } from "../i18n";
 import { settingText, t, valueLabel } from "../i18n";
+import { profileName } from "../state/profiles";
 import { changeSetting, fieldState, loaded, values } from "../state/settings";
 import { status } from "../state/status";
 
 export const showAdvanced = signal(false);
 
+/** Integers with named values and a short range read better as a list than as a slider. */
+const LIST_RANGE = 20;
+
+/** The text for a number in a setting's list (the startup profile shows the profile's name). */
+function numberLabel(meta: SettingMeta, n: number): string {
+  if (meta.id === "system.startupProfile") {
+    const name = profileName(n);
+    return name ? `${n} · ${name}` : t("profiles.slotFree", { slot: n });
+  }
+  return String(n);
+}
+
+/** The number behind a value text: a special value's name maps back to its number. */
+function numberOf(meta: SettingMeta, text: string): number {
+  const special = Object.entries(meta.special ?? {}).find(([, name]) => name === text);
+  return special ? Number(special[0]) : Number(text);
+}
+
 /** The control for one setting; the board's answer decides what it finally shows. */
-function Control({ meta }: { meta: SettingMeta }) {
+export function Control({ meta }: { meta: SettingMeta }) {
   const value = values.value[meta.id];
   const [dragging, setDragging] = useState<string | null>(null);
   const label = settingText(meta.id).label;
@@ -43,6 +63,30 @@ function Control({ meta }: { meta: SettingMeta }) {
         />
       );
     default: {
+      const min = meta.min ?? 0;
+      const max = meta.max ?? 0;
+      if (meta.special && max - min <= LIST_RANGE) {
+        const options = Array.from({ length: max - min + 1 }, (_, i) => {
+          const n = min + i;
+          const special = meta.special?.[String(n)];
+          return special
+            ? { value: special, label: valueLabel(meta.id, special) }
+            : { value: String(n), label: numberLabel(meta, n) };
+        });
+        return (
+          <select
+            aria-label={label}
+            value={value}
+            onChange={(e) => void changeSetting(meta.id, e.currentTarget.value)}
+          >
+            {options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        );
+      }
       // Integers: the number follows the slider while dragging; the board hears the release.
       const shown = dragging ?? value;
       return (
@@ -53,14 +97,14 @@ function Control({ meta }: { meta: SettingMeta }) {
             min={meta.min}
             max={meta.max}
             step={1}
-            value={Number(shown)}
+            value={numberOf(meta, shown)}
             onInput={(e) => setDragging(e.currentTarget.value)}
             onChange={(e) => {
               setDragging(null);
               void changeSetting(meta.id, e.currentTarget.value);
             }}
           />
-          <output>{shown}</output>
+          <output>{valueLabel(meta.id, shown)}</output>
         </span>
       );
     }
@@ -150,6 +194,19 @@ function SystemActions() {
             return (await runCommand("factoryReset")).ok ? "action.done" : "action.failed";
           }}
         />
+        {armed && (
+          <ActionButton
+            label={t("profiles.backup.download")}
+            run={async () => {
+              try {
+                downloadJson("gbs-backup.json", await fetchBackup());
+                return null;
+              } catch {
+                return "action.failed";
+              }
+            }}
+          />
+        )}
       </div>
     </li>
   );

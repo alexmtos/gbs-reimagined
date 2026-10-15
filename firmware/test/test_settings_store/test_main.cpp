@@ -105,6 +105,9 @@ TEST_CASE("values convert to and from text the way the console and the API spell
     CHECK(text(Id::InputPhase, -1) == "auto");
     CHECK(text(Id::InputPhase, 12) == "12");
     CHECK(text(Id::PictureBrightness, -3) == "-3");
+    CHECK(text(Id::SystemStartupProfile, -1) == "lastUsed"); // each special value has its name
+    CHECK(text(Id::SystemStartupProfile, 0) == "autoByInput");
+    CHECK(text(Id::SystemStartupProfile, 7) == "7");
 
     int16_t v = 0;
     CHECK(settings::parseValue(Id::OutputResolution, "R1080P", v));
@@ -117,7 +120,14 @@ TEST_CASE("values convert to and from text the way the console and the API spell
     CHECK(v == 0);
     CHECK(settings::parseValue(Id::InputPhase, "auto", v));
     CHECK(v == -1);
-    CHECK_FALSE(settings::parseValue(Id::PictureBrightness, "40", v)); // above +32
+    CHECK(settings::parseValue(Id::SystemStartupProfile, "AutoByInput", v));
+    CHECK(v == 0);
+    CHECK(settings::parseValue(Id::SystemStartupProfile, "lastUsed", v));
+    CHECK(v == -1);
+    CHECK(settings::parseValue(Id::SystemStartupProfile, "16", v));
+    CHECK(v == 16);
+    CHECK_FALSE(settings::parseValue(Id::SystemStartupProfile, "auto", v)); // not its name
+    CHECK_FALSE(settings::parseValue(Id::PictureBrightness, "40", v));      // above +32
     CHECK_FALSE(settings::parseValue(Id::PictureBrightness, "5x", v));
     CHECK_FALSE(settings::parseValue(Id::PictureSharpness, "extreme", v));
     CHECK_FALSE(settings::parseValue(Id::PictureBrightness, "auto", v)); // has no special
@@ -128,10 +138,10 @@ TEST_CASE("values convert to and from text the way the console and the API spell
     CHECK_FALSE(settings::findId("picture.hue", id));
 }
 
-TEST_CASE("settings of this milestone are available unless pending") {
+TEST_CASE("settings of this milestone are available") {
     CHECK(settings::available(Id::OutputResolution));
     CHECK(settings::available(Id::InputAutoGain));
-    CHECK(settings::available(Id::OutputAspect));               // M2
-    CHECK_FALSE(settings::available(Id::SystemStartupProfile)); // M2, pending
+    CHECK(settings::available(Id::OutputAspect)); // M2
+    CHECK(settings::available(Id::SystemStartupProfile));
     CHECK(settings::def(Id::SystemStartupProfile).milestone() == 2);
 }

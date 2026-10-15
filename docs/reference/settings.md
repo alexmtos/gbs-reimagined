@@ -2,7 +2,7 @@
 
 # Settings reference
 
-Schema hash `7cbe1e84`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
+Schema hash `ff651a3a`. Every user-facing setting, as defined in `schema/settings.yaml`; labels and help are the English strings. *Risky* settings arm the timed revert.
 
 ## Output
 
@@ -48,4 +48,4 @@ Schema hash `7cbe1e84`. Every user-facing setting, as defined in `schema/setting
 | `system.encoderReverse` | Reverse knob | off, on | off | advanced | M1 | Swaps the direction of the knob. |
 | `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change that could leave the screen black before it is undone. |
 | `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings for sampling, sync and diagnostics. |
-| `system.startupProfile` | Startup profile | -2…15 (-2 = Auto by input) (-1 = Last used) | -1 | essential | M2 (pending) | The profile loaded when the board starts: the last one used, one chosen automatically from the incoming signal, or a fixed profile. |
+| `system.startupProfile` | Startup profile | -1…16 (-1 = Last used) (0 = Auto by input) | -1 | essential | M2 | Which profile is in use when the board starts. Last used keeps the one you had, unsaved changes included, unless another console's profile matches the first picture; Auto by input always loads the profile that matches; a number loads that profile. |

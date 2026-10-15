@@ -51,6 +51,21 @@ enum class Msg : uint8_t {
     On, // oled.on
     Off, // oled.off
     CalibrateTooHot, // oled.calibrate.tooHot
+    MenuProfiles, // oled.menu.profiles
+    ProfilesNew, // oled.profiles.new
+    ProfilesLoad, // oled.profiles.load
+    ProfilesSave, // oled.profiles.save
+    ProfilesAuto, // oled.profiles.auto
+    ProfilesDelete, // oled.profiles.delete
+    ProfilesManual, // oled.profiles.manual
+    ProfilesModified, // oled.profiles.modified
+    ProfilesLoaded, // oled.profiles.loaded
+    ProfilesSaved, // oled.profiles.saved
+    ProfilesDeleted, // oled.profiles.deleted
+    ProfilesNoSource, // oled.profiles.noSource
+    ProfilesFull, // oled.profiles.full
+    ProfilesFailed, // oled.profiles.failed
+    ProfilesSlot, // oled.profiles.slot
     Count,
 };
 

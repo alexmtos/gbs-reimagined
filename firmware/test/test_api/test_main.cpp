@@ -48,7 +48,7 @@ TEST_CASE("GET /api/settings lists this milestone's settings as text") {
     CHECK(has(out.text, "\"output.frameLock\":\"on\""));
     CHECK(has(out.text, "\"picture.sharpness\":\"off\""));
     CHECK(has(out.text, "\"output.aspect\":\"a4x3\""));
-    CHECK_FALSE(has(out.text, "system.startupProfile")); // pending
+    CHECK(has(out.text, "\"system.startupProfile\":\"lastUsed\""));
     CHECK(out.text.back() == '}');
     CHECK(out.writes >= 2); // streamed through the small buffer, not built whole
 }
@@ -57,16 +57,17 @@ TEST_CASE("POST /api/settings takes text, numbers and booleans, and reports each
     Rig r;
     const std::string s =
         r.post(R"({"picture.sharpness":"medium","picture.brightness":-4,"input.autoGain":true,)"
-               R"("picture.contrast":99,"system.startupProfile":3,"no.such":1})");
+               R"("picture.contrast":99,"system.startupProfile":"autoByInput","no.such":1})");
     CHECK(has(s, "\"picture.sharpness\":\"applied\""));
     CHECK(has(s, "\"picture.brightness\":\"applied\""));
     CHECK(has(s, "\"input.autoGain\":\"applied\""));
     CHECK(has(s, "\"picture.contrast\":\"invalid\""));
-    CHECK(has(s, "\"system.startupProfile\":\"unavailable\""));
+    CHECK(has(s, "\"system.startupProfile\":\"applied\""));
     CHECK(has(s, "\"no.such\":\"unknown\""));
     CHECK(r.video.picture.sharpness == 2);
     CHECK(r.video.picture.brightness == -4);
     CHECK(r.video.autoGain);
+    CHECK(r.ctl.get(Id::SystemStartupProfile) == 0);
 }
 
 TEST_CASE("a risky change through the API arms the revert and says so") {

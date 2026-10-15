@@ -3,12 +3,21 @@ import { RevertBanner, SafeModeBanner } from "./components/banners";
 import type { MessageKey } from "./i18n";
 import { LOCALES, locale, setLocale, t } from "./i18n";
 import { NetworkPage } from "./pages/network-page";
+import { ProfilesPage } from "./pages/profiles-page";
 import { SettingsPage } from "./pages/settings-page";
 import { StatusPage } from "./pages/status-page";
 import { connection } from "./state/status";
 
-type PageId = "status" | "picture" | "output" | "input" | "system" | "network";
-const PAGES: readonly PageId[] = ["status", "picture", "output", "input", "system", "network"];
+type PageId = "status" | "picture" | "output" | "input" | "profiles" | "system" | "network";
+const PAGES: readonly PageId[] = [
+  "status",
+  "picture",
+  "output",
+  "input",
+  "profiles",
+  "system",
+  "network",
+];
 
 function pageFromHash(): PageId {
   const id = location.hash.replace("#", "");
@@ -61,6 +70,8 @@ export function App() {
           <StatusPage />
         ) : current === "network" ? (
           <NetworkPage />
+        ) : current === "profiles" ? (
+          <ProfilesPage />
         ) : (
           <SettingsPage group={current} />
         )}

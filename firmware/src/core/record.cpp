@@ -6,7 +6,7 @@ namespace gbsr::core {
 
 namespace {
 
-constexpr uint16_t kMaxPayload = 512;
+constexpr uint16_t kMaxPayload = kMaxRecordPayload;
 
 void put32(uint8_t* p, uint32_t v) {
     for (int i = 0; i < 4; ++i) {
