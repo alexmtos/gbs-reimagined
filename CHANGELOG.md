@@ -2,10 +2,28 @@
 
 ## [1.1.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.3...v1.1.0) (2026-10-15)
 
+### New
 
-### Features
+* **Settings that have no effect right now are dimmed and say why.** Examples: the picture settings in Passthrough, the size at 15 kHz, scanlines on an interlaced source ([#19](https://github.com/alexmtos/gbs-reimagined/pull/19)).
+* **Tidier pages:**
+  * Output, Picture and System are split into sections;
+  * the backup moved to System, next to the firmware update;
+  * the startup profile is on Profiles only, and importing a profile has its own form.
+* **"Default"** next to a changed setting puts its default value back.
+* **A fuller Status page:**
+  * input, sync, format, resolution, address, Wi-Fi signal, clock generator, and how long the board has been on;
+  * a dash instead of 0.00 when there is no signal.
+* **Better on a phone:**
+  * the tabs wrap;
+  * the "Keep these settings?" banner stays at the top;
+  * controls are larger to touch and on/off settings look like switches;
+  * on the board's setup network, every page points to the Network page.
+* **Easier to read:** the colours of the light theme have more contrast, and screen readers hear the help and the messages.
 
-* UI improvements after the audit, phone, accessibility, sections, Status ([#19](https://github.com/alexmtos/gbs-reimagined/issues/19)) ([18925cc](https://github.com/alexmtos/gbs-reimagined/commit/18925cc20d6c27c9235da81901cc7827392a7074))
+### Changed
+
+* **Force 60 Hz** now shows without the advanced settings.
+* **Passthrough** (not yet verified on a board) is offered only with the advanced settings, on the web page and on the board's menu.
 
 ## [1.0.3](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.2...v1.0.3) (2026-10-15)
 
