@@ -104,15 +104,9 @@ char* nextWord(char*& s) {
 
 void Console::poll() {
     while (Serial.available() > 0) {
-        const char c = static_cast<char>(Serial.read());
-        if (c == '\r' || c == '\n') {
-            if (len_ > 0) {
-                line_[len_] = '\0';
-                handleLine(line_);
-                len_ = 0;
-            }
-        } else if (len_ < sizeof line_ - 1) {
-            line_[len_++] = c;
+        const auto spill = improv_.feed(static_cast<uint8_t>(Serial.read()), millis());
+        for (uint8_t i = 0; i < spill.len; ++i) {
+            take(static_cast<char>(spill.data[i]));
         }
     }
     const bool pending = ctl_.revertPending();
@@ -120,6 +114,18 @@ void Console::poll() {
         Serial.println(F("revert window closed"));
     }
     revertWasPending_ = pending;
+}
+
+void Console::take(char c) {
+    if (c == '\r' || c == '\n') {
+        if (len_ > 0) {
+            line_[len_] = '\0';
+            handleLine(line_);
+            len_ = 0;
+        }
+    } else if (len_ < sizeof line_ - 1) {
+        line_[len_++] = c;
+    }
 }
 
 void Console::handleLine(char* line) {

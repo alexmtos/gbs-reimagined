@@ -5,8 +5,11 @@
     uv run --group board tools/board/board.py flash   --port COM3 --image <firmware.bin>
     uv run --group board tools/board/board.py restore --port COM3 --image backups/<file>.flash.bin
     uv run --group board tools/board/board.py console --port COM3 [--send status] [--seconds 5]
+    uv run --group board tools/board/board.py improv  --port COM3 [--scan]
 
 Writes to the board only in `flash` and `restore`, and only after printing what will be written.
+`improv` asks what the browser installer asks over Improv Wi-Fi Serial (state, device information,
+networks) and never sends Wi-Fi settings: the password goes from the browser to the board only.
 See the flash-board skill for the procedure.
 """
 
@@ -136,6 +139,103 @@ def cmd_console(args: argparse.Namespace) -> int:
     return 0
 
 
+IMPROV_TYPES = {1: "state", 2: "error", 3: "rpc", 4: "result"}
+IMPROV_STATES = {
+    0: "stopped",
+    1: "awaiting authorization",
+    2: "ready",
+    3: "provisioning",
+    4: "provisioned",
+}
+IMPROV_ERRORS = {
+    0: "none",
+    1: "invalid packet",
+    2: "unknown command",
+    3: "unable to connect",
+    0xFF: "unknown",
+}
+
+
+def improv_packet(kind: int, data: bytes) -> bytes:
+    """A packet as the installer's client writes it, newline included."""
+    body = b"IMPROV" + bytes([1, kind, len(data)]) + data
+    return body + bytes([sum(body) & 0xFF]) + b"\n"
+
+
+def improv_read(buf: bytearray) -> tuple[list[tuple[int, bytes]], list[str]]:
+    """Takes complete packets and complete text lines out of `buf`, as the client finds them: a
+    packet only where a line starts."""
+    packets: list[tuple[int, bytes]] = []
+    lines: list[str] = []
+    while buf:
+        if buf.startswith(b"IMPROV"):
+            if len(buf) < 9 or len(buf) < 10 + buf[8]:
+                break
+            n = buf[8]
+            if sum(buf[: 9 + n]) & 0xFF != buf[9 + n]:
+                lines.append("(Improv packet with a bad checksum)")
+            packets.append((buf[7], bytes(buf[9 : 9 + n])))
+            del buf[: 10 + n]
+            continue
+        end = buf.find(b"\n")
+        if end < 0:
+            break
+        lines.append(buf[:end].decode("utf-8", errors="replace").rstrip("\r"))
+        del buf[: end + 1]
+    return packets, lines
+
+
+def improv_strings(data: bytes) -> list[str]:
+    out, at = [], 2
+    while at < 2 + data[1]:
+        out.append(data[at + 1 : at + 1 + data[at]].decode("utf-8", errors="replace"))
+        at += 1 + data[at]
+    return out
+
+
+def cmd_improv(args: argparse.Namespace) -> int:
+    import serial
+
+    commands = [(2, "current state"), (3, "device information")]
+    if args.scan:
+        commands.append((4, "networks"))
+    with serial.Serial(args.port, 115200, timeout=0.1) as ser:
+        buf = bytearray()
+        for command, what in commands:
+            print(f"> {what}")
+            sent = time.monotonic()
+            ser.write(improv_packet(3, bytes([command, 0])))
+            answered = False
+            while time.monotonic() - sent < args.seconds and not answered:
+                buf += ser.read(512)
+                packets, lines = improv_read(buf)
+                for line in lines:
+                    if line:
+                        print(f"  console: {line}")
+                for kind, data in packets:
+                    ms = (time.monotonic() - sent) * 1000
+                    if kind == 1:
+                        print(f"  {ms:5.0f} ms state: {IMPROV_STATES.get(data[0], data[0])}")
+                        answered = answered or (command == 2 and data[0] != 4)
+                    elif kind == 2:
+                        print(f"  {ms:5.0f} ms error: {IMPROV_ERRORS.get(data[0], data[0])}")
+                        answered = answered or data[0] != 0
+                    elif kind == 4:
+                        strings = improv_strings(data)
+                        if command == 4 and strings:
+                            # SSIDs are the neighbours' business: show signal and security only.
+                            print(f"  {ms:5.0f} ms network: {strings[1]} dBm, secured {strings[2]}")
+                        else:
+                            print(f"  {ms:5.0f} ms result {data[0]}: {strings}")
+                            answered = True
+                    else:
+                        print(f"  {ms:5.0f} ms {IMPROV_TYPES.get(kind, kind)}: {data.hex()}")
+            if not answered:
+                print(f"  no answer in {args.seconds:.0f} s")
+                return 1
+    return 0
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -160,6 +260,11 @@ def main() -> int:
     p.add_argument("--gap", type=float, default=1.0, help="seconds between sent lines")
     p.add_argument("--seconds", type=float, default=4.0)
     p.set_defaults(fn=cmd_console)
+    p = sub.add_parser("improv")
+    p.add_argument("--port", required=True)
+    p.add_argument("--scan", action="store_true", help="also list the networks the board hears")
+    p.add_argument("--seconds", type=float, default=15.0, help="longest wait for each answer")
+    p.set_defaults(fn=cmd_improv)
     args = ap.parse_args()
     return args.fn(args)
 

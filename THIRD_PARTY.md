@@ -9,8 +9,8 @@ Components shipped in the firmware image or the web UI, with their licences. Bui
 | ESP8266 NONOS SDK | bundled with the core | Espressif MIT-style licence | firmware |
 | Preact | 11.0.1 | MIT | web UI |
 | @preact/signals | 2.11.3 | MIT | web UI |
-| U8g2 (planned, M1) | 2.36.18 | BSD-2-Clause | firmware |
-| improv-wifi/sdk-cpp (planned, M1) | 1.2.7 | Apache-2.0 | firmware |
+| U8g2 | 2.36.18 | BSD-2-Clause | firmware |
+| Improv (improv-wifi/sdk-cpp) | 1.2.7 | Apache-2.0 | firmware |
 
 Data, not code: the TV5725 register loci and baseline register programs from gbs-control (GPL-3.0),
 see [NOTICE.md](NOTICE.md).
