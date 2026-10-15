@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.0...v1.0.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **web:** colour only questions and failures in setting notes ([#13](https://github.com/alexmtos/gbs-reimagined/issues/13)) ([ba6cfde](https://github.com/alexmtos/gbs-reimagined/commit/ba6cfde1d5d17735424f3f4d196df893a7e376d5))
+
 ## 1.0.0 (2026-10-15)
 
 The first public release of GBS Reimagined, new firmware for the RetroScaler GBS-C. Install it from
