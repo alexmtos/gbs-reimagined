@@ -199,6 +199,7 @@ void setup() {
     if (safeMode) {
         Serial.println(F("safe mode: saved settings not loaded, nothing will be saved"));
     }
+    controller.setDefaultName(&ui::profileSlotName);
     controller.begin(safeMode, millis());
     engine.setSourceListener(&detectedToProfiles);
     engine.begin(clockGenPresent);

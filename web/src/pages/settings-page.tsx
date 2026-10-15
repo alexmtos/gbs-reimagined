@@ -26,7 +26,7 @@ function numberLabel(meta: SettingMeta, n: number): string {
     const name = profileName(n);
     return name ? `${n} · ${name}` : t("profiles.slotFree", { slot: n });
   }
-  return String(n);
+  return (meta.min ?? 0) < 0 && n > 0 ? `+${n}` : String(n);
 }
 
 /** The number behind a value text: a special value's name maps back to its number. */
@@ -77,7 +77,13 @@ export function Control({ meta }: { meta: SettingMeta }) {
           return special
             ? { value: special, label: valueLabel(meta.id, special) }
             : { value: String(n), label: numberLabel(meta, n) };
-        });
+        }).filter(
+          (o) =>
+            meta.id !== "system.startupProfile" ||
+            o.value === value ||
+            !/^\d+$/.test(o.value) ||
+            profileName(Number(o.value)) !== "",
+        );
         return (
           <select
             aria-label={label}

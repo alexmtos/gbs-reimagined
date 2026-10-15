@@ -36,7 +36,7 @@ Schema hash `59acd3c6`. Every user-facing setting, as defined in `schema/setting
 | `picture.contrast` | Contrast | -32…32 | 0 | essential | M1 | Increases or decreases the difference between dark and bright areas. |
 | `picture.saturation` | Saturation | -32…32 | 0 | essential | M1 | Makes colours stronger or weaker. |
 | `picture.sharpness` | Sharpness | Off, Low, Medium, High | Off | essential | M1 | Emphasises edges. Off shows the source as sampled. |
-| `picture.scanlines` | Scanlines | off, on | off | essential | M2 | Darkens the gaps between the console's lines to imitate a CRT. Works on 240p and 288p sources and pauses by itself on 480i and 576i. Even lines need an output that is a whole multiple of the source: 960p, 720p or 480p for 240p. |
+| `picture.scanlines` | Scanlines | off, on | off | essential | M2 | Darkens the gaps between the console's lines to imitate a CRT. Works on 240p and 288p sources and pauses by itself on 480i and 576i; never at 15 kHz or in Passthrough. Even lines need an output that is a whole multiple of the source: 960p, 720p or 480p for 240p, or 1080p with Integer scale. |
 | `picture.scanlineStrength` | Scanline strength | 1…8 | 4 | essential | M2 | How dark the scanlines are. |
 | `picture.deinterlace` | Deinterlacer | Motion adaptive, Bob | Motion adaptive | advanced | M2 | How interlaced pictures are rebuilt. Motion adaptive keeps still detail sharp; Bob has no combing artefacts and the least processing. |
 
@@ -45,8 +45,8 @@ Schema hash `59acd3c6`. Every user-facing setting, as defined in `schema/setting
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
 | `system.language` | Language | English, Português (Brasil) | English | essential | M1 | The language of the web page and of the board's screen. On the web page, choose it at the top. The serial console is always English. |
-| `system.oledSaver` | Display saver | Off, 1 min, 3 min, 5 min, 10 min | 5 min | advanced | M1 | Turns the display off after a period without use, to protect the OLED from burn-in. |
+| `system.oledSaver` | Screen saver | Off, 1 min, 3 min, 5 min, 10 min | 5 min | advanced | M1 | Turns the board's own screen off after a time without use, to protect it from burn-in. A turn or press of the knob, or a change of signal, wakes it. |
 | `system.encoderReverse` | Reverse knob | off, on | off | advanced | M1 | Swaps the direction of the knob. |
-| `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change that could leave the screen black before it is undone. |
-| `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings for sampling, sync and diagnostics, on the web page and in the board's menu. The switch at the bottom of every page is this same setting. |
+| `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change made on the web page or the serial console that could leave the screen black, before it is undone. With the knob, such a change applies on the press and is not undone. |
+| `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings most people never need: sampling and sync, picture size, the deinterlacer, auto gain and a few system options, on the web page and in the board's menu. The switch at the bottom of the Output, Input, Picture and System pages is this same setting. |
 | `system.startupProfile` | Startup profile | -1…16 (-1 = Last used) (0 = Auto by input) | -1 | essential | M2 | Which profile is in use when the board starts. Last used keeps the one you had, unsaved changes included, unless another console's profile matches the first picture; Auto by input always loads the profile that matches; a number loads that profile. |

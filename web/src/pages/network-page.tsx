@@ -76,6 +76,9 @@ export function NetworkPage() {
   return (
     <section>
       {wifi && <p class="headline">{describe(wifi)}</p>}
+      {wifi?.mode === "joined" && wifi.ap.active && (
+        <p class="banner banner-warn">{t("net.joinNote")}</p>
+      )}
       {wifi && wifi.mode !== "joined" && wifi.lastFailure !== "" && (
         <p class="banner banner-bad">{t(FAILURE_KEY[wifi.lastFailure], { ssid: wifi.ssid })}</p>
       )}

@@ -85,19 +85,47 @@ uint8_t slotArg(const char* word) {
                : 0;
 }
 
-// Splits off the first word of `s` (in place); returns the rest, or an empty string.
+// Splits off the first word of `s` (in place) and returns it; `s` moves past it. A word in
+// double quotes may hold spaces (a network name or password: wifi "My Net" "pass word").
 char* nextWord(char*& s) {
     while (*s == ' ') {
         ++s;
     }
+    const char end = *s == '"' ? '"' : ' ';
+    if (end == '"') {
+        ++s;
+    }
     char* word = s;
-    while (*s != '\0' && *s != ' ') {
+    while (*s != '\0' && *s != end) {
         ++s;
     }
     if (*s != '\0') {
         *s++ = '\0';
     }
     return word;
+}
+
+// "invalid value; one of: auto r1080p …" or "invalid value; from -8 to 8 (or auto)".
+void printAllowed(settings::Id id) {
+    const settings::Def d = settings::def(id);
+    char text[24];
+    Serial.print(F("invalid value; "));
+    if (d.type == settings::Type::Int) {
+        Serial.printf_P(PSTR("from %d to %d"), d.min, d.max);
+        for (int16_t s : d.special) {
+            if (s != settings::kNoSpecial) {
+                settings::formatValue(id, s, text, sizeof text);
+                Serial.printf_P(PSTR(" (%d: %s)"), s, text);
+            }
+        }
+    } else {
+        Serial.print(F("one of:"));
+        for (int16_t v = d.min; v <= d.max; ++v) {
+            settings::formatValue(id, v, text, sizeof text);
+            Serial.printf_P(PSTR(" %s"), text);
+        }
+    }
+    Serial.println();
 }
 
 } // namespace
@@ -204,7 +232,8 @@ void Console::help() {
     Serial.println(F("get <setting>           e.g. get output.resolution"));
     Serial.println(F("set <setting> <value>   e.g. set picture.sharpness medium"));
     Serial.println(F("list [prefix]           settings with current values"));
-    Serial.println(F("output <mode>           auto 1080p 1024p 960p 720p 480p 15khz"));
+    Serial.println(F("output <mode>           auto 1080p 1024p 960p 720p 480p 15khz passthrough"));
+    Serial.println(F("                        1024x768 800x600 1600x1200 1920x1200 (exp.)"));
     Serial.println(F("input <port>            auto rgb component"));
     Serial.println(F("keep | revert           answer a pending revert"));
     Serial.println(F("profile [list]          saved profiles (* in use)"));
@@ -214,7 +243,9 @@ void Console::help() {
     Serial.println(F("profile source <n> on|off  load n by itself for this source, or not"));
     Serial.println(F("SVS NEW INPUT=<n>, remote prof<n>  switcher: load profile n"));
     Serial.println(F("calibrate               set input levels from a white screen"));
-    Serial.println(F("wifi [<ssid> [password]] show the network, or join one"));
+    Serial.println(
+        F("wifi [<ssid> [password]] show the network, or join one (\"quotes\" for spaces)"));
+    Serial.println(F("wifi scan               how the saved network is heard from here"));
     Serial.println(F("reboot | factory-reset"));
     Serial.println(F("expert on|off           reg <FIELD> [value], dump <seg>, levels r|g|b [n]"));
 }
@@ -368,7 +399,7 @@ void Console::cmdSet(char* args) {
     }
     int16_t value = 0;
     if (!settings::parseValue(id, text, value)) {
-        Serial.println(F("invalid value (list shows the current ones)"));
+        printAllowed(id);
         return;
     }
     reportSet(name, ctl_.set(id, value, Origin::Console, millis()));

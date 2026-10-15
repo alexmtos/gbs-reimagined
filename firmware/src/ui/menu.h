@@ -41,6 +41,9 @@ struct NetView {
 // confirm, long press = back (on the home screen: the profiles). Risky settings apply on the
 // press, so turning through output modes does not reload a program at every detent; picture
 // settings apply while turning.
+// "Profile 3" in a language of the board (i18n tables): the controller's default profile name.
+void profileSlotName(uint8_t slot, uint8_t language, char* out, size_t cap);
+
 class Menu {
 public:
     static constexpr uint32_t kHomeAfterMs = 30'000;

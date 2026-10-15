@@ -103,7 +103,13 @@ public:
     bool restoreLevels(const uint8_t (&component)[3], const uint8_t (&rgb)[3]);
     bool safeMode() const { return safeMode_; }
 
+    // How an unnamed profile is called ("Profile 3"), in the board's language: the front ends own
+    // the strings, so they hand the controller a function for it. English until one is given.
+    using DefaultName = void (*)(uint8_t slot, uint8_t language, char* out, size_t cap);
+    void setDefaultName(DefaultName fn) { defaultName_ = fn; }
+
 private:
+    void defaultName(uint8_t slot, char* out, size_t cap) const;
     void apply(settings::Id id);
     void applyPicture();
     void applyGeometry();
@@ -118,6 +124,7 @@ private:
 
     platform::FileStore& fs_;
     video::VideoControl& video_;
+    DefaultName defaultName_ = nullptr;
     settings::Store store_;
     ProfileStore profiles_;
     bool safeMode_ = false;

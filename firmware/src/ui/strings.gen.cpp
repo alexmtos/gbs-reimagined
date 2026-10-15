@@ -58,13 +58,13 @@ const char kText_en[] PROGMEM =
     "Language\0"
     "Menus and web page\0"
     "English\037Português (Brasil)\0"
-    "Display saver\0"
-    "Dim the display\0"
+    "Screen saver\0"
+    "Turns the screen off\0"
     "Off\0371 min\0373 min\0375 min\03710 min\0"
     "Reverse knob\0"
     "Swap knob direction\0"
     "Confirm within\0"
-    "Time to keep changes\0"
+    "For web and console\0"
     "10 s\03720 s\03730 s\0"
     "Show advanced\0"
     "Expert settings\0"
@@ -104,13 +104,14 @@ const char kText_en[] PROGMEM =
     "Password:\0"
     "Password refused\0"
     "Network not found\0"
+    "Network: no answer\0"
     "Restart\0"
     "Factory reset\0"
     "Press again: confirm\0"
     "Done\0"
     "Sync\0"
     "Firmware\0"
-    "Free RAM\0"
+    "Free memory\0"
     "frame lock\0"
     "free running\0"
     "On\0"
@@ -120,7 +121,7 @@ const char kText_en[] PROGMEM =
     "Save as new\0"
     "Load\0"
     "Save here\0"
-    "Auto-load\0"
+    "Load by itself\0"
     "Delete\0"
     "Only when chosen\0"
     "Changed, not saved\0"
@@ -131,11 +132,11 @@ const char kText_en[] PROGMEM =
     "No free slot\0"
     "Did not work\0"
     "Profile {n}\0";
-const uint16_t kLabel_en[] PROGMEM = {0, 183, 212, 245, 287, 321, 359, 392, 425, 456, 527, 564, 595, 624, 691, 714, 735, 763, 810, 836, 868, 917, 973, 1032, 1065, 1116, 1146};
-const uint16_t kHint_en[] PROGMEM = {18, 194, 224, 252, 301, 341, 377, 408, 439, 462, 542, 579, 605, 634, 702, 723, 746, 773, 820, 854, 881, 926, 987, 1045, 1080, 1130, 1162};
-const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 266, 65535, 65535, 65535, 65535, 65535, 483, 559, 559, 65535, 656, 65535, 65535, 65535, 790, 65535, 65535, 897, 945, 1003, 65535, 1101, 65535, 1181};
-const uint16_t kGroup_en[] PROGMEM = {1205, 456, 1212, 1220};
-const uint16_t kMsg_en[] PROGMEM = {1227, 1248, 1258, 1272, 1295, 1317, 1325, 1339, 1358, 1366, 1373, 1380, 1397, 1402, 1409, 1426, 1445, 1455, 1476, 1493, 1513, 1528, 1546, 1565, 1583, 1599, 1616, 1631, 1641, 1658, 1676, 1684, 1698, 1719, 1724, 1729, 1738, 1747, 1758, 1771, 1774, 1778, 1796, 1805, 1817, 1822, 1832, 1842, 1849, 1866, 1885, 1900, 1914, 1930, 1944, 1957, 1970};
+const uint16_t kLabel_en[] PROGMEM = {0, 183, 212, 245, 287, 321, 359, 392, 425, 456, 527, 564, 595, 624, 691, 714, 735, 763, 810, 836, 868, 917, 973, 1036, 1069, 1119, 1149};
+const uint16_t kHint_en[] PROGMEM = {18, 194, 224, 252, 301, 341, 377, 408, 439, 462, 542, 579, 605, 634, 702, 723, 746, 773, 820, 854, 881, 926, 986, 1049, 1084, 1133, 1165};
+const uint16_t kValues_en[] PROGMEM = {39, 65535, 65535, 266, 65535, 65535, 65535, 65535, 65535, 483, 559, 559, 65535, 656, 65535, 65535, 65535, 790, 65535, 65535, 897, 945, 1007, 65535, 1104, 65535, 1184};
+const uint16_t kGroup_en[] PROGMEM = {1208, 456, 1215, 1223};
+const uint16_t kMsg_en[] PROGMEM = {1230, 1251, 1261, 1275, 1298, 1320, 1328, 1342, 1361, 1369, 1376, 1383, 1400, 1405, 1412, 1429, 1448, 1458, 1479, 1496, 1516, 1531, 1549, 1568, 1586, 1602, 1619, 1634, 1644, 1661, 1679, 1698, 1706, 1720, 1741, 1746, 1751, 1760, 1772, 1783, 1796, 1799, 1803, 1821, 1830, 1842, 1847, 1857, 1872, 1879, 1896, 1915, 1930, 1944, 1960, 1974, 1987, 2000};
 
 const char kText_ptBR[] PROGMEM =
     "Resolução de saída\0"
@@ -182,7 +183,7 @@ const char kText_ptBR[] PROGMEM =
     "Desligado\037Baixa\037Média\037Alta\0"
     "Scanlines\0"
     "Linhas estilo CRT\0"
-    "Intensidade\0"
+    "Força das scanlines\0"
     "Escuridão das linhas\0"
     "Desentrelaçador\0"
     "Para 480i / 576i\0"
@@ -191,12 +192,12 @@ const char kText_ptBR[] PROGMEM =
     "Menus e página web\0"
     "English\037Português (Brasil)\0"
     "Proteção de tela\0"
-    "Desliga o display\0"
+    "Desliga a telinha\0"
     "Desligada\0371 min\0373 min\0375 min\03710 min\0"
     "Inverter botão\0"
     "Inverte o giro\0"
     "Confirmar em\0"
-    "Tempo p/ confirmar\0"
+    "Para web e console\0"
     "10 s\03720 s\03730 s\0"
     "Mostrar avançado\0"
     "Ajustes técnicos\0"
@@ -236,13 +237,14 @@ const char kText_ptBR[] PROGMEM =
     "Senha:\0"
     "Senha recusada\0"
     "Rede não encontrada\0"
+    "A rede não respondeu\0"
     "Reiniciar\0"
     "Restaurar fábrica\0"
     "Aperte de novo: ok\0"
     "Feito\0"
     "Sync\0"
     "Firmware\0"
-    "RAM livre\0"
+    "Memória livre\0"
     "frame lock\0"
     "sem frame lock\0"
     "Ligado\0"
@@ -252,7 +254,7 @@ const char kText_ptBR[] PROGMEM =
     "Salvar como novo\0"
     "Carregar\0"
     "Salvar aqui\0"
-    "Automático\0"
+    "Carregar sozinho\0"
     "Apagar\0"
     "Só quando escolhido\0"
     "Alterado, não salvo\0"
@@ -263,11 +265,11 @@ const char kText_ptBR[] PROGMEM =
     "Sem posição livre\0"
     "Não funcionou\0"
     "Perfil {n}\0";
-const uint16_t kLabel_ptBR[] PROGMEM = {0, 184, 217, 252, 302, 338, 377, 415, 445, 470, 544, 578, 616, 655, 727, 750, 777, 811, 864, 892, 926, 975, 1030, 1102, 1133, 1180, 1216};
-const uint16_t kHint_ptBR[] PROGMEM = {22, 195, 231, 264, 317, 359, 396, 423, 452, 478, 559, 597, 634, 674, 734, 760, 789, 819, 874, 904, 943, 982, 1049, 1118, 1146, 1198, 1231};
-const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 282, 65535, 65535, 65535, 65535, 65535, 499, 573, 573, 65535, 692, 65535, 65535, 65535, 836, 65535, 65535, 960, 1002, 1067, 65535, 1165, 65535, 1250};
-const uint16_t kGroup_ptBR[] PROGMEM = {1282, 470, 1289, 1296};
-const uint16_t kMsg_ptBR[] PROGMEM = {1304, 1325, 1335, 1357, 1389, 1415, 1425, 1440, 1459, 1464, 1471, 1480, 1495, 1502, 1511, 1530, 1546, 1558, 1578, 1595, 1614, 1628, 1647, 1667, 1687, 1703, 1723, 1747, 1754, 1769, 1790, 1800, 1819, 1838, 1844, 1849, 1858, 1868, 1879, 1894, 1901, 1911, 1930, 1937, 1954, 1963, 1975, 1987, 1994, 2015, 2036, 2053, 2066, 2081, 2097, 2117, 2132};
+const uint16_t kLabel_ptBR[] PROGMEM = {0, 184, 217, 252, 302, 338, 377, 415, 445, 470, 544, 578, 616, 655, 727, 750, 777, 811, 864, 892, 935, 984, 1039, 1111, 1142, 1189, 1225};
+const uint16_t kHint_ptBR[] PROGMEM = {22, 195, 231, 264, 317, 359, 396, 423, 452, 478, 559, 597, 634, 674, 734, 760, 789, 819, 874, 913, 952, 991, 1058, 1127, 1155, 1207, 1240};
+const uint16_t kValues_ptBR[] PROGMEM = {40, 65535, 65535, 282, 65535, 65535, 65535, 65535, 65535, 499, 573, 573, 65535, 692, 65535, 65535, 65535, 836, 65535, 65535, 969, 1011, 1076, 65535, 1174, 65535, 1259};
+const uint16_t kGroup_ptBR[] PROGMEM = {1291, 470, 1298, 1305};
+const uint16_t kMsg_ptBR[] PROGMEM = {1313, 1334, 1344, 1366, 1398, 1424, 1434, 1449, 1468, 1473, 1480, 1489, 1504, 1511, 1520, 1539, 1555, 1567, 1587, 1604, 1623, 1637, 1656, 1676, 1696, 1712, 1732, 1756, 1763, 1778, 1799, 1821, 1831, 1850, 1869, 1875, 1880, 1889, 1904, 1915, 1930, 1937, 1947, 1966, 1973, 1990, 1999, 2011, 2028, 2035, 2056, 2077, 2094, 2107, 2122, 2138, 2158, 2173};
 
 const LocaleTables kLocales[] PROGMEM = {
     {kText_en, kLabel_en, kHint_en, kValues_en, kGroup_en, kMsg_en},

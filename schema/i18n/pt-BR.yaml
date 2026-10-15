@@ -156,10 +156,11 @@ settings:
     hint: Linhas estilo CRT
     help: >-
       Escurece o espaço entre as linhas do console para imitar um CRT. Funciona com fontes 240p e
-      288p e pausa sozinho em 480i e 576i. Linhas uniformes pedem uma saída que seja múltiplo
-      inteiro da fonte: 960p, 720p ou 480p para 240p.
+      288p e pausa sozinho em 480i e 576i; nunca a 15 kHz nem em Passthrough. Linhas uniformes
+      pedem uma saída que seja múltiplo inteiro da fonte: 960p, 720p ou 480p para 240p, ou 1080p
+      com Escala inteira.
   picture.scanlineStrength:
-    label: Intensidade
+    label: Força das scanlines
     hint: Escuridão das linhas
     help: O quanto as scanlines são escuras.
   picture.deinterlace:
@@ -183,8 +184,10 @@ settings:
       ptBR: Português (Brasil)
   system.oledSaver:
     label: Proteção de tela
-    hint: Desliga o display
-    help: Desliga o display após um tempo sem uso, para proteger o OLED contra marcas.
+    hint: Desliga a telinha
+    help: >-
+      Desliga a telinha da placa após um tempo sem uso, para protegê-la contra marcas. Girar ou
+      apertar o botão, ou uma mudança de sinal, a acorda.
     values:
       "off": Desligada
       m1: 1 min
@@ -197,8 +200,11 @@ settings:
     help: Inverte o sentido do botão giratório.
   system.revertSeconds:
     label: Confirmar em
-    hint: Tempo p/ confirmar
-    help: Quanto tempo você tem para confirmar uma mudança que pode deixar a tela preta antes de ela ser desfeita.
+    hint: Para web e console
+    help: >-
+      Quanto tempo você tem para confirmar uma mudança feita na página web ou no console serial que
+      pode deixar a tela preta, antes de ela ser desfeita. Pelo botão da placa, uma mudança assim
+      vale quando você aperta e não é desfeita.
     values:
       s10: 10 s
       s20: 20 s
@@ -207,8 +213,9 @@ settings:
     label: Mostrar avançado
     hint: Ajustes técnicos
     help: >-
-      Mostra os ajustes de amostragem, sincronismo e diagnóstico, na página web e no menu da
-      placa. A chave no fim de cada página é este mesmo ajuste.
+      Mostra os ajustes que quase ninguém precisa: amostragem e sincronismo, tamanho da imagem,
+      desentrelaçador, ganho automático e algumas opções de sistema, na página web e no menu da
+      placa. A chave no fim das abas Saída, Entrada, Imagem e Sistema é este mesmo ajuste.
   system.startupProfile:
     label: Perfil inicial
     hint: Carregado ao ligar
@@ -360,13 +367,14 @@ messages:
   oled.net.password: "Senha:"
   oled.net.refused: "Senha recusada"
   oled.net.notFound: "Rede não encontrada"
+  oled.net.noAnswer: "A rede não respondeu"
   oled.reboot: "Reiniciar"
   oled.factoryReset: "Restaurar fábrica"
   oled.confirm: "Aperte de novo: ok"
   oled.done: "Feito"
   oled.edit.sync: "Sync"
   oled.status.version: "Firmware"
-  oled.status.heap: "RAM livre"
+  oled.status.heap: "Memória livre"
   oled.status.lockOn: "frame lock"
   oled.status.lockOff: "sem frame lock"
   oled.on: "Ligado"
@@ -384,7 +392,7 @@ messages:
   profiles.load: "Carregar"
   profiles.saveHere: "Salvar aqui"
   profiles.rename: "Renomear"
-  profiles.autoOn: "Usar para esta fonte"
+  profiles.autoOn: "Carregar sozinho com esta fonte"
   profiles.autoOff: "Parar de carregar sozinho"
   profiles.export: "Exportar"
   profiles.delete: "Apagar"
@@ -430,7 +438,7 @@ messages:
   oled.profiles.new: "Salvar como novo"
   oled.profiles.load: "Carregar"
   oled.profiles.save: "Salvar aqui"
-  oled.profiles.auto: "Automático"
+  oled.profiles.auto: "Carregar sozinho"
   oled.profiles.delete: "Apagar"
   oled.profiles.manual: "Só quando escolhido"
   oled.profiles.modified: "Alterado, não salvo"

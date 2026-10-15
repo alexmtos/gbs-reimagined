@@ -431,20 +431,22 @@ export function ProfilesPage() {
           ? t("profiles.sourceNow", { source: describeSource(list.source) })
           : t("profiles.noSource")}
       </p>
-      {safe && <p class="banner banner-bad">{t("profiles.reason.safeMode")}</p>}
+      {safe && <p class="setting-note bad">{t("profiles.reason.safeMode")}</p>}
       <p class="setting-help">{t("profiles.help")}</p>
-      {list.profiles.length === 0 ? (
-        <p class="muted">{t("profiles.empty")}</p>
-      ) : (
-        <ul class="settings">
-          {list.profiles.map((p) => (
-            <ProfileRow key={p.slot} p={p} />
-          ))}
-        </ul>
-      )}
-      <SaveForm />
-      <StartupProfile />
-      <Backup />
+      <fieldset class="plain" disabled={safe}>
+        {list.profiles.length === 0 ? (
+          <p class="muted">{t("profiles.empty")}</p>
+        ) : (
+          <ul class="settings">
+            {list.profiles.map((p) => (
+              <ProfileRow key={p.slot} p={p} />
+            ))}
+          </ul>
+        )}
+        <SaveForm />
+        <StartupProfile />
+        <Backup />
+      </fieldset>
     </section>
   );
 }

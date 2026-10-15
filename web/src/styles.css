@@ -247,6 +247,14 @@ input[type="checkbox"] {
 .setting-failed {
   outline: 1px solid var(--bad);
 }
+/* A group of controls that can be turned off together (safe mode), with no frame of its own. */
+fieldset.plain {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
 .setting-note {
   margin: 6px 0 0;
   font-size: 0.85rem;

@@ -239,7 +239,7 @@ TEST_CASE("loading a profile from the OLED goes home and shows it there") {
     r.press(); // the profile's actions
     ui::Frame f = r.frame();
     CHECK(std::string(f.line[0]) == "Load");
-    CHECK(std::string(f.line[2]).rfind("Auto-load", 0) == 0);
+    CHECK(std::string(f.line[2]).rfind("Load by itself", 0) == 0);
     CHECK(std::string(f.line[5]) == "2 Mega Drive");
     r.press(); // Load: a risky change, yet no revert from the board itself
     CHECK(r.line(2) == "Profile loaded");
@@ -258,7 +258,7 @@ TEST_CASE("the OLED marks a profile for the current source, saves over it and de
     r.press();
     r.press(); // profile 1
     r.turn(2);
-    r.press(); // Auto-load, with no source settled
+    r.press(); // Load by itself, with no source settled
     CHECK(r.line(2) == "No source now");
     r.hold();
     r.press();
