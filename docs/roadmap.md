@@ -64,7 +64,8 @@ Research, documentation, repository structure, Claude Code configuration, CI.
   once the repository is public. User guide: installing from the browser, updating over USB,
   troubleshooting by status message. **Gate passed 2026-10-15**: a blank board installed from the
   browser, joined Wi-Fi and showed a picture with the owner following only the pt-BR guide
-  ([bench M3](bench/M3.md)). First public release: 1.0.0 (user decision, 2026-10-15).
+  ([bench M3](bench/M3.md)). **1.0.0 released 2026-10-15**, the repository made public and the
+  installer site published; the board updated to it and found it current from the public site.
 
 ## Open items that need the bench
 
