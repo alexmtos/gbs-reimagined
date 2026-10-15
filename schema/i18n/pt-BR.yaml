@@ -417,3 +417,66 @@ messages:
   oled.profiles.full: "Sem posição livre"
   oled.profiles.failed: "Não funcionou"
   oled.profiles.slot: "Perfil {n}"
+
+# A página do instalador no navegador (installer/, ADR 0012). A janela de instalação é do ESP Web
+# Tools e só existe em inglês: os passos citam os nomes em inglês que ela mostra.
+installer:
+  title: "Instalar o GBS Reimagined"
+  lead: >-
+    Instale o firmware numa RetroScaler GBS-C por esta página e conecte a placa ao seu Wi-Fi. Você
+    precisa do Chrome ou do Edge num computador e de um cabo USB de dados.
+  language: "Idioma"
+  channel: "Versão"
+  stable: "Estável {version}"
+  beta: "Beta {version}"
+  notes: "O que mudou"
+  none: >-
+    Este site ainda não tem firmware para instalar. Para servir a sua própria compilação, rode
+    uv run tools/release/installer_site.py --build e gere o site de novo.
+  install: "Instalar"
+  unsupported: >-
+    Este navegador não acessa as portas seriais do computador. Abra esta página no Chrome ou no
+    Edge num computador: celulares e tablets não instalam.
+  notAllowed: "O instalador só funciona por HTTPS ou neste computador (localhost)."
+  steps: "Instalando"
+  step1: "Ligue a porta micro-USB da placa ao computador com um cabo USB de dados."
+  step2: >-
+    Clique em Instalar, escolha a porta da placa (chamada USB-SERIAL CH340 ou parecida) e clique
+    em Conectar.
+  step3: >-
+    Escolha "Install GBS Reimagined" (instalar). Na primeira vez, marque "Erase device" (apagar o
+    dispositivo), para não sobrar nada do firmware anterior, e escolha "Next" (próximo) e
+    "Install" (instalar). Numa placa que já roda o GBS Reimagined, a janela oferece "Update GBS
+    Reimagined" (atualizar), que mantém as configurações, os perfis e o Wi-Fi.
+  step4: >-
+    Quando aparecer "Installation complete!" (instalação concluída), escolha "Next". Depois de
+    apagar, a janela pede a sua rede Wi-Fi: escolha a rede, digite a senha e escolha "Connect"
+    (conectar). Assim que a placa entrar na rede, "Visit Device" (visitar o dispositivo) abre a
+    página da placa.
+  step5: >-
+    Para configurar o Wi-Fi depois, escolha "Skip" (pular) nesse formulário: a placa abre a própria
+    rede, chamada GBS- e mais quatro caracteres, senha qqqqqqqq. Entre nela e abra
+    http://192.168.4.1.
+  update: "Atualizando"
+  updateBody: >-
+    Uma placa no seu Wi-Fi se atualiza pela própria página: Sistema, Atualização do firmware. Esta
+    página também atualiza pela USB, mantendo as configurações.
+  trouble: "Se algo der errado"
+  troubleNoPort: >-
+    Nenhuma porta na lista: tente outro cabo (alguns só carregam) e outra porta USB. No Windows, o
+    chip USB da placa, um WCH CH340, pode precisar do driver do fabricante.
+  troubleBusy: >-
+    "Failed to open serial port" (falha ao abrir a porta serial): feche todos os outros programas
+    que usam a porta (Arduino IDE, PlatformIO, um monitor serial) e tente de novo.
+  troubleWifi: >-
+    A placa não entra na rede: confira a senha e se a rede é de 2,4 GHz (a placa não tem rádio de
+    5 GHz). Para tentar de novo, clique em Instalar: a janela encontra a placa ligada e oferece
+    "Connect to Wi-Fi" (conectar ao Wi-Fi) ou "Change Wi-Fi" (trocar o Wi-Fi).
+  troubleStopped: >-
+    A instalação parou no meio: clique em Instalar e comece de novo. O carregador do próprio chip,
+    com quem o instalador conversa, nunca é gravado, então uma instalação pela USB sempre pode ser
+    repetida.
+  guide: "Guia do usuário"
+  source: "Código-fonte e versões"
+  licence: >-
+    O GBS Reimagined é software livre sob a GPL-3.0. Esta página usa o ESP Web Tools (Apache-2.0).

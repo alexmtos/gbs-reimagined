@@ -52,6 +52,25 @@ jobs:
           name: web-ui
           path: web/dist/index.html.gz
 
+  installer:
+    name: Installer page
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: installer/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: installer/pnpm-lock.yaml
+      - run: pnpm -C installer install --frozen-lockfile
+      - run: pnpm -C installer typecheck
+      - run: pnpm -C installer lint
+      - run: pnpm -C installer test
+      - run: pnpm -C installer build
+
   firmware-tests:
     name: Firmware host tests
     runs-on: ubuntu-24.04

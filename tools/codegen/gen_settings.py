@@ -1,4 +1,5 @@
-"""Settings and translations: schema/settings.yaml + schema/i18n/*.yaml -> firmware, web, docs.
+"""Settings and translations: schema/settings.yaml + schema/i18n/*.yaml -> firmware, web, docs,
+and the installer page's strings.
 
 Called by generate.py. Validation failures raise SystemExit with every problem listed, so a
 missing translation or an over-long OLED string fails the build instead of shipping.
@@ -153,12 +154,18 @@ def validate(schema: dict, locales: dict[str, dict]) -> list[str]:
         for sid in sorted(extra):
             problems.append(f"[{loc}] {sid}: strings for an unknown setting")
     reference_messages = set((locales.get(REFERENCE_LOCALE) or {}).get("messages") or {})
+    reference_installer = set((locales.get(REFERENCE_LOCALE) or {}).get("installer") or {})
     for loc, data in locales.items():
         messages = set(data.get("messages") or {})
         for key in sorted(reference_messages - messages):
             problems.append(f"[{loc}] message {key}: missing")
         for key in sorted(messages - reference_messages):
             problems.append(f"[{loc}] message {key}: not in the reference locale")
+        installer = set(data.get("installer") or {})
+        for key in sorted(reference_installer - installer):
+            problems.append(f"[{loc}] installer {key}: missing")
+        for key in sorted(installer - reference_installer):
+            problems.append(f"[{loc}] installer {key}: not in the reference locale")
         for key, text in (data.get("messages") or {}).items():
             if not key.startswith(OLED_PREFIX):
                 continue
@@ -359,6 +366,10 @@ def generate(root: Path, banner) -> dict[Path, str]:
         payload["messages"] = data.get("messages", {})
         out[root / f"web/src/gen/i18n/{loc}.gen.json"] = (
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+        )
+        page = {"locale": loc, "name": data["name"], "strings": data.get("installer", {})}
+        out[root / f"installer/src/gen/i18n/{loc}.gen.json"] = (
+            json.dumps(page, ensure_ascii=False, indent=2) + "\n"
         )
 
     # ---------------------------------------------------------------- docs

@@ -8,6 +8,7 @@ OLED. Written from scratch; only factual chip data comes from gbs-control (NOTIC
 
 - `firmware/` — C++20 on the ESP8266 Arduino core via PlatformIO. Read `firmware/CLAUDE.md`.
 - `web/` — Preact + TypeScript UI, embedded into the firmware image. Read `web/CLAUDE.md`.
+- `installer/` — the browser installer page (ESP Web Tools + Improv). Read `installer/README.md`.
 - `schema/` — single sources of truth: registers, baseline programs, settings, translations.
 - `tools/` — Python (uv): code generation, bench verification, board helpers, size budgets.
   Read `tools/CLAUDE.md`.
@@ -25,6 +26,7 @@ cd firmware && pio test -e native           # host tests (doctest, fake TV5725/S
 cd firmware && pio run -e gbsc              # firmware for the board (writes size.json)
 uv run tools/size/check_budget.py --size firmware/.pio/build/gbsc/size.json
 pnpm -C web check                           # typecheck + lint + test + build the UI
+pnpm -C installer check                     # the same for the installer page
 ```
 
 Run the generator, the host tests and the web checks for whatever you changed before calling a

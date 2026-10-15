@@ -2,6 +2,7 @@
 .pio/
 firmware/.pio/
 web/node_modules/
+installer/node_modules/
 web/dist/
 installer/dist/
 dist/
