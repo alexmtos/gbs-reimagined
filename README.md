@@ -5,8 +5,11 @@ turns analogue consoles and computers (RGBS/SCART, component, VGA) into a clean 
 picture, and can be controlled from a **web page**, the built-in **OLED and knob**, or a
 **serial console**, with live monitoring of what the scaler is doing.
 
-> **Status: in development (milestone M0 — foundations).** It is not installable yet. The first
-> picture-producing milestone (M1) is next; see the [roadmap](docs/roadmap.md).
+> **Install it from your browser** at **https://alexmtos.github.io/gbs-reimagined/** (Chrome or Edge
+> on a computer, and a USB data cable); the [user guide](docs/user-guide/en/README.md) walks through
+> it ([em português](docs/user-guide/pt-BR/README.md)). Releases and notes:
+> [GitHub releases](https://github.com/alexmtos/gbs-reimagined/releases). What comes next: the
+> [roadmap](docs/roadmap.md).
 
 ## What it aims to be
 
@@ -35,6 +38,7 @@ so plainly — see the [market study](docs/research/market-scalers.md).
 uv sync                                     # Python tooling (code generation, bench, board)
 uv run tools/codegen/generate.py            # derived files from schema/
 pnpm -C web install && pnpm -C web check    # web UI
+pnpm -C installer install && pnpm -C installer check  # installer page
 cd firmware && pio test -e native           # host tests
 cd firmware && pio run -e gbsc              # firmware image
 ```
