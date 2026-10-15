@@ -5,10 +5,12 @@
 #include "chip/field_table.h"
 #include "core/settings_store.h"
 #include "core/status.h"
+#include "core/words.h"
 
 namespace gbsr::ui {
 
 using core::Controller;
+using core::nextWord;
 using core::Origin;
 
 namespace {
@@ -83,26 +85,6 @@ uint8_t slotArg(const char* word) {
     return end != word && *end == '\0' && n >= 1 && n <= core::kProfileSlots
                ? static_cast<uint8_t>(n)
                : 0;
-}
-
-// Splits off the first word of `s` (in place) and returns it; `s` moves past it. A word in
-// double quotes may hold spaces (a network name or password: wifi "My Net" "pass word").
-char* nextWord(char*& s) {
-    while (*s == ' ') {
-        ++s;
-    }
-    const char end = *s == '"' ? '"' : ' ';
-    if (end == '"') {
-        ++s;
-    }
-    char* word = s;
-    while (*s != '\0' && *s != end) {
-        ++s;
-    }
-    if (*s != '\0') {
-        *s++ = '\0';
-    }
-    return word;
 }
 
 // "invalid value; one of: auto r1080p …" or "invalid value; from -8 to 8 (or auto)".

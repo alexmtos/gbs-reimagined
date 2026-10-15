@@ -538,7 +538,7 @@ TEST_CASE("an unnamed profile is named in the board's language, by the front end
     r.ctl.setDefaultName([](uint8_t slot, uint8_t language, char* out, size_t cap) {
         snprintf(out, cap, language == 1 ? "Perfil %u" : "Profile %u", slot);
     });
-    r.ctl.set(Id::SystemLanguage, 1, Origin::Web, 0); // PortuguÃªs (Brasil)
+    r.ctl.set(Id::SystemLanguage, 1, Origin::Web, 0); // Brazilian Portuguese
     CHECK(r.ctl.saveProfile(4, "", Save::Keep));
     REQUIRE(r.ctl.profiles().read(4, p));
     CHECK(std::string(p.name) == "Perfil 4");

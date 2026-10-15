@@ -190,6 +190,32 @@ TEST_CASE("the network page shows how to reach the setup access point") {
     CHECK(std::string(f.line[4]) == "Password refused");
 }
 
+TEST_CASE("the network page also says when the network did not answer") {
+    Rig r;
+    r.net.mode = ui::NetView::Mode::Setup;
+    r.net.failure = 3; // no answer
+    r.openGroup(4);
+    CHECK(r.line(4) == "Network: no answer");
+}
+
+TEST_CASE("turning Show advanced on lists the advanced System settings at once") {
+    Rig r;
+    r.openGroup(6); // System: Language, Show advanced, Startup profile, ...
+    r.turn(1);
+    r.press(); // edit Show advanced
+    r.turn(1); // on: applies while turning
+    r.press(); // back to the list, which now holds the advanced settings
+    CHECK(r.ctl.get(Id::SystemShowAdvanced) == 1);
+    std::string all;
+    for (uint8_t i = 0; i < 5; ++i) {
+        all += r.line(i) + "|";
+    }
+    CHECK(all.find("Screen saver") != std::string::npos);
+    r.press(); // the cursor stayed on Show advanced
+    CHECK(r.line(0).rfind("Show advanced", 0) == 0);
+    r.hold();
+}
+
 TEST_CASE("factory reset asks for a second press") {
     Rig r;
     r.ctl.set(Id::PictureSaturation, 9, core::Origin::Oled, 0);
