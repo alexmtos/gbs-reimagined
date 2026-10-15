@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.2...v1.0.3) (2026-10-15)
+
+
+### Bug Fixes
+
+* UI audit fixes, one language, real state, confirmations, consistent texts ([#17](https://github.com/alexmtos/gbs-reimagined/issues/17)) ([d5f99a1](https://github.com/alexmtos/gbs-reimagined/commit/d5f99a107a99389321a33494b89ccafc593f1c1c))
+
 ## [1.0.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.1...v1.0.2) (2026-10-15)
 
 
