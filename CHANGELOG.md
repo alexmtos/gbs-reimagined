@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.1...v1.0.2) (2026-10-15)
+
+
+### Bug Fixes
+
+* **web:** one advanced switch for the page, the System setting and the board ([#15](https://github.com/alexmtos/gbs-reimagined/issues/15)) ([f58ee3e](https://github.com/alexmtos/gbs-reimagined/commit/f58ee3e345e2731d4e50162fa9fbddae6fd84f27))
+
 ## [1.0.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.0...v1.0.1) (2026-10-15)
 
 
