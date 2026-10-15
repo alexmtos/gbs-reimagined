@@ -12,6 +12,7 @@ enum class Id : uint8_t {
     OutputFrameLock,
     OutputForce60,
     OutputAspect,
+    OutputIntegerScale,
     OutputHPosition,
     OutputVPosition,
     OutputHSize,
@@ -37,7 +38,7 @@ enum class Id : uint8_t {
     Count,
 };
 
-inline constexpr char kSchemaHash[] = "ff651a3a";
+inline constexpr char kSchemaHash[] = "59acd3c6";
 inline constexpr uint8_t kGroupCount = 4;
 // The milestone being built; later milestones' settings are generated but hidden.
 inline constexpr uint8_t kMilestone = 2;

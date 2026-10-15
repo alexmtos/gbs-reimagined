@@ -11,7 +11,7 @@
     "output.resolution": {
       "label": "Output resolution",
       "hint": "What the TV receives",
-      "help": "The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and PC sources always pass through. Passthrough is experimental: not yet verified on a board.",
+      "help": "The picture size sent to your display. Auto picks 1280x960 for 60 Hz sources (an exact 4x of 240p) and 1280x1024 for 50 Hz sources. Passthrough sends the source unscaled; HD and PC sources always pass through. Passthrough is experimental: not yet verified on a board. The other (exp.) modes are computed from the display standards; your display must accept them.",
       "values": {
         "auto": "Auto",
         "r1080p": "1080p",
@@ -20,7 +20,11 @@
         "r720p": "720p",
         "r480p": "480p / 576p",
         "r15khz": "15 kHz (CRT)",
-        "passthrough": "Passthrough (exp.)"
+        "passthrough": "Passthrough (exp.)",
+        "r1024x768": "1024x768 (exp.)",
+        "r800x600": "800x600 (exp.)",
+        "r1600x1200": "1600x1200 (exp.)",
+        "r1920x1200": "1920x1200 (exp.)"
       }
     },
     "output.frameLock": {
@@ -57,6 +61,11 @@
       "label": "Horizontal size",
       "hint": "Narrower / wider",
       "help": "Makes the picture narrower or wider."
+    },
+    "output.integerScale": {
+      "label": "Integer scale",
+      "hint": "Even lines, smaller",
+      "help": "Shows every line of the console as the same number of screen lines (four at 1080p for 240p games), so scanlines and pixels come out even. The picture gets a little smaller, with black borders, and Vertical size has no effect while it is on."
     },
     "output.vSize": {
       "label": "Vertical size",

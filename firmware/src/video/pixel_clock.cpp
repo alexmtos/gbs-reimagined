@@ -2,6 +2,7 @@
 
 #include "chip/fields.gen.h"
 #include "platform/time.h"
+#include "video/raster.h"
 
 namespace gbsr::video {
 
@@ -16,24 +17,8 @@ constexpr uint32_t kSmoothStepHz = 1'000;
 } // namespace
 
 uint32_t PixelClock::frequencyForCode(uint8_t code) {
-    switch (code) {
-    case 0x25:
-        return 40'500'000;
-    case 0x45:
-        return 54'000'000;
-    case 0x55:
-        return 64'800'000;
-    case 0x65:
-        return 81'000'000;
-    case 0x85:
-        return 108'000'000;
-    case 0x95:
-        return 129'600'000;
-    case 0xA5:
-        return 162'000'000;
-    default:
-        return 81'000'000; // unused (0x35, bypass) or nothing loaded
-    }
+    const uint32_t hz = displayClockHz(code);
+    return hz != 0 ? hz : 81'000'000; // unused (0x35, bypass) or nothing loaded
 }
 
 bool PixelClock::setFrequency(uint32_t hz) {

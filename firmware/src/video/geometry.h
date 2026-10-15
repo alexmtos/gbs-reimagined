@@ -33,6 +33,12 @@ struct GeometryBase {
     // its full height. Known for SD and EDTV (BT.601); otherwise the program's own capture.
     uint16_t width43 = 0;
     uint16_t fullHeight = 0;
+    // What the HDMI converter shows of this raster: the active share of the standard timing it
+    // recognises (frameActive of frameTotal), that frame's lines and its shape. Zero for the 15 kHz
+    // programs, which bypass the converter: position only.
+    uint16_t frameActive = 0, frameTotal = 0, frameLines = 0;
+    uint8_t shapeW = 0, shapeH = 0;
+    bool hasFrame() const { return frameTotal != 0 && frameLines != 0; }
 };
 
 // The fields the geometry owns once a program is loaded. Scales of 1024 mean bypassed.
@@ -52,6 +58,11 @@ GeometryBase readGeometryBase(tv5725::Chip& chip, const PathContext& ctx);
 // shortened since the load; an implausible value falls back to the baseline's). Pure: same inputs,
 // same result. Meaningless for an invalid baseline: callers check `valid` first.
 GeometryRegs computeGeometry(const GeometryBase& base, const GeometryAdjust& adj, uint16_t htotal);
+
+// The horizontal divisor `adj`'s shape asks for on a line of `htotal`, before the user's size and
+// the scaler's limits: above 1024 the picture would have to shrink, which only a longer line
+// allows (video/raster.h). 1024 without a frame or a valid baseline.
+int32_t neededHScale(const GeometryBase& base, const GeometryAdjust& adj, uint16_t htotal);
 
 // Writes every owned field; the external blanking mirrors the display blanking, as after a load.
 void writeGeometry(tv5725::Chip& chip, const GeometryRegs& regs);

@@ -187,6 +187,12 @@ TEST_CASE("a detected source has the signature its settled self will have") {
     CHECK_FALSE(core::detectedSource(d).valid);
 }
 
+TEST_CASE("every output mode has the id its setting value has") {
+    CHECK(std::string(core::outputModeId(video::OutputMode::Passthrough)) == "passthrough");
+    CHECK(std::string(core::outputModeId(video::OutputMode::R1024x768)) == "r1024x768");
+    CHECK(std::string(core::outputModeId(video::OutputMode::R1920x1200)) == "r1920x1200");
+}
+
 TEST_CASE("a buffer too small yields nothing rather than a truncated object") {
     core::StatusModel m;
     char buf[64];

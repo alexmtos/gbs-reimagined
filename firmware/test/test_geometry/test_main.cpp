@@ -156,6 +156,61 @@ TEST_CASE("4:3 letterboxes a 5:4 frame to 960 lines; Full fills it") {
     CHECK(full.disVbSt - full.disVbSp == 1026); // the program's whole window
 }
 
+GeometryAdjust integer(Aspect a = Aspect::FourThree) {
+    GeometryAdjust adj = aspect(a);
+    adj.integer = true;
+    return adj;
+}
+
+TEST_CASE("integer scale shows 240p at exactly four lines per line on 1080p") {
+    Rig r(tv5725::ProgramId::Ntsc1080p, Standard::Ntsc);
+    const GeometryRegs plain = r.at({});
+    const GeometryRegs g = r.at(integer());
+    CHECK(plain.vscale == 455); // 4.5x
+    CHECK(g.vscale == 512);     // 4x: each doubled line twice
+    // The window holds the program's capture (482 doubled lines) at the new scale, centred.
+    const int captured = (plain.disVbSt - plain.disVbSp) * plain.vscale / 1024;
+    CHECK(g.disVbSt - g.disVbSp == 2 * captured);
+    CHECK((g.disVbSt + g.disVbSp) / 2 == (plain.disVbSt + plain.disVbSp) / 2);
+    // 4:3 of the smaller height would need fewer output units than 1:1 gives: the scaler only
+    // enlarges, so on 1080p's own line the width stays (a longer line would make it fit).
+    CHECK(plain.hscale == 1024);
+    CHECK(g.hscale == 1024);
+    // Vertical size cannot undo the multiple; horizontal size still applies.
+    GeometryAdjust taller = integer();
+    taller.vSize = 20;
+    CHECK(r.at(taller) == g);
+    GeometryAdjust wider = integer();
+    wider.hSize = 40;
+    CHECK(r.at(wider).hscale < g.hscale);
+    // 16:9 keeps the multiple and narrows with the height, within the scaler's reach.
+    const GeometryRegs wide = r.at(integer(Aspect::SixteenNine));
+    CHECK(wide.vscale == 512);
+    CHECK(wide.hscale == doctest::Approx(769.0 * 1080 / 960).epsilon(0.005));
+}
+
+TEST_CASE("integer scale changes nothing where the program is already a whole multiple") {
+    Rig r720(tv5725::ProgramId::Ntsc720p, Standard::Ntsc); // 3x
+    CHECK(r720.at(integer()) == r720.at({}));
+    Rig r960(tv5725::ProgramId::Ntsc960p, Standard::Ntsc); // 4x
+    CHECK(r960.at(integer()) == r960.at({}));
+    Rig r1024(tv5725::ProgramId::Ntsc1024p, Standard::Ntsc); // 4:3 is already 960 lines
+    CHECK(r1024.at(integer()) == r1024.at({}));
+}
+
+TEST_CASE("integer scale shows 288p at three lines per line on PAL 1080p, two on 720p") {
+    Rig r(tv5725::ProgramId::Pal1080p, Standard::Pal, 625);
+    CHECK(r.at(integer()).vscale == 683); // 1024 x 576 / 864: the nearest the divisor gets to 3x
+    Rig r720(tv5725::ProgramId::Pal720p, Standard::Pal, 625);
+    const GeometryRegs plain = r720.at({});
+    const GeometryRegs g = r720.at(integer());
+    CHECK(g.vscale == 1024);        // 2x exactly: the doubled lines unscaled
+    CHECK(g.hscale > plain.hscale); // 4:3 of the smaller height: narrower
+    // At least the source's full 576 lines (the program captures fewer).
+    const int captured = (plain.disVbSt - plain.disVbSp) * plain.vscale / 1024;
+    CHECK(g.disVbSt - g.disVbSp == doctest::Approx(captured > 576 ? captured : 576).epsilon(0.002));
+}
+
 TEST_CASE("position moves the whole window; the content stays the same") {
     Rig r(tv5725::ProgramId::Ntsc960p, Standard::Ntsc);
     GeometryAdjust adj;

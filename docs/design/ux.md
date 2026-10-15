@@ -30,10 +30,11 @@ help in every language, and the milestone that delivers it. Identifiers below ar
 
 | Id | Label | Values (default first) | Tier | Milestone |
 |---|---|---|---|---|
-| `output.resolution` | Output resolution | **Auto** (960p for 60 Hz sources, 1024p for 50 Hz), 1080p, 1280×1024, 1280×960, 720p, 480p/576p, 15 kHz, Passthrough | Essential | M1 |
+| `output.resolution` | Output resolution | **Auto** (960p for 60 Hz sources, 1024p for 50 Hz), 1080p, 1280×1024, 1280×960, 720p, 480p/576p, 15 kHz, Passthrough (exp.); M2: 1024×768, 800×600, 1600×1200, 1920×1200 (exp., [ADR 0015](../adr/0015-computed-modes-on-the-1080p-program.md)) | Essential | M1 |
 | `output.frameLock` | Frame lock | **On** (output rate follows the source via the clock generator), Off (fixed 60/50 Hz) | Essential | M1 |
 | `output.force60` | Force 60 Hz | **Off**, On (50 Hz sources output at 60 Hz) | Advanced | M2 |
 | `output.aspect` | Aspect | **4:3**, 16:9, Full | Essential | M2 |
+| `output.integerScale` | Integer scale | **Off**, On (the source's lines at a whole multiple; vertical size then has no effect) | Essential | M2 |
 | `output.hPosition` / `vPosition` | Position | −64…+64, **0** | Essential | M2 |
 | `output.hSize` / `vSize` | Size | −64…+64, **0** | Advanced | M2 |
 

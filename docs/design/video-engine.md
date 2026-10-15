@@ -270,8 +270,9 @@ axis.
 **Limits.**
 
 - The scaler only enlarges horizontally; at 1080p the programs are already 1:1, so horizontal size
-  below 0 does nothing there, and PAL at 1080p stays 10 % wider than 4:3 (measured,
-  [M2](../bench/M2.md#2026-10-14--geometry-with-a-pal-source)).
+  below 0 does nothing there, and PAL at 1080p was 10 % wider than 4:3 (measured,
+  [M2](../bench/M2.md#2026-10-14--geometry-with-a-pal-source)) until the loader drew a longer line
+  for it ([Computed modes](#computed-modes-and-the-longer-line)).
 - Horizontal size stops at 2× (divisor 512), or at the shape's own divisor where that is lower
   (480p's 4:3 needs 478, measured clean): at 1280x960, divisors under 512 displaced lines
   ([M2](../bench/M2.md#2026-10-14--geometry-on-the-board)).
@@ -349,11 +350,39 @@ the adoption watchdog stands down. The frame memory then shows one source frame 
   instead, gbs-control `applyPresets`), and the PAL capture start (first active line) applies on
   the 60 Hz programs too. The vertical window shows at least the source's full height.
 - At 1080p the 60 Hz program samples each line less than the 50 Hz one, which brings a PAL picture
-  to true 4:3 (divisor 1019) where the 50 Hz program stays 10 % wide.
+  to true 4:3 (divisor 1019); the 50 Hz program now gets there with a longer line
+  ([Computed modes](#computed-modes-and-the-longer-line)).
 - Changing it reloads a showing 50 Hz source, and it arms the timed revert (a display that takes
   neither rate loses the picture).
 - `output.blankOnChange` was dropped (user decision 2026-10-14): every reload already blanks the
   output, and blanking the DAC around the 240p↔480i switch risks the HDMI converter re-locking.
+
+## Computed modes and the longer line
+
+Decided in [ADR 0015](../adr/0015-computed-modes-on-the-1080p-program.md); bench evidence in
+[bench M2](../bench/M2.md) ("Custom timings: bench spike" and "Computed modes").
+
+- **Rasters** (`video/raster.*`, pure): a standard timing (VESA DMT, CVT-RB, CEA-861) drawn with
+  `hUnits` output units per line on a loaded program's capture. Totals are written as total − 1,
+  the HSync starts at unit 8 and the VSync at line 1, and a negative pulse is ST > SP (the chip
+  has no polarity bit). The geometry baseline's window is the timing's active area, holding the
+  donor's capture, with the donor's fetch distances; it carries the converter's frame (active
+  share, lines, shape) so aspect, integer scale, position and size work as on a program.
+- **Loader** (`Engine::applyLineShape`, after the post-load and the baseline read):
+  - an extra mode loads the 1080p program of the source's family and writes the raster drawn for
+    the fastest internal clock code that leaves a 4:3 picture a divisor of 683 or more (16:9 keeps
+    512), at 60 Hz (50 Hz for PAL) on that code alone; when no code reaches 683 the slowest one
+    that still fits the capture is used, and when none fits the 1080p program stays as it is. The
+    generator is parked at the code and the frame lock trims it to the source;
+  - otherwise, when the picture would need to be more than 2 % narrower than 1:1 (PAL 4:3 or
+    integer scale at 1080p), the program's own layout is scaled to the same line in more units on
+    the lowest faster code that leaves the divisor 1 % under 1:1.
+- `programBase_` keeps the program's own baseline; a geometry change that crosses the 2 % point
+  requests a reload so the loader draws the right line. Frame lock off releases to the code in
+  effect (`displayClock_`), not the program's.
+- Measured: one apply, frame-locked from the first adoption; 64.65–130.16 MHz in use (bench M2,
+  "Computed modes"); the only defect seen (a stray column) was at a divisor below 512, which the
+  code-choice rule avoids.
 
 ## Pass-through (experimental)
 
@@ -390,6 +419,8 @@ Passthrough, the board settles in bypass and holds sync; HDMI showed no picture.
 | 480p / 576p | NTSC 480 / PAL 576 | line doubling only |
 | 15 kHz | NTSC/PAL downscale | for CRTs, from 31 kHz sources |
 | Passthrough *(experimental)* | HD or RGBHV bypass | HD and PC sources always; any source by choice |
+| 1024x768, 800x600 *(experimental)* | NTSC/PAL 1080p + computed raster | VESA DMT; [Computed modes](#computed-modes-and-the-longer-line) |
+| 1600x1200, 1920x1200 *(experimental)* | NTSC/PAL 1080p + computed raster | CVT reduced blanking; the bench TV reported 1920x1200 (bench M2) |
 
 ## Safety rules
 

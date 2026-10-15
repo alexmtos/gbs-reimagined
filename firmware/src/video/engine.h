@@ -13,6 +13,7 @@
 #include "video/ops.h"
 #include "video/picture.h"
 #include "video/pixel_clock.h"
+#include "video/raster.h"
 #include "video/scanlines.h"
 #include "video/sense.h"
 #include "video/tuning.h"
@@ -160,6 +161,10 @@ private:
     void loopLevel();
     void lockFrameRate();
     void applyGeometry();
+    // An extra mode's raster, or a longer line for a picture the program's own cannot narrow
+    // (ADR 0015); right after the post-load, before the generator is parked.
+    void applyLineShape(Standard standard);
+    static bool rasterMode(OutputMode m);
     void followScanlines();
     void scanlinesOff();
     void applyLpf();
@@ -205,6 +210,9 @@ private:
     uint8_t baseGain_[2][3] = {{0x7B, 0x7B, 0x7B}, {0x7B, 0x7B, 0x7B}};
     uint16_t levelsSequence_ = 0;
     SourceListener* listener_ = nullptr;
+    GeometryBase programBase_; // the loaded program's own, before any line shape
+    uint8_t programClock_ = 0; // the loaded program's display clock code
+    uint8_t displayClock_ = 0; // the code in effect: the program's, or a line shape's
     EngineStatus status_;
 
     OutputMode outputPref_ = OutputMode::Auto;

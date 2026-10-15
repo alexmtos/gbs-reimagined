@@ -400,6 +400,7 @@ void Controller::apply(Id id) {
     case Id::OutputVPosition:
     case Id::OutputHSize:
     case Id::OutputVSize:
+    case Id::OutputIntegerScale:
         applyGeometry();
         break;
     case Id::InputSyncThreshold:
@@ -439,6 +440,7 @@ void Controller::applyGeometry() {
     adj.vPosition = static_cast<int8_t>(store_.get(Id::OutputVPosition));
     adj.hSize = static_cast<int8_t>(store_.get(Id::OutputHSize));
     adj.vSize = static_cast<int8_t>(store_.get(Id::OutputVSize));
+    adj.integer = store_.get(Id::OutputIntegerScale) != 0;
     video_.setGeometry(adj);
 }
 

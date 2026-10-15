@@ -26,7 +26,9 @@ groups: [output, input, picture, system]
 settings:
   output.resolution:
     type: enum
-    values: [auto, r1080p, r1024p, r960p, r720p, r480p, r15khz, passthrough]
+    # New values go at the end: settings store the index.
+    values: [auto, r1080p, r1024p, r960p, r720p, r480p, r15khz, passthrough, r1024x768, r800x600,
+             r1600x1200, r1920x1200]
     default: auto
     tier: essential
     milestone: M1
@@ -47,6 +49,11 @@ settings:
     type: enum
     values: [a4x3, a16x9, full]
     default: a4x3
+    tier: essential
+    milestone: M2
+  output.integerScale:
+    type: bool
+    default: false
     tier: essential
     milestone: M2
   output.hPosition:
