@@ -93,7 +93,8 @@ TEST_CASE("the revert window follows system.revertSeconds") {
 TEST_CASE("pending settings and out-of-range values are refused") {
     Rig r;
     r.ctl.begin(false, 0);
-    CHECK(r.ctl.set(Id::OutputForce60, 1, Origin::Web, 0) == Controller::Outcome::Unavailable);
+    CHECK(r.ctl.set(Id::SystemStartupProfile, 3, Origin::Web, 0) ==
+          Controller::Outcome::Unavailable);
     CHECK(r.ctl.set(Id::PictureContrast, 50, Origin::Web, 0) == Controller::Outcome::Invalid);
     CHECK(r.ctl.set(Id::PictureContrast, 0, Origin::Web, 0) == Controller::Outcome::Unchanged);
 }
@@ -137,6 +138,14 @@ TEST_CASE("the sampling settings reach the video path, Auto as -1 and 0") {
     CHECK(r.ctl.set(Id::InputPhase, 20, Origin::Web, 0) == Controller::Outcome::Applied);
     CHECK(r.video.sampling.sog == 9);
     CHECK(r.video.sampling.phase == 20);
+}
+
+TEST_CASE("force 60 Hz reaches the video path and asks for confirmation") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    CHECK_FALSE(r.video.force60);
+    CHECK(r.ctl.set(Id::OutputForce60, 1, Origin::Web, 0) == Controller::Outcome::RevertArmed);
+    CHECK(r.video.force60);
 }
 
 TEST_CASE("safe mode ignores the saved settings, outputs 480p and saves nothing") {

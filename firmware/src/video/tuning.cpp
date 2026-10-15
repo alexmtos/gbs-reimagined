@@ -200,6 +200,14 @@ void fitPalVertical(Ops& ops, const PathContext& ctx) {
         {0x14, 0},   // 576p: 1:1 already; the capture started at 42, cutting the top (M2)
     };
     constexpr uint16_t kFirstActiveLine = 16; // IF_VB_ST; the stop is two lines later
+    if (ctx.presetId < 0x10 && ctx.presetId != 0x06) {
+        // A 60 Hz program with a 50 Hz source (output.force60): the geometry sets the scale for
+        // 576 lines; the capture starts at the first active line as on the 50 Hz programs.
+        tv5725::Chip& chip = ops.chip();
+        chip.write(IF_VB_ST, kFirstActiveLine);
+        chip.write(IF_VB_SP, kFirstActiveLine + 2);
+        return;
+    }
     for (const Fit& f : kFits) {
         if (f.presetId != ctx.presetId) {
             continue;

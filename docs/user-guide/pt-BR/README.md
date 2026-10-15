@@ -116,6 +116,11 @@ Algumas combinações não têm efeito, porque o scaler não consegue fazê-las 
 Em 1080p, consoles PAL aparecem cerca de 10 % mais largos que 4:3, pelo mesmo motivo; escolha 720p
 ou 1280x1024 para uma imagem 4:3 exata.
 
+Forçar 60 Hz (na aba **Saída**, ajustes avançados) é para telas que não aceitam 50 Hz: um console
+PAL passa a ser mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá
+pequenos trancos (um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita
+50 Hz. Em 1080p ele também dá aos jogos PAL a largura 4:3 exata.
+
 ## Scanlines e desentrelaçador
 
 Na aba **Imagem**:

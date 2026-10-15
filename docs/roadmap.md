@@ -35,13 +35,14 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 - Profiles with auto-load by input signature, SVS/remote triggers, import/export
 - Scanlines, deinterlacer choice, sharpness levels, geometry (aspect, position, size)
 - Advanced sampling controls (phase, SOG threshold, gain, LPF) with live sync feedback
-- Force 60 Hz, blank on mode change
+- Force 60 Hz
 - Experimental: custom output timings (ADR 0004)
 - **Gate:** each setting verified on the capture card to do what its help text says.
 - **Progress:** geometry (aspect, position, size) verified with NTSC and PAL sources on every
   output, 2026-10-14; scanlines, the deinterlacer choice and the sampling controls (SOG threshold,
-  ADC phase, input filter, live sync quality) verified the same day ([bench M2](bench/M2.md)). Gain
-  is M1's calibrate levels and auto gain.
+  ADC phase, input filter, live sync quality) and Force 60 Hz verified the same day
+  ([bench M2](bench/M2.md)). Gain is M1's calibrate levels and auto gain; "blank on mode change"
+  was dropped (user decision).
 
 ## M3 — Distribution
 

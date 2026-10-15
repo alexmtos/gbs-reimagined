@@ -58,6 +58,17 @@ TEST_CASE("576p keeps its 1:1 scale and starts at the first active line") {
     CHECK(r.chip.get(IF_VB_SP) == 18);
 }
 
+TEST_CASE("a 50 Hz source forced onto a 60 Hz program starts at the first active line") {
+    Rig r(video::Standard::Pal, 0x05); // ntsc-1080p, output.force60
+    video::fitPalVertical(r.ops, r.ctx);
+    CHECK(r.chip.get(IF_VB_ST) == 16);
+    CHECK(r.chip.get(IF_VB_SP) == 18);
+    CHECK(r.chip.get(VDS_VSCALE) == 512); // the geometry sets the scale for 576 lines
+    Rig r15(video::Standard::Pal, 0x06);  // the 15 kHz program stays as it is
+    video::fitPalVertical(r15.ops, r15.ctx);
+    CHECK(r15.chip.get(IF_VB_ST) == 38);
+}
+
 TEST_CASE("NTSC, the unmeasured 15 kHz PAL program and the bypass are left alone") {
     Rig ntsc(video::Standard::Ntsc, 0x05);
     video::fitPalVertical(ntsc.ops, ntsc.ctx);

@@ -333,6 +333,24 @@ sampling, with a live sync-quality reading.
   ([M2](../bench/M2.md#2026-10-14--sampling-controls)). Automatic SOG decisions (the guard, the
   detection walk, the settle-time search, the SD bump) stand down under a fixed threshold.
 
+## Force 60 Hz
+
+`output.force60`. A 50 Hz source loads the 60 Hz program of the chosen output (Auto picks 1280x960,
+the 60 Hz family's choice) and runs on that program's own clock: no frame lock can follow a 50 Hz
+source at 60 Hz (its ratio, 0.83, is outside what the lock accepts), so the clock is not adopted and
+the adoption watchdog stands down. The frame memory then shows one source frame in five twice.
+
+- The source keeps its own standard for the tuning, the deinterlacer and the geometry, so the
+  geometry fits all 576 lines into the 60 Hz raster (the reference crops them to the NTSC height
+  instead, gbs-control `applyPresets`), and the PAL capture start (first active line) applies on
+  the 60 Hz programs too. The vertical window shows at least the source's full height.
+- At 1080p the 60 Hz program samples each line less than the 50 Hz one, which brings a PAL picture
+  to true 4:3 (divisor 1019) where the 50 Hz program stays 10 % wide.
+- Changing it reloads a showing 50 Hz source, and it arms the timed revert (a display that takes
+  neither rate loses the picture).
+- `output.blankOnChange` was dropped (user decision 2026-10-14): every reload already blanks the
+  output, and blanking the DAC around the 240p↔480i switch risks the HDMI converter re-locking.
+
 ## Pass-through (experimental)
 
 Written from the community firmware's sequences (mechanics §6.5, §5.6) and **not yet verified on

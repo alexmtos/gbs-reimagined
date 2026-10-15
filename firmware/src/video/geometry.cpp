@@ -265,7 +265,12 @@ GeometryRegs computeGeometry(const GeometryBase& b, const GeometryAdjust& adj, u
     // (the frame memory holds one frame from the capture start); moving the fetch blanking with
     // the window letterboxed cleanly (docs/bench/M2.md).
     const int32_t h0 = b.disVbSt - b.disVbSp;
-    const int32_t k0 = divRound(static_cast<int64_t>(h0) * b.vscale, 1024);
+    int32_t k0 = divRound(static_cast<int64_t>(h0) * b.vscale, 1024);
+    if (b.fullHeight > k0 && b.width43 != 0 && frameFor(b.presetId, f)) {
+        // At least the source's full height: a 50 Hz source on a 60 Hz program (output.force60)
+        // brings 576 lines where the program captures 482 (bench, docs/bench/M2.md).
+        k0 = b.fullHeight;
+    }
     int32_t h = divRound(static_cast<int64_t>(k0) * 1024, vs);
     h = clampTo(h, kMinWindow, h0);
     const int32_t k = divRound(static_cast<int64_t>(h) * vs, 1024);
