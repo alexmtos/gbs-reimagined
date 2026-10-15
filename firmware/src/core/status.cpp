@@ -202,20 +202,30 @@ InputSignature detectedSource(const video::DetectedSource& d) {
 
 size_t statusJson(const StatusModel& m, const char* version, const char* schema, char* buf,
                   size_t cap) {
-    static const char* const kPort[] = {"component", "rgb", "none"};
-    static const char* const kSync[] = {"none", "hv", "csync"};
-    static const char* const kLock[] = {"locked", "inactive", "off"};
-    // FrameLockReason and video::GainCalibrator::Outcome, as the web reads them.
-    static const char* const kReason[] = {"",           "noSignal",   "passthrough", "force60",
-                                          "noClockGen", "outOfRange", "locking"};
-    static const char* const kLevels[] = {"none",     "running", "done",
-                                          "notWhite", "tooHot",  "aborted"};
+    // The JSON's words, in flash (fixed-width rows), copied out one at a time. Reasons follow
+    // FrameLockReason and levels video::GainCalibrator::Outcome, as the web reads them.
+    static const char kPort[][10] PROGMEM = {"component", "rgb", "none"};
+    static const char kSync[][6] PROGMEM = {"none", "hv", "csync"};
+    static const char kLock[][9] PROGMEM = {"locked", "inactive", "off"};
+    static const char kReason[][12] PROGMEM = {"",           "noSignal",   "passthrough", "force60",
+                                               "noClockGen", "outOfRange", "locking"};
+    static const char kLevels[][9] PROGMEM = {"none",     "running", "done",
+                                              "notWhite", "tooHot",  "aborted"};
+    const bool source = m.sync != video::SyncType::None;
+    char port[10];
+    char sync[6];
+    char lock[9];
+    char levels[9];
+    strncpy_P(port, kPort[source ? static_cast<uint8_t>(m.port) % 2 : 2], sizeof port);
+    strncpy_P(sync, kSync[static_cast<uint8_t>(m.sync) % 3], sizeof sync);
+    strncpy_P(lock, kLock[static_cast<uint8_t>(m.frameLock) % 3], sizeof lock);
+    strncpy_P(levels, kLevels[m.levelCalibration % 6], sizeof levels);
     char reason[40] = "";
     if (m.lockReason != FrameLockReason::None) {
-        snprintf_P(reason, sizeof reason, PSTR(",\"frameLockReason\":\"%s\""),
-                   kReason[static_cast<uint8_t>(m.lockReason) % 7]);
+        char word[12];
+        strncpy_P(word, kReason[static_cast<uint8_t>(m.lockReason) % 7], sizeof word);
+        snprintf_P(reason, sizeof reason, PSTR(",\"frameLockReason\":\"%s\""), word);
     }
-    const bool source = m.sync != video::SyncType::None;
     char quality[8] = "null";
     if (m.syncQuality <= 100) {
         snprintf(quality, sizeof quality, "%u", m.syncQuality);
@@ -247,17 +257,14 @@ size_t statusJson(const StatusModel& m, const char* version, const char* schema,
              "\"heapMin\":%lu,\"rssi\":%d,\"ip\":\"%u.%u.%u.%u\",\"scaler\":%s,\"clockGen\":%s},"
              "\"profile\":%s%s}"),
         static_cast<unsigned long>(m.seq), headlineCode(m.headline), m.safeMode ? "true" : "false",
-        m.settingsSeq, kLevels[m.levelCalibration % 6],
-        source ? kPort[static_cast<uint8_t>(m.port) % 3] : "none",
-        kSync[static_cast<uint8_t>(m.sync) % 3], standardText(m.standard, m.interlaced), m.lines,
+        m.settingsSeq, levels, port, sync, standardText(m.standard, m.interlaced), m.lines,
         m.interlaced ? "true" : "false", static_cast<unsigned long>(m.hHz / 1000),
         static_cast<unsigned long>(m.hHz % 1000), static_cast<unsigned long>(m.vMilliHz / 1000),
         static_cast<unsigned long>(m.vMilliHz % 1000), m.sogLevel, m.phase, quality,
         outputModeId(m.mode), static_cast<unsigned long>(m.pixelClockHz / 1'000'000),
         static_cast<unsigned long>(m.pixelClockHz / 1000 % 1000),
         static_cast<unsigned long>(m.rateMilliHz / 1000),
-        static_cast<unsigned long>(m.rateMilliHz % 1000),
-        kLock[static_cast<uint8_t>(m.frameLock) % 3], reason, version, schema,
+        static_cast<unsigned long>(m.rateMilliHz % 1000), lock, reason, version, schema,
         static_cast<unsigned long>(m.board.uptimeS), static_cast<unsigned long>(m.board.heapFree),
         static_cast<unsigned long>(m.board.heapMin), m.board.rssi, m.board.ip & 0xFF,
         m.board.ip >> 8 & 0xFF, m.board.ip >> 16 & 0xFF, m.board.ip >> 24,
