@@ -2,7 +2,14 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { runCommand, scanWifi } from "../src/api/endpoints";
 import { handlers, resetDevice } from "../src/mocks/handlers";
-import { changeSetting, fieldState, loadSettings, values } from "../src/state/settings";
+import {
+  changeSetting,
+  fieldState,
+  loadSettings,
+  setShowAdvanced,
+  showAdvanced,
+  values,
+} from "../src/state/settings";
 import { pollOnce, status } from "../src/state/status";
 
 const server = setupServer(...handlers);
@@ -70,5 +77,15 @@ describe("commands and network", () => {
     const done = await scanWifi();
     expect(done.scanning).toBe(false);
     expect(done.networks?.[0]?.ssid).toBe("Home");
+  });
+
+  it("the advanced switch is the board's setting: off by default, kept once turned on", async () => {
+    await loadSettings();
+    expect(showAdvanced.value).toBe(false);
+    expect(await setShowAdvanced(true)).toBe("applied");
+    expect(showAdvanced.value).toBe(true);
+    await loadSettings();
+    expect(values.value["system.showAdvanced"]).toBe("on");
+    expect(showAdvanced.value).toBe(true);
   });
 });

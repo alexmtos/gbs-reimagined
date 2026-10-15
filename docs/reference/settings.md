@@ -48,5 +48,5 @@ Schema hash `59acd3c6`. Every user-facing setting, as defined in `schema/setting
 | `system.oledSaver` | Display saver | Off, 1 min, 3 min, 5 min, 10 min | 5 min | advanced | M1 | Turns the display off after a period without use, to protect the OLED from burn-in. |
 | `system.encoderReverse` | Reverse knob | off, on | off | advanced | M1 | Swaps the direction of the knob. |
 | `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change that could leave the screen black before it is undone. |
-| `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings for sampling, sync and diagnostics. |
+| `system.showAdvanced` | Show advanced | off, on | off | essential | M1 | Shows the settings for sampling, sync and diagnostics, on the web page and in the board's menu. The switch at the bottom of every page is this same setting. |
 | `system.startupProfile` | Startup profile | -1…16 (-1 = Last used) (0 = Auto by input) | -1 | essential | M2 | Which profile is in use when the board starts. Last used keeps the one you had, unsaved changes included, unless another console's profile matches the first picture; Auto by input always loads the profile that matches; a number loads that profile. |

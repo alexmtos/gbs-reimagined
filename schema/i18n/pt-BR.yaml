@@ -204,7 +204,9 @@ settings:
   system.showAdvanced:
     label: Mostrar avançado
     hint: Ajustes técnicos
-    help: Mostra os ajustes de amostragem, sincronismo e diagnóstico.
+    help: >-
+      Mostra os ajustes de amostragem, sincronismo e diagnóstico, na página web e no menu da
+      placa. A chave no fim de cada página é este mesmo ajuste.
   system.startupProfile:
     label: Perfil inicial
     hint: Carregado ao ligar

@@ -163,7 +163,8 @@ On the **Output** page:
   1080p and 1280x960.
 - **Horizontal size** and **Vertical size** — make the picture bigger or smaller, about half a
   percent per step. They are advanced settings: turn on **Show advanced settings** at the bottom of
-  the page. A picture bigger than the screen is cut at the edges.
+  the page. It is the same setting as **Show advanced** on the **System** page: it stays on, and
+  the board's menu shows them too. A picture bigger than the screen is cut at the edges.
 
 Some combinations have no effect, because the scaler cannot do them cleanly:
 

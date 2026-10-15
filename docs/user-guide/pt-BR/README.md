@@ -162,8 +162,9 @@ Na aba **Saída**:
   múltiplo é contado nas linhas 240p (ou 288p) do console, então um menu 480i só fica exato em
   1080p e 1280x960.
 - **Largura** e **Altura** — aumentam ou diminuem a imagem, cerca de meio por cento por passo. São
-  ajustes avançados: ligue **Mostrar ajustes avançados**, no fim da página. Uma imagem maior que a
-  tela é cortada nas bordas.
+  ajustes avançados: ligue **Mostrar ajustes avançados**, no fim da página. É o mesmo ajuste que
+  **Mostrar avançado** na aba **Sistema**: fica ligado, e o menu da placa também os mostra. Uma
+  imagem maior que a tela é cortada nas bordas.
 
 Algumas combinações não têm efeito, porque o scaler não consegue fazê-las sem defeito:
 
