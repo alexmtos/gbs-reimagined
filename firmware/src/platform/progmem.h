@@ -22,6 +22,7 @@
 #define pgm_read_ptr(addr) (*reinterpret_cast<const void* const*>(addr))
 #define memcpy_P memcpy
 #define strcmp_P strcmp
+#define strncmp_P strncmp
 #define strcasecmp_P strcasecmp
 #define strlen_P strlen
 #define strncpy_P strncpy

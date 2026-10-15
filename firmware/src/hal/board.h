@@ -8,6 +8,8 @@ namespace gbsr::hal {
 // the build selects it with -DGBSR_BOARD_<NAME>. See docs/hardware/board-gbsc.md.
 struct BoardProfile {
     const char* name;
+    // What update files name this board by (core/update_check.h, tools/release/ota_image.py).
+    const char* id;
 
     // I2C bus shared by the scaler, the clock generator and the display.
     uint8_t pinSda;
@@ -40,6 +42,7 @@ struct BoardProfile {
 // RetroScaler GBS-C: TV5725 + Si5351 + SSD1306 + encoder + MS9288A on one PCB, ESP-12F module.
 inline constexpr BoardProfile kBoardGbsc{
     "RetroScaler GBS-C",
+    /*id*/ "gbsc",
     /*pinSda*/ 4,
     /*pinScl*/ 5,
     /*i2cClockHz*/ 400'000,

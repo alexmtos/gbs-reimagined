@@ -227,6 +227,28 @@ os perfis. Há 16 posições.
   `curl -d "remote prof3" http://gbs.local/api/svs`. Ligar um seletor direto nos pinos seriais
   internos da placa não é suportado: essa linha também leva as mensagens da própria placa.
 
+## Atualizando o firmware
+
+Versões novas mantêm seus ajustes, perfis, calibração de níveis e Wi-Fi. Na página web, abra
+**Sistema** → **Atualização do firmware**:
+
+- **Procurar atualizações** procura uma versão mais nova no site do projeto, baixa, confere se
+  chegou inteira e instala. O computador ou celular que mostra a página precisa estar na internet.
+  Marque **Incluir versões beta** para receber também versões de teste. (O site abre com a
+  primeira versão pública; até lá, atualize a partir de um arquivo.)
+- Ou instale a partir de um arquivo: baixe o arquivo terminado em **.ota.bin.gz** de uma versão
+  publicada, escolha-o em **Atualizar a partir de um arquivo** e toque em **Instalar**. O outro
+  arquivo, terminado só em **.bin**, é para o instalador pelo navegador, e a placa o recusa aqui.
+
+O envio leva alguns segundos. Depois a placa reinicia sozinha, e a imagem e a página voltam em
+cerca de 20 segundos. Deixe a placa ligada nesse tempo: se faltar energia enquanto ela copia a nova
+versão, pode ser preciso instalar de novo pelo navegador, pela USB (escolha a mesma versão e não
+apague a placa, para manter seus ajustes).
+
+Antes de gravar qualquer coisa, a placa confere se o arquivo foi feito para ela, e recusa um feito
+para outra placa. **Procurar atualizações** também recusa um download que chegou danificado. Se
+uma atualização não for concluída, a placa continua com a versão que tinha.
+
 ## Console serial (avançado)
 
 Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 baud**. Digite
@@ -250,4 +272,4 @@ Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 
 2. Escolhendo a resolução de saída para a sua tela
 3. Ajustes de imagem
 4. Solução de problemas, pela mensagem que a placa mostra
-5. Atualizando e restaurando
+5. Restaurando uma cópia

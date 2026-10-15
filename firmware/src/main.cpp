@@ -138,7 +138,7 @@ void serviceKnobAndOled(uint32_t now) {
     menu.render(frame, now);
     oled.show(frame);
     if (menu.rebootRequested() && rebootAtMs == 0) {
-        rebootAtMs = now + 500;
+        rebootAtMs = millis() + 500;
     }
 }
 
@@ -210,9 +210,11 @@ void loop() {
     }
     serviceKnobAndOled(now);
     if (web.rebootRequested() && rebootAtMs == 0) {
-        rebootAtMs = now + 300; // let the answer reach the browser first
+        // Let the answer reach the browser first. From now, not from the pass's start: a firmware
+        // upload keeps web.tick() busy for seconds, and the answer was lost (bench M3).
+        rebootAtMs = millis() + 500;
     }
-    if (rebootAtMs != 0 && static_cast<int32_t>(now - rebootAtMs) >= 0) {
+    if (rebootAtMs != 0 && static_cast<int32_t>(millis() - rebootAtMs) >= 0) {
         ESP.restart();
     }
     if (now - lastTickMs >= kVideoTickMs) {

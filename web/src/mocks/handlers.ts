@@ -402,6 +402,27 @@ export const handlers = [
     return HttpResponse.json({ ok: true, result: "loaded" });
   }),
 
+  // Firmware update: the board reads the gzip header's comment before writing (ADR 0012).
+  http.post("/api/update", async ({ request }) => {
+    const form = await request.formData();
+    const file = form.get("file");
+    if (!(file instanceof Blob)) {
+      return HttpResponse.json({ ok: false, reason: "noFile" }, { status: 400 });
+    }
+    const head = new Uint8Array(await file.slice(0, 256).arrayBuffer());
+    if (head[0] !== 0x1f || head[1] !== 0x8b) {
+      return HttpResponse.json({ ok: false, reason: "notGzip" }, { status: 400 });
+    }
+    const text = new TextDecoder("latin1").decode(head);
+    const board = /gbsr board=(\S+)/.exec(text)?.[1];
+    if (!board) return HttpResponse.json({ ok: false, reason: "noBoardId" }, { status: 400 });
+    if (board !== "gbsc") {
+      return HttpResponse.json({ ok: false, reason: "wrongBoard" }, { status: 400 });
+    }
+    const version = /version=([^\s\0]+)/.exec(text)?.[1] ?? "";
+    return HttpResponse.json({ ok: true, version });
+  }),
+
   http.get("/api/wifi", () => HttpResponse.json(device.wifi)),
 
   http.post("/api/wifi", async ({ request }) => {
