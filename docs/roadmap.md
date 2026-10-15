@@ -50,7 +50,8 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 ## M3 — Distribution
 
 - Browser installer (ESP Web Tools) and OTA update from the web UI preserving settings and profiles
-- Signed release images, release automation, changelog
+- Release automation, changelog and SHA-256 sums; image signing is supported but not enforced in
+  v1 ([ADR 0012](adr/0012-distribution-and-releases.md))
 - User guide in English and Brazilian Portuguese; troubleshooting by status headline
 - **Gate:** a blank board is installed from the browser, joins Wi-Fi and shows a picture following
   only the user guide.
