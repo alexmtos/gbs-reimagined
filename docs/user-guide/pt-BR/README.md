@@ -23,6 +23,10 @@ Você pode controlá-lo de três formas:
 A página web e a telinha da placa falam inglês ou português do Brasil. Escolha o idioma no alto da
 página web, ou em **Sistema → Idioma** no menu da placa; os dois mudam juntos.
 
+Na página web, um ajuste que não tem efeito no momento (por exemplo a força das scanlines com as
+scanlines desligadas) fica esmaecido e diz por quê, e **Padrão**, ao lado de um ajuste mudado,
+devolve o valor padrão.
+
 ## Instalando pelo navegador
 
 Você precisa da placa, de um computador com **Chrome** ou **Edge** (celulares e tablets não
@@ -31,10 +35,10 @@ firmware que a placa tem agora, por exemplo o GBS-Control; os ajustes dele não 
 
 1. Ligue a placa como de costume e conecte a porta micro-USB dela ao computador. A telinha acende
    como sempre.
-2. Abra **https://alexmtos.github.io/gbs-reimagined/** e clique em **Instalar**. Escolha a
-   porta chamada **USB-SERIAL CH340** (ou parecida) e clique em **Conectar**. A janela do instalador abre e
-   oferece **Install GBS Reimagined**. Se nenhuma porta aparecer, veja
-   [Se a instalação não funcionar](#se-a-instalação-não-funcionar).
+2. Abra **https://alexmtos.github.io/gbs-reimagined/** e clique em **Instalar**. Escolha a porta
+   chamada **USB-SERIAL CH340** (ou parecida) e clique em **Conectar**. A janela do instalador abre
+   e oferece **Install GBS Reimagined**. Se nenhuma porta aparecer, veja [Se a instalação não
+   funcionar](#se-a-instalação-não-funcionar).
 3. A janela do instalador é em inglês. Escolha **Install GBS Reimagined** (instalar). Na primeira
    vez, marque **Erase device** (apagar o dispositivo), para não sobrar nada do firmware anterior,
    e escolha **Next** (próximo) e **Install**. Uma barra de progresso avança; não desconecte a
@@ -171,7 +175,9 @@ Na aba **Saída**:
 
 Algumas combinações não têm efeito, porque o scaler não consegue fazê-las sem defeito:
 
-- em **15 kHz (CRT)** só a posição funciona, e o **Passthrough** não usa nenhum desses ajustes;
+- em **15 kHz (CRT)** só a posição funciona, e o **Passthrough** não usa nenhum desses ajustes
+  (ele aparece na lista de resoluções com **Mostrar ajustes avançados** ligado: ainda não foi
+  verificado numa placa);
 - em **1080p** a imagem não pode ficar mais estreita do que no início;
 - em **1280x960**, **1280x1024** e **480p / 576p** ela não pode ficar mais larga do que no início,
   e em 480p / 576p também não pode ficar mais baixa.
@@ -180,20 +186,19 @@ Em 1080p, consoles PAL e a **Escala inteira** precisam de uma imagem mais estrei
 consegue fazer sozinho: a placa passa então a desenhar cada linha em passos mais finos, o que a sua
 tela não percebe, e a imagem sai na forma exata.
 
-As resoluções de saída marcadas com **(exp.)** — 1024x768, 800x600, 1600x1200 e 1920x1200 — são
-para monitores e TVs que preferem essas resoluções, como um monitor de PC 1920x1200 ou uma tela
-antiga 1024x768. Elas são calculadas a partir dos padrões de vídeo, e não tiradas do conjunto testado
-do scaler, e foram experimentadas numa placa e numa TV. Se a sua tela não mostrar nada depois de
+As resoluções de saída marcadas com **(exp.)** — 1024x768, 800x600, 1600x1200 e 1920x1200 — são para
+monitores e TVs que preferem essas resoluções, como um monitor de PC 1920x1200 ou uma tela antiga
+1024x768. Elas são calculadas a partir dos padrões de vídeo, e não tiradas do conjunto testado do
+scaler, e foram experimentadas numa placa e numa TV. Se a sua tela não mostrar nada depois de
 escolher uma delas pela página web ou pelo console serial, a placa volta à resolução anterior se
-você não confirmar (veja [Mudanças que pedem confirmação](#mudanças-que-pedem-confirmação)).
-Com um console PAL esses modos rodam a 50 Hz para manter o movimento suave; a saída HDMI da placa
-pode então mostrar a imagem um pouco estreita e deslocada para a direita. **Forçar 60 Hz** corrige
-a forma (com um pequeno tranco), ou ajuste a posição e o tamanho.
+você não confirmar (veja [Mudanças que pedem confirmação](#mudanças-que-pedem-confirmação)). Com um
+console PAL esses modos rodam a 50 Hz para manter o movimento suave; a saída HDMI da placa pode
+então mostrar a imagem um pouco estreita e deslocada para a direita. **Forçar 60 Hz** corrige a
+forma (com um pequeno tranco), ou ajuste a posição e o tamanho.
 
-Forçar 60 Hz (na aba **Saída**, ajustes avançados) é para telas que não aceitam 50 Hz: um console
-PAL passa a ser mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá
-pequenos trancos (um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita
-50 Hz.
+Forçar 60 Hz (na aba **Saída**) é para telas que não aceitam 50 Hz: um console PAL passa a ser
+mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá pequenos trancos
+(um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita 50 Hz.
 
 ## Scanlines e desentrelaçador
 
@@ -265,23 +270,24 @@ os perfis. Há 16 posições.
   entre 240p e 480i (ou 288p e 576i) nunca muda de perfil. Dois consoles que mandam exatamente o
   mesmo tipo de sinal na mesma entrada não podem ser distinguidos: carregue os perfis deles à mão ou
   use um seletor (abaixo).
-- **Perfil inicial** (na página **Perfis** e em **Sistema**): *Último usado* começa de onde você
-  parou, com as mudanças não salvas, a não ser que o perfil de outro console combine com a primeira
-  imagem; *Auto pela entrada* sempre carrega o perfil que combina; um perfil numerado é carregado
-  ao ligar.
+- **Perfil inicial** (na página **Perfis**; na placa, em **Sistema**): *Último usado* começa de onde
+  você parou, com as mudanças não salvas, a não ser que o perfil de outro console combine com a
+  primeira imagem; *Auto pela entrada* sempre carrega o perfil que combina; um perfil numerado é
+  carregado ao ligar.
 - **Exportar e importar:** **Exportar** salva um perfil num arquivo; escolha uma posição e importe
   o arquivo nela, nesta placa ou em outra.
-- **Cópia de segurança:** **Baixar uma cópia** salva todos os ajustes, a calibração de níveis e
-  todos os perfis num arquivo (nunca a senha do Wi-Fi). **Restaurar uma cópia** pede confirmação,
-  devolve o que o arquivo contém e diz o que não conseguiu; perfis em posições que o arquivo não
-  menciona ficam como estão. Os ajustes de saída restaurados esperam o **Manter**, como qualquer
-  mudança que possa apagar a tela. A restauração de fábrica mantém os perfis.
+- **Cópia de segurança** (na aba **Sistema**): **Baixar uma cópia** salva todos os ajustes, a
+  calibração de níveis e todos os perfis num arquivo (nunca a senha do Wi-Fi). **Restaurar uma
+  cópia** pede confirmação, devolve o que o arquivo contém e diz o que não conseguiu; perfis em
+  posições que o arquivo não menciona ficam como estão. Os ajustes de saída restaurados esperam o
+  **Manter**, como qualquer mudança que possa apagar a tela. A restauração de fábrica mantém os
+  perfis.
 - **Seletores de console:** os comandos que seletores mandam para scalers RetroTINK funcionam aqui
-  também: `SVS NEW INPUT=3` ou `remote prof3` carrega o perfil 3; `SVS CURRENT INPUT=3` carrega,
-  a não ser que ele já esteja em uso e sem alterações. Mande-os de um computador ou de uma ponte pela
-  porta USB da placa, ou pela rede para `http://gbs.local/api/svs`, por exemplo
-  `curl -d "remote prof3" http://gbs.local/api/svs`. Ligar um seletor direto nos pinos seriais
-  internos da placa não é suportado: essa linha também leva as mensagens da própria placa.
+  também: `SVS NEW INPUT=3` ou `remote prof3` carrega o perfil 3; `SVS CURRENT INPUT=3` carrega, a
+  não ser que ele já esteja em uso e sem alterações. Mande-os de um computador ou de uma ponte pela
+  porta USB da placa, ou pela rede para `http://gbs.local/api/svs`, por exemplo `curl -d "remote
+  prof3" http://gbs.local/api/svs`. Ligar um seletor direto nos pinos seriais internos da placa não
+  é suportado: essa linha também leva as mensagens da própria placa.
 
 ## Atualizando o firmware
 
