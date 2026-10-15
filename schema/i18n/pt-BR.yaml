@@ -175,7 +175,9 @@ settings:
   system.language:
     label: Idioma
     hint: Menus e página web
-    help: O idioma da página web e da tela. O console serial é sempre em inglês.
+    help: >-
+      O idioma da página web e da telinha da placa. Na página web, escolha no alto. O console serial
+      é sempre em inglês.
     values:
       en: English
       ptBR: Português (Brasil)

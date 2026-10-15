@@ -163,7 +163,7 @@
     "system.language": {
       "label": "Language",
       "hint": "Menus and web page",
-      "help": "The language of the web page and the display. The serial console is always English.",
+      "help": "The language of the web page and of the board's screen. On the web page, choose it at the top. The serial console is always English.",
       "values": {
         "en": "English",
         "ptBR": "Português (Brasil)"

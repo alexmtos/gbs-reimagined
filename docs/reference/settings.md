@@ -44,7 +44,7 @@ Schema hash `59acd3c6`. Every user-facing setting, as defined in `schema/setting
 
 | Id | Label | Values | Default | Tier | Ms | Help |
 |---|---|---|---|---|---|---|
-| `system.language` | Language | English, Português (Brasil) | English | essential | M1 | The language of the web page and the display. The serial console is always English. |
+| `system.language` | Language | English, Português (Brasil) | English | essential | M1 | The language of the web page and of the board's screen. On the web page, choose it at the top. The serial console is always English. |
 | `system.oledSaver` | Display saver | Off, 1 min, 3 min, 5 min, 10 min | 5 min | advanced | M1 | Turns the display off after a period without use, to protect the OLED from burn-in. |
 | `system.encoderReverse` | Reverse knob | off, on | off | advanced | M1 | Swaps the direction of the knob. |
 | `system.revertSeconds` | Confirm within | 10 s, 20 s, 30 s | 20 s | advanced | M1 | How long you have to confirm a change that could leave the screen black before it is undone. |

@@ -19,6 +19,9 @@ You can control it three ways:
   shows nothing.
 - **From a USB serial terminal**, for advanced users and console switchers.
 
+The web page and the board's screen speak English or Brazilian Portuguese. Choose the language at
+the top of the web page, or in **System → Language** on the board's menu; both change together.
+
 ## Installing from your browser
 
 You need the board, a computer with **Chrome** or **Edge** (phones and tablets cannot install) and

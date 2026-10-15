@@ -217,9 +217,16 @@ function SystemActions() {
   );
 }
 
+// Chosen elsewhere on the page: the language in the header.
+const ELSEWHERE: ReadonlySet<string> = new Set(["system.language"]);
+
 export function SettingsPage({ group }: { group: SettingGroup }) {
   const visible = SETTINGS.filter(
-    (m) => m.group === group && m.available && (showAdvanced.value || m.tier === "essential"),
+    (m) =>
+      m.group === group &&
+      m.available &&
+      !ELSEWHERE.has(m.id) &&
+      (showAdvanced.value || m.tier === "essential"),
   );
   if (!loaded.value) {
     return <p class="muted">{t("conn.reconnecting")}</p>;

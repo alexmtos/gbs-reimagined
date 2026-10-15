@@ -20,6 +20,9 @@ Você pode controlá-lo de três formas:
   não mostra nada.
 - **Por um terminal serial USB**, para usuários avançados e chaveadores de consoles.
 
+A página web e a telinha da placa falam inglês ou português do Brasil. Escolha o idioma no alto da
+página web, ou em **Sistema → Idioma** no menu da placa; os dois mudam juntos.
+
 ## Instalando pelo navegador
 
 Você precisa da placa, de um computador com **Chrome** ou **Edge** (celulares e tablets não
