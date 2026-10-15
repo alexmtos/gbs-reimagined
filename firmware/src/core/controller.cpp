@@ -344,6 +344,14 @@ bool Controller::deleteProfile(uint8_t slot) {
 
 void Controller::onSource(const InputSignature& now, uint32_t nowMs) {
     currentSource_ = now;
+    evaluateSource(now, nowMs);
+}
+
+void Controller::sourceDetected(const InputSignature& source, uint32_t nowMs) {
+    evaluateSource(source, nowMs);
+}
+
+void Controller::evaluateSource(const InputSignature& now, uint32_t nowMs) {
     if (!now.valid || safeMode_ || sameSource(now, evaluatedSource_)) {
         return;
     }

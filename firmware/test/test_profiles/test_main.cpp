@@ -498,3 +498,32 @@ TEST_CASE("a startup profile that is gone, or an active slot whose file is gone,
     again.ctl.onSource(kSnes, 1000);
     CHECK(again.ctl.activeProfile() == 0);
 }
+
+TEST_CASE("a source chosen at detection sets the output once; the settled source finds it done") {
+    Rig r;
+    r.ctl.begin(false, 0);
+    r.ctl.set(Id::OutputResolution, 1, Origin::Oled, 0); // r1080p
+    saveWith(r, 1, 6, InputSignature{});
+    r.ctl.onSource(kSnes, 0);
+    REQUIRE(r.ctl.setProfileSource(1, true));
+    r.ctl.onSource(kPs2, 0);                             // another console, no profile for it
+    r.ctl.set(Id::OutputResolution, 5, Origin::Oled, 0); // r480p
+    saveWith(r, 2, -6, InputSignature{});
+    const int before = r.video.outputCalls;
+
+    r.ctl.sourceDetected(kSnes, 1000); // before the engine picks the program
+    CHECK(r.video.output == video::OutputMode::R1080p);
+    CHECK(r.video.outputCalls == before + 1);
+    CHECK(r.ctl.activeProfile() == 1);
+    CHECK_FALSE(r.ctl.currentSource().valid); // nothing has settled yet
+    r.ctl.onSource(sig(1, 2, 1, 263), 1500);  // settles one line away: the same source
+    CHECK(r.video.outputCalls == before + 1);
+    CHECK(r.ctl.currentSource() == sig(1, 2, 1, 263));
+
+    // A load at the board still owns the next source, at detection too.
+    REQUIRE(r.ctl.loadProfile(2, Kind::Oled, 2000) == Result::Loaded);
+    r.ctl.sourceDetected(kPs2, 3000);
+    CHECK(r.ctl.activeProfile() == 2);
+    r.ctl.sourceDetected(kSnes, 4000);
+    CHECK(r.ctl.activeProfile() == 1); // the hold covered only the next new source
+}

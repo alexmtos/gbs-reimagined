@@ -172,6 +172,18 @@ InputSignature settledSource(const video::EngineStatus& e) {
     return s;
 }
 
+InputSignature detectedSource(const video::DetectedSource& d) {
+    InputSignature s;
+    s.valid = d.sync != video::SyncType::None && d.standard != Standard::None && d.lines != 0;
+    if (s.valid) {
+        s.port = static_cast<uint8_t>(d.port);
+        s.sync = static_cast<uint8_t>(d.sync);
+        s.standard = static_cast<uint8_t>(d.standard);
+        s.lines = static_cast<uint16_t>(d.lines + 1); // as settledSource counts them
+    }
+    return s;
+}
+
 size_t statusJson(const StatusModel& m, const char* version, const char* schema, char* buf,
                   size_t cap) {
     static const char* const kPort[] = {"component", "rgb", "none"};

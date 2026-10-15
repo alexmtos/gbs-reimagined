@@ -172,6 +172,21 @@ TEST_CASE("a source counts as settled after 10 stable ticks of a running program
     CHECK_FALSE(core::settledSource(e).valid);
 }
 
+TEST_CASE("a detected source has the signature its settled self will have") {
+    video::DetectedSource d;
+    d.port = video::InputPort::Component;
+    d.sync = video::SyncType::Csync;
+    d.standard = video::Standard::Edtv60;
+    d.lines = 524;
+    const core::InputSignature s = core::detectedSource(d);
+    CHECK(s.valid);
+    CHECK(s.port == static_cast<uint8_t>(video::InputPort::Component));
+    CHECK(s.standard == static_cast<uint8_t>(video::Standard::Edtv60));
+    CHECK(s.lines == 525);
+    d.lines = 0;
+    CHECK_FALSE(core::detectedSource(d).valid);
+}
+
 TEST_CASE("a buffer too small yields nothing rather than a truncated object") {
     core::StatusModel m;
     char buf[64];

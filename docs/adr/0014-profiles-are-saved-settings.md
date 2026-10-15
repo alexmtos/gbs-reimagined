@@ -48,8 +48,10 @@ details added to the others came up while building it; the user approved them th
    new ones.
 4. **Input signature** = port, sync type, standard and source lines per field, captured from the
    running source (10 stable engine ticks, 200 ms) when the user saves with "use for this source".
-   Auto-load runs only for profiles that have a signature, when a newly settled source differs from
-   the last one evaluated (port, sync and standard equal and lines within two count as the same).
+   Auto-load runs only for profiles that have a signature, when a new source differs from the last
+   one evaluated (port, sync and standard equal and lines within two count as the same). The
+   choice is made when the engine detects the source, before its program is chosen, and checked
+   again once the source has settled.
    Match levels, most specific first: port + sync + standard + lines (±2) → port + standard → port;
    ties go to the lowest slot. No match loads nothing. 240p↔480i is the same source and never
    reloads. An automatic load leaves `input.port` alone (the source is already on that input).
@@ -86,10 +88,10 @@ details added to the others came up while building it; the user approved them th
 
 - Profiles reuse the settings machinery (records, hashes, text forms, the controller's apply path);
   a renamed id resets that value in old profiles exactly as it does in `/settings.bin`.
-- A profile that changes the output resolution, loaded automatically, makes the source load twice
-  the first time it appears (the engine loads before the controller sees the settled signature):
-  measured on the bench, two loads within 2 s per swap ([bench M2](../bench/M2.md), profiles). If
-  it matters, the signature can be evaluated at detection instead.
+- The engine reports each new source to the profiles before choosing its program, so a profile
+  that changes the output resolution costs no second load: one load per console swap on the bench,
+  where choosing at the settled signature alone had cost two within 2 s ([bench M2](../bench/M2.md),
+  profiles). The video layer knows only a listener interface, not the profiles.
 - Profiles cannot tell two consoles with identical timing apart; SVS or a manual load is the answer,
   and the user guide says so.
 - SVS over the USB serial port works from a computer or a bridge; a switcher wired directly to the

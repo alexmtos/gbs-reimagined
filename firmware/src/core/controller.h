@@ -90,6 +90,9 @@ public:
     // The settled source, every status refresh (an invalid signature while there is none). A new
     // source loads the profile whose signature fits it best.
     void onSource(const InputSignature& now, uint32_t nowMs);
+    // A source the engine detected and is about to load: the same choice, made early so the
+    // profile's output takes part in the first program load. The settled source then finds it done.
+    void sourceDetected(const InputSignature& source, uint32_t nowMs);
     const InputSignature& currentSource() const { return currentSource_; }
 
     // Whether `name` can be a profile name: up to 23 bytes of printable Latin-1 in UTF-8.
@@ -109,6 +112,7 @@ private:
     void loadLevels();
     void saveLevels();
     uint32_t revertWindowMs() const;
+    void evaluateSource(const InputSignature& now, uint32_t nowMs);
     // The active profile counts as modified when a value it carries differs from the current one.
     void refreshModified();
 

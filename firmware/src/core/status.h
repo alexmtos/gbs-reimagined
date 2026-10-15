@@ -68,6 +68,8 @@ void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSet
 // The source's signature once the engine has been running it for a moment (ADR 0014); invalid
 // while there is no source or it is still being loaded.
 InputSignature settledSource(const video::EngineStatus& e);
+// The same for a source the engine has just detected and is about to load.
+InputSignature detectedSource(const video::DetectedSource& d);
 
 // Short words shared by the JSON and the console.
 const char* headlineCode(video::Headline h);

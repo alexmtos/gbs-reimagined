@@ -1118,6 +1118,15 @@ void Engine::watchFormatChange(Standard detected) {
     hdmiSyncFix_ = ctx_.standard == Standard::None || (was60 && is50) || (was50 && is60);
     badHsActive_ = 0;
     sogWindowStartMs_ = nowMs();
+    if (listener_ != nullptr) {
+        // A profile for this source may change the output: let it, before the program is chosen.
+        DetectedSource d;
+        d.port = ctx_.inputIsYpbpr ? InputPort::Component : InputPort::Rgb;
+        d.sync = ctx_.syncCsync ? SyncType::Csync : SyncType::Hv;
+        d.standard = detected;
+        d.lines = static_cast<uint16_t>(chip_.get(STATUS_SYNC_PROC_VTOTAL));
+        listener_->sourceDetected(d);
+    }
     beginLoad(detected);
 }
 

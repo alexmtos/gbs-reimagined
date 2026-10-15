@@ -41,6 +41,14 @@ hal::EspPulseTimer pulseTimer(hal::board().pinVsyncProbe);
 video::Engine engine(chip, &clockGen, &pulseTimer);
 platform::EspFileStore files;
 core::Controller controller(files, engine);
+
+// New sources reach the profiles before their program is chosen (ADR 0014).
+class DetectedToProfiles : public video::SourceListener {
+public:
+    void sourceDetected(const video::DetectedSource& d) override {
+        controller.sourceDetected(core::detectedSource(d), millis());
+    }
+} detectedToProfiles;
 core::StatusModel statusModel;
 net::Wifi wifi(files);
 net::Web web(controller, statusModel, wifi);
@@ -183,6 +191,7 @@ void setup() {
         Serial.println(F("safe mode: saved settings not loaded, nothing will be saved"));
     }
     controller.begin(safeMode, millis());
+    engine.setSourceListener(&detectedToProfiles);
     engine.begin(clockGenPresent);
     wifi.begin(millis());
     web.begin();
