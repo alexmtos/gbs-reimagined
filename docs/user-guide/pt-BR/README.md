@@ -104,6 +104,13 @@ Na aba **Saída**:
 - **Posição horizontal** e **Posição vertical** — movem a imagem, para consoles que a colocam um
   pouco fora do centro. Cada passo vertical é uma linha da imagem do console. Onde a imagem chega à
   borda da tela, ela é cortada ali.
+- **Escala inteira** — mostra cada linha do console com o mesmo número de linhas na tela (para
+  jogos 240p: quatro em 1080p, onde a imagem fica normalmente 4,5 vezes mais alta), para scanlines e
+  pixels saírem iguais. A imagem fica um pouco menor, com bordas pretas, e a **Altura** não tem
+  efeito enquanto ela estiver ligada. Para jogos 240p não muda nada em 1280x960, 1280x1024, 720p e
+  480p, que já os mostram em múltiplos exatos; para consoles PAL vale em todas as saídas. O
+  múltiplo é contado nas linhas 240p (ou 288p) do console, então um menu 480i só fica exato em
+  1080p e 1280x960.
 - **Largura** e **Altura** — aumentam ou diminuem a imagem, cerca de meio por cento por passo. São
   ajustes avançados: ligue **Mostrar ajustes avançados**, no fim da página. Uma imagem maior que a
   tela é cortada nas bordas.
@@ -115,13 +122,21 @@ Algumas combinações não têm efeito, porque o scaler não consegue fazê-las 
 - em **1280x960**, **1280x1024** e **480p / 576p** ela não pode ficar mais larga do que no início,
   e em 480p / 576p também não pode ficar mais baixa.
 
-Em 1080p, consoles PAL aparecem cerca de 10 % mais largos que 4:3, pelo mesmo motivo; escolha 720p
-ou 1280x1024 para uma imagem 4:3 exata.
+Em 1080p, consoles PAL e a **Escala inteira** precisam de uma imagem mais estreita do que o scaler
+consegue fazer sozinho: a placa passa então a desenhar cada linha em passos mais finos, o que a sua
+tela não percebe, e a imagem sai na forma exata.
+
+As resoluções de saída marcadas com **(exp.)** — 1024x768, 800x600, 1600x1200 e 1920x1200 — são
+para monitores e TVs que preferem essas resoluções, como um monitor de PC 1920x1200 ou uma tela
+antiga 1024x768. Elas são calculadas a partir dos padrões de vídeo, e não tiradas do conjunto testado
+do scaler, e foram experimentadas numa placa e numa TV. Se a sua tela não mostrar nada depois de
+escolher uma delas pela página web ou pelo console serial, a placa volta à resolução anterior se
+você não confirmar (veja [Mudanças que pedem confirmação](#mudanças-que-pedem-confirmação)).
 
 Forçar 60 Hz (na aba **Saída**, ajustes avançados) é para telas que não aceitam 50 Hz: um console
 PAL passa a ser mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá
 pequenos trancos (um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita
-50 Hz. Em 1080p ele também dá aos jogos PAL a largura 4:3 exata.
+50 Hz.
 
 ## Scanlines e desentrelaçador
 

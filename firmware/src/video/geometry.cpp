@@ -135,6 +135,14 @@ GeometryBase readGeometryBase(tv5725::Chip& chip, const PathContext& ctx) {
     b.ifFrame = vperiod > tail ? static_cast<uint16_t>(vperiod - tail) : 0;
     // 15 kHz sources pass the line doubler: one source line is two input-formatter lines.
     b.lineStep = isSd(ctx.standard) ? 2 : 1;
+    Frame f{};
+    if (frameFor(b.presetId, f)) {
+        b.frameActive = f.active;
+        b.frameTotal = f.total;
+        b.frameLines = f.lines;
+        b.shapeW = f.shapeW;
+        b.shapeH = f.shapeH;
+    }
 
     if (chip.errorCount() != errorsBefore || b.htotal < 256 || b.disHbSt <= b.disHbSp ||
         b.disHbSt > b.htotal || b.disVbSt <= b.disVbSp || b.disVbSt > b.vtotal || b.ifLine < 256 ||
@@ -156,6 +164,62 @@ GeometryBase readGeometryBase(tv5725::Chip& chip, const PathContext& ctx) {
     return b;
 }
 
+namespace {
+
+// The picture's shape on the converter's frame: its share of the frame's height and width (1/10000)
+// and the divisor that width asks for on a line of `htotal`, before the user's size and the
+// scaler's limits. Invalid without a frame (the 15 kHz programs).
+struct Shape {
+    bool valid = false;
+    bool integer = false;
+    int64_t hb = 10000, wb = 10000;
+    int32_t visible = 0;
+    int32_t hs = 1024;
+};
+
+Shape shapeOf(const GeometryBase& b, const GeometryAdjust& adj, uint16_t htotal) {
+    Shape s;
+    if (!b.hasFrame() || b.width43 == 0 || b.fullHeight == 0) {
+        return s;
+    }
+    uint32_t rw = 4, rh = 3;
+    if (adj.aspect == Aspect::SixteenNine) {
+        rw = 16;
+        rh = 9;
+    } else if (adj.aspect == Aspect::Full) {
+        rw = b.shapeW;
+        rh = b.shapeH;
+    }
+    // Share of the frame the picture's full height and 4:3 width fill. A picture wider than the
+    // frame is letterboxed (user decision 2026-10-14).
+    if (rw * b.shapeH > b.shapeW * rh) {
+        s.hb = 10000LL * b.shapeW * rh / (static_cast<int64_t>(b.shapeH) * rw);
+    }
+    const int32_t srcLines = b.fullHeight / (b.lineStep != 0 ? b.lineStep : 1);
+    const int32_t fit = static_cast<int32_t>(s.hb * b.frameLines / 10000);
+    s.integer = adj.integer && srcLines != 0 && fit >= srcLines;
+    if (s.integer) {
+        // The largest whole multiple of the source's lines that the frame's height share holds,
+        // counted in 240p / 288p lines for 15 kHz sources: 240p at 960 of 1080p's lines, 288p at
+        // 864, so scanlines come out even. A 480i picture is a whole multiple of its own lines
+        // only where the multiple is even (1080p, 1280x960); the 240p one comes first.
+        s.hb = 10000LL * (fit / srcLines) * srcLines / b.frameLines;
+    }
+    s.wb = s.hb * rw * b.shapeH / (static_cast<int64_t>(rh) * b.shapeW);
+    s.visible =
+        static_cast<int32_t>((static_cast<uint32_t>(htotal) + 1) * b.frameActive / b.frameTotal);
+    s.hs = divRound(1024LL * b.width43 * 10000, s.wb * s.visible);
+    s.valid = true;
+    return s;
+}
+
+} // namespace
+
+int32_t neededHScale(const GeometryBase& b, const GeometryAdjust& adj, uint16_t htotal) {
+    const Shape s = shapeOf(b, adj, htotal < 256 ? b.htotal : htotal);
+    return b.valid && s.valid ? s.hs : 1024;
+}
+
 GeometryRegs computeGeometry(const GeometryBase& b, const GeometryAdjust& adj, uint16_t htotal) {
     GeometryRegs r;
     if (!b.valid) {
@@ -171,31 +235,14 @@ GeometryRegs computeGeometry(const GeometryBase& b, const GeometryAdjust& adj, u
     // ---- scales: the picture's shape on screen, then the user's size
     int32_t hs = b.hscale;
     int32_t vs = b.vscale;
-    int32_t visible = 0; // the converter's width in output units
-    Frame f{};
-    if (frameFor(b.presetId, f) && b.width43 != 0 && b.fullHeight != 0) {
-        uint32_t rw = 4, rh = 3;
-        if (adj.aspect == Aspect::SixteenNine) {
-            rw = 16;
-            rh = 9;
-        } else if (adj.aspect == Aspect::Full) {
-            rw = f.shapeW;
-            rh = f.shapeH;
-        }
-        // Share of the frame (1/10000) the picture's full height and 4:3 width fill. A picture
-        // wider than the frame is letterboxed (user decision 2026-10-14).
-        int64_t hb = 10000;
-        if (rw * f.shapeH > f.shapeW * rh) {
-            hb = 10000LL * f.shapeW * rh / (static_cast<int64_t>(f.shapeH) * rw);
-        }
-        int64_t wb = hb * rw * f.shapeH / (static_cast<int64_t>(rh) * f.shapeW);
-        visible = static_cast<int32_t>((static_cast<uint32_t>(htotal) + 1) * f.active / f.total);
-        const int32_t hsShape = divRound(1024LL * b.width43 * 10000, wb * visible);
-        wb = wb * (200 + adj.hSize) / 200;
-        hb = hb * (200 + adj.vSize) / 200;
+    const Shape shape = shapeOf(b, adj, htotal);
+    const int32_t visible = shape.visible; // the converter's width in output units
+    if (shape.valid) {
+        const int64_t wb = shape.wb * (200 + adj.hSize) / 200;
+        const int64_t hb = shape.integer ? shape.hb : shape.hb * (200 + adj.vSize) / 200;
         hs = clampTo(divRound(1024LL * b.width43 * 10000, wb * visible),
-                     hsShape < kMinHScale ? hsShape : kMinHScale, 1024);
-        vs = clampTo(divRound(1024LL * b.fullHeight * 10000, hb * f.lines), kMinVScale, 1024);
+                     shape.hs < kMinHScale ? shape.hs : kMinHScale, 1024);
+        vs = clampTo(divRound(1024LL * b.fullHeight * 10000, hb * b.frameLines), kMinVScale, 1024);
     }
     r.hscale = static_cast<uint16_t>(hs);
     r.vscale = static_cast<uint16_t>(vs);
@@ -266,7 +313,7 @@ GeometryRegs computeGeometry(const GeometryBase& b, const GeometryAdjust& adj, u
     // the window letterboxed cleanly (docs/bench/M2.md).
     const int32_t h0 = b.disVbSt - b.disVbSp;
     int32_t k0 = divRound(static_cast<int64_t>(h0) * b.vscale, 1024);
-    if (b.fullHeight > k0 && b.width43 != 0 && frameFor(b.presetId, f)) {
+    if (b.fullHeight > k0 && b.width43 != 0 && b.hasFrame()) {
         // At least the source's full height: a 50 Hz source on a 60 Hz program (output.force60)
         // brings 576 lines where the program captures 482 (bench, docs/bench/M2.md).
         k0 = b.fullHeight;

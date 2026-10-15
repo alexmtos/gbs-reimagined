@@ -11,6 +11,7 @@ const char kIdNames[] PROGMEM =
     "output.frameLock\0"
     "output.force60\0"
     "output.aspect\0"
+    "output.integerScale\0"
     "output.hPosition\0"
     "output.vPosition\0"
     "output.hSize\0"
@@ -36,7 +37,7 @@ const char kIdNames[] PROGMEM =
 
 // Enum value ids per setting, NUL-separated; each list ends at an empty string.
 const char kValueIds[] PROGMEM =
-    "auto\000r1080p\000r1024p\000r960p\000r720p\000r480p\000r15khz\000passthrough\000\0"
+    "auto\000r1080p\000r1024p\000r960p\000r720p\000r480p\000r15khz\000passthrough\000r1024x768\000r800x600\000r1600x1200\000r1920x1200\000\0"
     "a4x3\000a16x9\000full\000\0"
     "auto\000rgb\000component\000\0"
     "auto\000\0"
@@ -49,32 +50,33 @@ const char kValueIds[] PROGMEM =
     "lastUsed\000autoByInput\000\0";
 
 const Def kDefs[] PROGMEM = {
-    {0x108D52FCu, 0, 0, 0, 7, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x11}, // output.resolution
+    {0x108D52FCu, 0, 0, 0, 11, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x11}, // output.resolution
     {0xEF52C848u, 18, 65535, 0, 1, 1, {kNoSpecial, kNoSpecial}, Type::Bool, 0x11}, // output.frameLock
     {0x6387DF1Bu, 35, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x23}, // output.force60
-    {0xC3D663B6u, 50, 57, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x20}, // output.aspect
-    {0xE5412A5Du, 64, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // output.hPosition
-    {0xFE332B2Bu, 81, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // output.vPosition
-    {0x202F792Bu, 98, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x22}, // output.hSize
-    {0xB1C22829u, 111, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x22}, // output.vSize
-    {0xBA8D3898u, 124, 74, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // input.port
-    {0x4B71DECBu, 135, 94, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x23}, // input.syncThreshold
-    {0x07FD70AAu, 155, 94, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x22}, // input.phase
-    {0xDA8358FFu, 167, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // input.autoGain
-    {0xBD282EA8u, 182, 100, 0, 4, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x23}, // input.videoLpf
-    {0x1543544Au, 197, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.brightness
-    {0x79648B93u, 216, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.contrast
-    {0xFF59D3A9u, 233, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.saturation
-    {0xDFA03AD8u, 252, 124, 0, 3, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // picture.sharpness
-    {0xBAB329D3u, 270, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x20}, // picture.scanlines
-    {0xD34407F3u, 288, 65535, 1, 8, 4, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // picture.scanlineStrength
-    {0x7215F62Bu, 313, 145, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x22}, // picture.deinterlace
-    {0xCE880134u, 333, 165, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // system.language
-    {0xF93B5751u, 349, 174, 0, 4, 3, {kNoSpecial, kNoSpecial}, Type::Enum, 0x12}, // system.oledSaver
-    {0xBA60E50Cu, 366, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // system.encoderReverse
-    {0xE75D92A5u, 388, 192, 0, 2, 1, {kNoSpecial, kNoSpecial}, Type::Enum, 0x12}, // system.revertSeconds
-    {0xEF07D155u, 409, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x10}, // system.showAdvanced
-    {0x351AB094u, 429, 205, -1, 16, -1, {-1, 0}, Type::Int, 0x20}, // system.startupProfile
+    {0xC3D663B6u, 50, 98, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x20}, // output.aspect
+    {0x798A14DAu, 64, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x20}, // output.integerScale
+    {0xE5412A5Du, 84, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // output.hPosition
+    {0xFE332B2Bu, 101, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // output.vPosition
+    {0x202F792Bu, 118, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x22}, // output.hSize
+    {0xB1C22829u, 131, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x22}, // output.vSize
+    {0xBA8D3898u, 144, 115, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // input.port
+    {0x4B71DECBu, 155, 135, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x23}, // input.syncThreshold
+    {0x07FD70AAu, 175, 135, -1, 31, -1, {-1, kNoSpecial}, Type::Int, 0x22}, // input.phase
+    {0xDA8358FFu, 187, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // input.autoGain
+    {0xBD282EA8u, 202, 141, 0, 4, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x23}, // input.videoLpf
+    {0x1543544Au, 217, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.brightness
+    {0x79648B93u, 236, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.contrast
+    {0xFF59D3A9u, 253, 65535, -32, 32, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x10}, // picture.saturation
+    {0xDFA03AD8u, 272, 165, 0, 3, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // picture.sharpness
+    {0xBAB329D3u, 290, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x20}, // picture.scanlines
+    {0xD34407F3u, 308, 65535, 1, 8, 4, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // picture.scanlineStrength
+    {0x7215F62Bu, 333, 186, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x22}, // picture.deinterlace
+    {0xCE880134u, 353, 206, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x10}, // system.language
+    {0xF93B5751u, 369, 215, 0, 4, 3, {kNoSpecial, kNoSpecial}, Type::Enum, 0x12}, // system.oledSaver
+    {0xBA60E50Cu, 386, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x12}, // system.encoderReverse
+    {0xE75D92A5u, 408, 233, 0, 2, 1, {kNoSpecial, kNoSpecial}, Type::Enum, 0x12}, // system.revertSeconds
+    {0xEF07D155u, 429, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x10}, // system.showAdvanced
+    {0x351AB094u, 449, 246, -1, 16, -1, {-1, 0}, Type::Int, 0x20}, // system.startupProfile
 };
 
 } // namespace gbsr::settings

@@ -104,6 +104,13 @@ On the **Output** page:
 - **Horizontal position** and **Vertical position** — move the picture, for consoles that put it a
   little off centre. Each vertical step is one line of the console's picture. Where the picture
   reaches the edge of the screen, it is cut there.
+- **Integer scale** — shows every line of the console as the same number of screen lines (for
+  240p games: four at 1080p, where the picture is otherwise 4.5 times taller), so scanlines and
+  pixels come out even. The picture gets a little smaller, with black borders, and **Vertical size**
+  has no effect while it is on. For 240p games it changes nothing at 1280x960, 1280x1024, 720p and
+  480p, which already show them at whole multiples; for PAL consoles it applies at every output.
+  The multiple is counted in the console's 240p (or 288p) lines, so a 480i menu is exact only at
+  1080p and 1280x960.
 - **Horizontal size** and **Vertical size** — make the picture bigger or smaller, about half a
   percent per step. They are advanced settings: turn on **Show advanced settings** at the bottom of
   the page. A picture bigger than the screen is cut at the edges.
@@ -115,13 +122,20 @@ Some combinations have no effect, because the scaler cannot do them cleanly:
 - at **1280x960**, **1280x1024** and **480p / 576p** it cannot be made wider than at the start, and
   at 480p / 576p not shorter either.
 
-At 1080p, PAL consoles look about 10 % wider than 4:3, for the same reason; choose 720p or
-1280x1024 for an exact 4:3 picture.
+At 1080p, PAL consoles and **Integer scale** need a picture narrower than the scaler alone can
+make: the board then draws each line in finer steps, which your display does not notice, and the
+picture comes out at its exact shape.
+
+The output resolutions marked **(exp.)** — 1024x768, 800x600, 1600x1200 and 1920x1200 — are for
+monitors and TVs that prefer them, such as a 1920x1200 PC monitor or an old 1024x768 screen. They
+are computed from the display standards rather than taken from the scaler's tested set, and have
+been tried on one board and one TV. If your display shows nothing after you choose one on the web
+page or the serial console, the board goes back to the previous resolution unless you confirm (see
+[Changes that need your confirmation](#changes-that-need-your-confirmation)).
 
 Force 60 Hz (on the **Output** page, advanced settings) is for displays that do not accept 50 Hz:
 a PAL console is then shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little
-(one frame in five is shown twice); leave it off if your display takes 50 Hz. At 1080p it also gives
-PAL games their exact 4:3 width.
+(one frame in five is shown twice); leave it off if your display takes 50 Hz.
 
 ## Scanlines and the deinterlacer
 

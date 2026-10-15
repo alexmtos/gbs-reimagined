@@ -36,7 +36,7 @@ Research, documentation, repository structure, Claude Code configuration, CI.
 - Scanlines, deinterlacer choice, sharpness levels, geometry (aspect, position, size)
 - Advanced sampling controls (phase, SOG threshold, gain, LPF) with live sync feedback
 - Force 60 Hz
-- Experimental: custom output timings (ADR 0004)
+- Experimental: custom output timings (ADR 0004, ADR 0015)
 - **Gate:** each setting verified on the capture card to do what its help text says.
 - **Progress:** geometry (aspect, position, size) verified with NTSC and PAL sources on every
   output, 2026-10-14; scanlines, the deinterlacer choice and the sampling controls (SOG threshold,
@@ -44,7 +44,8 @@ Research, documentation, repository structure, Claude Code configuration, CI.
   ([bench M2](bench/M2.md)). Gain is M1's calibrate levels and auto gain; "blank on mode change"
   was dropped (user decision). Profiles (ADR 0014) verified the same day: save/load, auto-load
   across two consoles, switcher lines on serial and HTTP, revert, startup modes, export/import and
-  backup.
+  backup. Integer scale and the computed modes 1024x768, 800x600, 1600x1200 and 1920x1200
+  (ADR 0015) verified the same day, with PAL at 1080p now an exact 4:3.
 
 ## M3 — Distribution
 

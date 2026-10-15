@@ -20,6 +20,8 @@ settings:
       O tamanho da imagem enviada à tela. Auto escolhe 1280x960 para fontes de 60 Hz (exatamente
       4x o 240p) e 1280x1024 para fontes de 50 Hz. Passthrough envia a fonte sem escalar; fontes HD e
       de PC sempre passam direto. O Passthrough é experimental: ainda não foi verificado numa placa.
+      Os outros modos (exp.) são calculados a partir dos padrões de vídeo; a sua tela precisa
+      aceitá-los.
     values:
       auto: Auto
       r1080p: 1080p
@@ -29,6 +31,10 @@ settings:
       r480p: 480p / 576p
       r15khz: 15 kHz (CRT)
       passthrough: Passthrough (exp.)
+      r1024x768: 1024x768 (exp.)
+      r800x600: 800x600 (exp.)
+      r1600x1200: 1600x1200 (exp.)
+      r1920x1200: 1920x1200 (exp.)
   output.frameLock:
     label: Frame lock
     hint: Igualar taxa da fonte
@@ -64,6 +70,13 @@ settings:
     label: Largura
     hint: Mais estreita / larga
     help: Deixa a imagem mais estreita ou mais larga.
+  output.integerScale:
+    label: Escala inteira
+    hint: Linhas iguais, menor
+    help: >-
+      Mostra cada linha do console com o mesmo número de linhas na tela (quatro em 1080p para jogos
+      240p), para scanlines e pixels saírem iguais. A imagem fica um pouco menor, com bordas pretas,
+      e a Altura não tem efeito enquanto estiver ligada.
   output.vSize:
     label: Altura
     hint: Mais baixa / alta

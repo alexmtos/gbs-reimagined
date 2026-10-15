@@ -31,7 +31,21 @@ enum class SyncType : uint8_t { None, Hv, Csync };
 enum class InputPreference : uint8_t { Auto, Rgb, Component };
 
 // Output modes offered to the user; values match schema/settings.yaml output.resolution.
-enum class OutputMode : uint8_t { Auto, R1080p, R1024p, R960p, R720p, R480p, R15kHz, Passthrough };
+enum class OutputMode : uint8_t {
+    Auto,
+    R1080p,
+    R1024p,
+    R960p,
+    R720p,
+    R480p,
+    R15kHz,
+    Passthrough,
+    // Computed from standard timings on the 1080p program (ADR 0015).
+    R1024x768,
+    R800x600,
+    R1600x1200,
+    R1920x1200,
+};
 
 enum class EngineState : uint8_t {
     NoPower,   // the scaler does not answer on I2C
@@ -64,6 +78,7 @@ struct GeometryAdjust {
     int8_t vPosition = 0; // + moves down; one source line per step
     int8_t hSize = 0;     // + wider; 0.5 % per step
     int8_t vSize = 0;     // + taller; 0.5 % per step
+    bool integer = false; // the source's lines at a whole multiple; vSize then has no effect
     bool operator==(const GeometryAdjust&) const = default;
 };
 

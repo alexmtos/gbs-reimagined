@@ -100,7 +100,7 @@ void Engine::setFrameLock(bool on) {
         return;
     }
     if (!on) {
-        clock_.release(tv5725::programInfo(loadedProgram_).displayClock);
+        clock_.release(displayClock_);
     } else if (phase_ == Phase::Running && clock_.present()) {
         doneStagePending_ = true; // adopt and lock at the next settled moment
     }
@@ -131,6 +131,18 @@ void Engine::setGeometry(const GeometryAdjust& adj) {
         return;
     }
     geometry_ = adj;
+    if (loadedProgram_ != tv5725::ProgramId::Count && !bypass_ &&
+        !rasterMode(effectiveMode(ctx_.standard))) {
+        // A picture that now needs a longer line, another one, or the program's own again: the
+        // loader draws it. Until a settled source reloads, the current line shows the change.
+        const LoadStretch s = stretchFor(programBase_, geometry_, programClock_);
+        if ((s.valid ? s.code : programClock_) != displayClock_) {
+            requestReload();
+            if (phase_ == Phase::Running) {
+                return;
+            }
+        }
+    }
     applyGeometry();
 }
 
@@ -609,6 +621,72 @@ void Engine::detectFound(bool ypbpr) {
 // ------------------------------------------------------------------------------------------------
 // Loader
 
+namespace {
+
+// The standard timing behind a computed output mode (ADR 0015).
+bool rasterTiming(OutputMode m, Timing& t) {
+    switch (m) {
+    case OutputMode::R1024x768:
+        return timingByName("1024x768", t);
+    case OutputMode::R800x600:
+        return timingByName("800x600", t);
+    case OutputMode::R1600x1200:
+        return timingByName("1600x1200", t);
+    case OutputMode::R1920x1200:
+        return timingByName("1920x1200", t);
+    default:
+        return false;
+    }
+}
+
+} // namespace
+
+bool Engine::rasterMode(OutputMode m) {
+    Timing t{};
+    return rasterTiming(m, t);
+}
+
+void Engine::applyLineShape(Standard standard) {
+    Timing t{};
+    if (rasterTiming(effectiveMode(standard), t)) {
+        // The line drawn for the internal clock that runs it at the source family's rate, so the
+        // display gets the mode before the generator takes over and the frame lock trims it.
+        const uint32_t nominal = isPalFamily(standard) && !force60_ ? 50'000 : 60'000;
+        const LoadRaster lr = rasterForMode(programBase_, t, nominal);
+        if (!lr.valid) {
+            return; // the 1080p program as it is
+        }
+        const RasterRegs& r = lr.raster.regs;
+        chip_.write(VDS_HSYNC_RST, r.hsyncRst);
+        chip_.write(VDS_HS_ST, r.hsSt);
+        chip_.write(VDS_HS_SP, r.hsSp);
+        chip_.write(VDS_VSYNC_RST, r.vsyncRst);
+        chip_.write(VDS_VS_ST, r.vsSt);
+        chip_.write(VDS_VS_SP, r.vsSp);
+        chip_.write(VDS_VSYN_SIZE1, r.vsynSize);
+        chip_.write(VDS_VSYN_SIZE2, r.vsynSize);
+        chip_.write(PLL648_CONTROL_01, lr.code);
+        displayClock_ = lr.code;
+        geometryBase_ = lr.raster.base;
+        return;
+    }
+    // A picture the program's line cannot narrow (PAL 4:3, integer scale at 1080p): the same line
+    // in more units, on a faster internal clock at the same rate (docs/bench/M2.md, spike).
+    const LoadStretch s = stretchFor(programBase_, geometry_, programClock_);
+    if (!s.valid) {
+        return;
+    }
+    const uint16_t oldH = programBase_.htotal;
+    chip_.write(VDS_HS_ST,
+                stretchPosition(static_cast<uint16_t>(chip_.get(VDS_HS_ST)), oldH, s.htotal));
+    chip_.write(VDS_HS_SP,
+                stretchPosition(static_cast<uint16_t>(chip_.get(VDS_HS_SP)), oldH, s.htotal));
+    chip_.write(VDS_HSYNC_RST, s.htotal);
+    chip_.write(PLL648_CONTROL_01, s.code);
+    displayClock_ = s.code;
+    geometryBase_ = s.base;
+}
+
 OutputMode Engine::effectiveMode(Standard standard) const {
     if (outputPref_ != OutputMode::Auto) {
         return outputPref_;
@@ -623,6 +701,11 @@ tv5725::ProgramId Engine::chooseProgram(Standard standard) const {
     const bool pal = isPalFamily(standard) && !force60_;
     switch (effectiveMode(standard)) {
     case OutputMode::R1080p:
+    case OutputMode::R1024x768:
+    case OutputMode::R800x600:
+    case OutputMode::R1600x1200:
+    case OutputMode::R1920x1200:
+        // The computed modes start from 1080p (ADR 0015: the reference built them there too).
         return pal ? P::Pal1080p : P::Ntsc1080p;
     case OutputMode::R1024p:
         return pal ? P::Pal1024p : P::Ntsc1024p;
@@ -688,10 +771,13 @@ void Engine::runLoad() {
     sense_.forgetVgaTargets();
     const bool wantSog = postLoadTuning(ops_, sense_, ctx_);
     applyPicture(ops_, ctx_.inputIsYpbpr, picture_);
-    clock_.resetForProgram(info.displayClock);
     hdmiSyncFix_ = false;
     loadedProgram_ = program;
     geometryBase_ = readGeometryBase(chip_, ctx_);
+    programBase_ = geometryBase_;
+    programClock_ = displayClock_ = info.displayClock;
+    applyLineShape(standard);
+    clock_.resetForProgram(displayClock_);
     applyGeometry();
     scanlineBase_ = readScanlineBase(chip_);
     scanlinesOn_ = false;

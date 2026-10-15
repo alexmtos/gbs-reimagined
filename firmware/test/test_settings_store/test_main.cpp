@@ -101,6 +101,7 @@ TEST_CASE("a failed save is retried after another delay, not on every pass") {
 
 TEST_CASE("values convert to and from text the way the console and the API spell them") {
     CHECK(text(Id::OutputResolution, 1) == "r1080p");
+    CHECK(text(Id::OutputResolution, 11) == "r1920x1200"); // appended: earlier indexes keep
     CHECK(text(Id::OutputFrameLock, 1) == "on");
     CHECK(text(Id::InputPhase, -1) == "auto");
     CHECK(text(Id::InputPhase, 12) == "12");

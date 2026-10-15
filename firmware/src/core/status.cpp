@@ -101,10 +101,11 @@ const char* standardFamily(Standard s) {
 
 const char* outputModeId(video::OutputMode m) {
     // The value ids of output.resolution (schema/settings.yaml).
-    static const char* const kIds[] = {"auto",  "r1080p", "r1024p", "r960p",
-                                       "r720p", "r480p",  "r15khz", "passthrough"};
+    static const char* const kIds[] = {"auto",      "r1080p",   "r1024p",     "r960p",
+                                       "r720p",     "r480p",    "r15khz",     "passthrough",
+                                       "r1024x768", "r800x600", "r1600x1200", "r1920x1200"};
     const uint8_t i = static_cast<uint8_t>(m);
-    return i < 8 ? kIds[i] : "auto";
+    return i < sizeof kIds / sizeof kIds[0] ? kIds[i] : "auto";
 }
 
 void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSetting,
