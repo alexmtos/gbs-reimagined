@@ -2,7 +2,7 @@ import { computed, effect, signal } from "@preact/signals";
 import { fetchSettings, saveSettings } from "../api/endpoints";
 import type { SetOutcome } from "../api/types";
 import { type Locale, locale, setLocale } from "../i18n";
-import { status } from "./status";
+import { connection, status } from "./status";
 
 /** Per control: unchanged since load (saved), sent and not yet answered (pending), or refused. */
 export type FieldState = "saved" | "pending" | "failed";
@@ -70,6 +70,24 @@ export function followLanguage(): () => void {
 export function chooseLanguage(next: Locale): Promise<SetOutcome | "failed"> {
   setLocale(next);
   return changeSetting("system.language", LANGUAGE_VALUE[next]);
+}
+
+/**
+ * Settings changed somewhere else (the knob, the console, a profile loading by itself, a switcher,
+ * a factory reset) move the status's settingsSeq: the page reloads its values. A first load that
+ * failed is tried again once the board answers.
+ */
+export function followSettings(): () => void {
+  let seen: number | undefined;
+  return effect(() => {
+    const s = status.value;
+    const live = connection.value === "live";
+    if (!s || !live) return;
+    const pending = Object.values(fieldState.peek()).includes("pending");
+    if (pending || (loaded.peek() && s.settingsSeq === seen)) return;
+    seen = s.settingsSeq;
+    void loadSettings();
+  });
 }
 
 /** When a pending revert ends (kept, reverted, or timed out), the values may have moved back. */

@@ -1,6 +1,7 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
 import { FirmwareUpdate } from "../components/firmware-update";
+import { bad, info, Note, type Notice } from "../components/note";
 import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
@@ -92,8 +93,10 @@ export function Control({ meta }: { meta: SettingMeta }) {
           </select>
         );
       }
-      // Integers: the number follows the slider while dragging; the board hears the release.
-      const shown = dragging ?? value;
+      // Integers: the number follows the slider while dragging; the board hears the release. A
+      // special number (the left end: Auto) is shown and sent by its name.
+      const named = (raw: string) => meta.special?.[raw] ?? raw;
+      const shown = named(dragging ?? value);
       return (
         <span class="range">
           <input
@@ -106,7 +109,7 @@ export function Control({ meta }: { meta: SettingMeta }) {
             onInput={(e) => setDragging(e.currentTarget.value)}
             onChange={(e) => {
               setDragging(null);
-              void changeSetting(meta.id, e.currentTarget.value);
+              void changeSetting(meta.id, named(e.currentTarget.value));
             }}
           />
           <output>{valueLabel(meta.id, shown)}</output>
@@ -160,21 +163,62 @@ function SyncQuality() {
   );
 }
 
+const LEVELS_NOTICE: Readonly<Record<string, () => Notice>> = {
+  running: () => info(t("action.calibrate.started")),
+  done: () => info(t("action.calibrate.done")),
+  notWhite: () => bad(t("action.calibrate.notWhite")),
+  tooHot: () => bad(t("action.calibrate.tooHot")),
+  aborted: () => bad(t("action.calibrate.aborted")),
+};
+
+/**
+ * "Calibrate levels", then the board's verdict. The status keeps the last outcome, so after a press
+ * the page waits to see this run start before it reports one.
+ */
 function InputActions() {
+  const [phase, setPhase] = useState<"idle" | "asked" | "running" | "finished">("idle");
+  const [refusal, setRefusal] = useState<Notice | null>(null);
+  const outcome = status.value?.levels ?? "none";
+  useEffect(() => {
+    if (phase === "asked" && outcome === "running") setPhase("running");
+    if (phase === "running" && outcome !== "running") setPhase("finished");
+  }, [phase, outcome]);
+  const busy = phase === "asked" || phase === "running";
+  const notice =
+    refusal ??
+    (busy
+      ? info(t("action.calibrate.started"))
+      : phase === "finished"
+        ? (LEVELS_NOTICE[outcome]?.() ?? null)
+        : null);
   return (
     <li class="setting">
       <div class="setting-head">
         <span class="setting-label">{t("action.calibrate")}</span>
-        <ActionButton
-          label={t("action.calibrate")}
-          run={async () => {
+        <button
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            setRefusal(null);
             const r = await runCommand("calibrate");
-            if (r.ok) return "action.calibrate.started";
-            return r.reason === "noStablePicture" ? "action.calibrate.noPicture" : "action.failed";
+            if (r.ok) {
+              setPhase("asked");
+            } else {
+              setRefusal(
+                bad(
+                  t(
+                    r.reason === "noStablePicture" ? "action.calibrate.noPicture" : "action.failed",
+                  ),
+                ),
+              );
+            }
           }}
-        />
+        >
+          {t("action.calibrate")}
+        </button>
       </div>
       <p class="setting-help">{t("action.calibrate.help")}</p>
+      <Note notice={notice} />
     </li>
   );
 }

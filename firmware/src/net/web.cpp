@@ -127,7 +127,7 @@ void Web::handleUi() {
 }
 
 void Web::handleStatus() {
-    char buf[768];
+    char buf[896];
     if (core::statusJson(status_, GBSR_VERSION, settings::kSchemaHash, buf, sizeof buf) == 0) {
         sendJson(500, "{\"error\":\"status too large\"}");
         return;

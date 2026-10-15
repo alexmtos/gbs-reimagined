@@ -10,6 +10,18 @@ namespace gbsr::core {
 
 enum class FrameLockState : uint8_t { Locked, Inactive, Off };
 
+// Why frame lock is inactive while its setting is on: the Status page says it rather than a dash
+// (docs/design/ux.md, principle 4).
+enum class FrameLockReason : uint8_t {
+    None,
+    NoSignal,
+    Passthrough, // the scaler is bypassed: no output frame to time
+    Force60,     // a PAL source shown at 60 Hz cannot follow the source's rate
+    NoClockGen,
+    OutOfRange, // the source's rate needs a clock this output cannot reach
+    Locking,    // the program is still settling
+};
+
 // What the board and the network add to the video status.
 struct BoardInfo {
     uint32_t uptimeS = 0;
@@ -49,11 +61,13 @@ struct StatusModel {
     uint32_t pixelClockHz = 0;
     uint32_t rateMilliHz = 0;
     FrameLockState frameLock = FrameLockState::Inactive;
+    FrameLockReason lockReason = FrameLockReason::None;
     // board
     BoardInfo board;
     uint16_t revertSecondsLeft = 0; // 0: nothing pending
     bool safeMode = false;
     uint8_t levelCalibration = 0; // video::GainCalibrator::Outcome of the last "calibrate levels"
+    uint16_t settingsSeq = 0;     // moves whenever a setting changes, wherever it was changed
     // profile
     uint8_t profile = 0; // 0: none
     bool profileModified = false;
@@ -61,9 +75,10 @@ struct StatusModel {
 };
 
 // Rebuilds `m` from its inputs; increments m.seq if anything other than the uptime changed.
+// `settingsSeq` is the settings store's sequence: a page reloads its values when it moves.
 void buildStatus(StatusModel& m, const video::EngineStatus& e, bool frameLockSetting,
                  uint16_t revertSecondsLeft, bool safeMode, const BoardInfo& board,
-                 const ProfileInfo& profile = ProfileInfo{});
+                 const ProfileInfo& profile = ProfileInfo{}, uint16_t settingsSeq = 0);
 
 // The source's signature once the engine has been running it for a moment (ADR 0014); invalid
 // while there is no source or it is still being loaded.

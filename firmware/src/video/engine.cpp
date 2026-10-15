@@ -1499,6 +1499,7 @@ void Engine::refreshStatus() {
     st.scanlines = scanlinesOn_;
     st.pixelClockHz = clock_.frequency();
     st.frameLocked = clock_.locked();
+    st.forced60 = forced60_;
     st.sourceMilliHz = clock_.lastSourceMilliHz();
     st.outputMilliHz = clock_.lastOutputMilliHz();
     for (uint8_t i = 0; i < 3; ++i) {

@@ -25,7 +25,7 @@ video::EngineStatus scaling240p() {
 }
 
 std::string json(const core::StatusModel& m) {
-    char buf[768];
+    char buf[896]; // as net/web.cpp
     const size_t n = core::statusJson(m, "0.1.0", "f838c797", buf, sizeof buf);
     REQUIRE(n > 0);
     return std::string(buf, n);
@@ -197,4 +197,65 @@ TEST_CASE("a buffer too small yields nothing rather than a truncated object") {
     core::StatusModel m;
     char buf[64];
     CHECK(core::statusJson(m, "0.1.0", "x", buf, sizeof buf) == 0);
+}
+
+TEST_CASE("an inactive frame lock says why, most telling reason first") {
+    core::BoardInfo b;
+    b.clockGen = true;
+    auto reason = [&](const video::EngineStatus& e, const core::BoardInfo& board) {
+        core::StatusModel m;
+        core::buildStatus(m, e, true, 0, false, board);
+        return json(m);
+    };
+    video::EngineStatus e = scaling240p();
+    e.frameLocked = false;
+    CHECK(has(reason(e, b), "\"frameLock\":\"inactive\",\"frameLockReason\":\"locking\"}"));
+    e.lockResult = static_cast<uint8_t>(video::PixelClock::SyncResult::OutOfRange);
+    CHECK(has(reason(e, b), "\"frameLockReason\":\"outOfRange\""));
+    CHECK(has(reason(e, core::BoardInfo{}), "\"frameLockReason\":\"noClockGen\""));
+    e.forced60 = true;
+    CHECK(has(reason(e, b), "\"frameLockReason\":\"force60\""));
+    e.state = video::EngineState::Bypass;
+    CHECK(has(reason(e, b), "\"frameLockReason\":\"passthrough\""));
+    video::EngineStatus none;
+    none.state = video::EngineState::Searching;
+    CHECK(has(reason(none, b), "\"frameLockReason\":\"noSignal\""));
+    // Locked, or off by the setting: no reason.
+    CHECK_FALSE(has(reason(scaling240p(), b), "frameLockReason"));
+    core::StatusModel m;
+    core::buildStatus(m, e, false, 0, false, b);
+    CHECK_FALSE(has(json(m), "frameLockReason"));
+}
+
+TEST_CASE("the settings sequence and the level calibration outcome travel with the status") {
+    core::StatusModel m;
+    core::buildStatus(m, scaling240p(), true, 0, false, core::BoardInfo{}, {}, 41);
+    CHECK(has(json(m), "\"settingsSeq\":41,\"levels\":\"none\""));
+    const uint32_t first = m.seq;
+    core::buildStatus(m, scaling240p(), true, 0, false, core::BoardInfo{}, {}, 42);
+    CHECK(m.seq == first + 1); // a setting changed somewhere: pollers must see it
+    video::EngineStatus e = scaling240p();
+    e.levelCalibration = static_cast<uint8_t>(video::GainCalibrator::Outcome::NotWhite);
+    core::buildStatus(m, e, true, 0, false, core::BoardInfo{}, {}, 42);
+    CHECK(has(json(m), "\"levels\":\"notWhite\""));
+}
+
+TEST_CASE("the longest status still fits the web server's buffer") {
+    core::StatusModel m;
+    core::ProfileInfo p;
+    p.slot = 16;
+    const std::string worst(core::kProfileNameCap - 1, '"'); // each escapes to two bytes
+    p.name = worst.c_str();
+    video::EngineStatus e = scaling240p();
+    e.frameLocked = false;
+    e.lockResult = static_cast<uint8_t>(video::PixelClock::SyncResult::OutOfRange);
+    core::BoardInfo b;
+    b.clockGen = true;
+    b.uptimeS = 4'000'000'000u;
+    b.heapFree = 4'000'000'000u;
+    b.heapMin = 4'000'000'000u;
+    b.rssi = -100;
+    b.ip = 0xFFFFFFFF;
+    core::buildStatus(m, e, true, 65535, true, b, p, 65535);
+    CHECK(json(m).size() < 896);
 }

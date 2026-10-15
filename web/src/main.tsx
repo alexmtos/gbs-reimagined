@@ -2,8 +2,8 @@ import { render } from "preact";
 import { App } from "./app";
 import { locale } from "./i18n";
 import { followProfiles } from "./state/profiles";
-import { followLanguage, followReverts, loadSettings } from "./state/settings";
-import { startPolling } from "./state/status";
+import { followLanguage, followReverts, followSettings, loadSettings } from "./state/settings";
+import { followFirmware, startPolling } from "./state/status";
 import "./styles.css";
 
 document.documentElement.lang = locale.value;
@@ -19,6 +19,8 @@ async function start(): Promise<void> {
   startPolling();
   followReverts();
   followLanguage();
+  followSettings();
+  followFirmware();
   followProfiles();
   void loadSettings();
 }

@@ -168,7 +168,8 @@ void refreshStatus(uint32_t now) {
     p.name = controller.profiles().activeName();
     core::buildStatus(statusModel, engine.status(),
                       controller.get(settings::Id::OutputFrameLock) != 0,
-                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p);
+                      static_cast<uint16_t>((revertMs + 999) / 1000), controller.safeMode(), b, p,
+                      controller.sequence());
 }
 
 } // namespace

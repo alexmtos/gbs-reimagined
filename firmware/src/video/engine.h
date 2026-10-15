@@ -39,6 +39,7 @@ struct EngineStatus {
     OutputMode outputMode = OutputMode::Auto; // the mode in effect (never Auto once loaded)
     bool clockAdopted = false;
     bool frameLocked = false;
+    bool forced60 = false; // Force 60 Hz in effect: a PAL source shown at 60 Hz
     uint32_t pixelClockHz = 0;
     uint32_t sourceMilliHz = 0;
     uint32_t outputMilliHz = 0;
