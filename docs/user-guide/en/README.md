@@ -22,6 +22,10 @@ You can control it three ways:
 The web page and the board's screen speak English or Brazilian Portuguese. Choose the language at
 the top of the web page, or in **System → Language** on the board's menu; both change together.
 
+On the web page, a setting that has no effect at the moment (for example the scanline strength
+while scanlines are off) is dimmed and says why, and **Default** next to a changed setting puts its
+default value back.
+
 ## Installing from your browser
 
 You need the board, a computer with **Chrome** or **Edge** (phones and tablets cannot install) and
@@ -171,7 +175,9 @@ On the **Output** page:
 
 Some combinations have no effect, because the scaler cannot do them cleanly:
 
-- at **15 kHz (CRT)** only the position works, and **Passthrough** takes none of these settings;
+- at **15 kHz (CRT)** only the position works, and **Passthrough** takes none of these settings
+  (it appears in the resolution list with **Show advanced settings** on: it has not been verified
+  on a board);
 - at **1080p** the picture cannot be made narrower than at the start;
 - at **1280x960**, **1280x1024** and **480p / 576p** it cannot be made wider than at the start, and
   at 480p / 576p not shorter either.
@@ -190,9 +196,9 @@ console these modes run at 50 Hz to keep motion smooth; the board's HDMI output 
 picture a little narrow and to the right. **Force 60 Hz** fixes the shape (with a small judder), or
 adjust the position and size.
 
-Force 60 Hz (on the **Output** page, advanced settings) is for displays that do not accept 50 Hz:
-a PAL console is then shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little
-(one frame in five is shown twice); leave it off if your display takes 50 Hz.
+Force 60 Hz (on the **Output** page) is for displays that do not accept 50 Hz: a PAL console is then
+shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little (one frame in five is
+shown twice); leave it off if your display takes 50 Hz.
 
 ## Scanlines and the deinterlacer
 
@@ -256,21 +262,21 @@ all profiles. There are 16 slots.
 - **Loading by itself:** when a new console's picture settles, the board loads the profile marked
   for it. It looks first for one saved from a console on the same input sending the same kind of
   picture (for example 240p/480i, or 480p) with the same number of lines, give or take two; then for
-  the same input and kind of picture; then for the same input alone. Switching a console between 240p
-  and 480i (or 288p and 576i) never changes the profile. Two consoles that send exactly the same
-  kind of signal on the same input cannot be told apart: load their profiles by hand, or use a
+  the same input and kind of picture; then for the same input alone. Switching a console between
+  240p and 480i (or 288p and 576i) never changes the profile. Two consoles that send exactly the
+  same kind of signal on the same input cannot be told apart: load their profiles by hand, or use a
   switcher (below).
-- **Startup profile** (on the **Profiles** page and in **System**): *Last used* starts where you
-  left off, unsaved changes included, unless a different console's profile matches the first
-  picture; *Auto by input* always loads the profile that matches; a numbered profile loads that
-  one at power-on.
+- **Startup profile** (on the **Profiles** page; on the board, in **System**): *Last used* starts
+  where you left off, unsaved changes included, unless a different console's profile matches the
+  first picture; *Auto by input* always loads the profile that matches; a numbered profile loads
+  that one at power-on.
 - **Export and import:** **Export** saves one profile as a file; choose a slot and import the file
   there, on this board or another one.
-- **Backup:** **Download a backup** saves every setting, the level calibration and all profiles in
-  one file (never the Wi-Fi password). **Restore a backup** asks first, then puts back what the
-  file holds and says what it could not; profiles in slots the file does not mention stay as they
-  are. Restored output settings wait for **Keep**, like any change that could blank the screen. A
-  factory reset keeps the profiles.
+- **Backup** (on the **System** page): **Download a backup** saves every setting, the level
+  calibration and all profiles in one file (never the Wi-Fi password). **Restore a backup** asks
+  first, then puts back what the file holds and says what it could not; profiles in slots the file
+  does not mention stay as they are. Restored output settings wait for **Keep**, like any change
+  that could blank the screen. A factory reset keeps the profiles.
 - **Console switchers:** the commands that switchers send to RetroTINK scalers work here too:
   `SVS NEW INPUT=3` or `remote prof3` loads profile 3; `SVS CURRENT INPUT=3` loads it unless it is
   already in use and unchanged. Send them from a computer or a bridge through the board's USB port,

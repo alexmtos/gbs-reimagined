@@ -42,7 +42,9 @@ settings:
   output.force60:
     type: bool
     default: false
-    tier: advanced
+    # Essential: it is the fix for a PAL console on a display that takes 60 Hz only (user
+    # decision, 2026-10-15).
+    tier: essential
     milestone: M2
     risky: true
   output.aspect:

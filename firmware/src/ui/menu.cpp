@@ -342,6 +342,14 @@ void Menu::turn(int steps, bool coarse, uint32_t nowMs) {
         } else {
             v += steps * (coarse && d.type == settings::Type::Int ? 10 : 1);
             v = v < d.min ? d.min : (v > d.max ? d.max : v);
+            // Passthrough comes with the advanced settings only (experimental, not verified on a
+            // board; user decision, 2026-10-15), unless it is the one in use.
+            const int pass = static_cast<int>(video::OutputMode::Passthrough);
+            if (editId_ == Id::OutputResolution && v == pass && editOriginal_ != pass &&
+                ctl_.get(Id::SystemShowAdvanced) == 0) {
+                const int next = v + (steps > 0 ? 1 : -1);
+                v = next >= d.min && next <= d.max ? next : editValue_;
+            }
         }
         editValue_ = static_cast<int16_t>(v);
         if (!d.risky()) {

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
+import { Backup } from "../components/backup";
 import { FirmwareUpdate } from "../components/firmware-update";
 import { bad, info, Note, type Notice, warn } from "../components/note";
 import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
 import { settingText, t, valueLabel } from "../i18n";
+import { defaultText, ELSEWHERE, idleReason, offered, SECTIONS } from "../settings/layout";
 import { profileName } from "../state/profiles";
 import {
   changeSetting,
@@ -49,11 +51,13 @@ export function Control({ meta }: { meta: SettingMeta }) {
           value={value}
           onChange={(e) => void changeSetting(meta.id, e.currentTarget.value)}
         >
-          {(meta.values ?? []).map((v) => (
-            <option key={v} value={v}>
-              {valueLabel(meta.id, v)}
-            </option>
-          ))}
+          {(meta.values ?? [])
+            .filter((v) => offered(meta.id, v, value, showAdvanced.value))
+            .map((v) => (
+              <option key={v} value={v}>
+                {valueLabel(meta.id, v)}
+              </option>
+            ))}
         </select>
       );
     case "bool":
@@ -266,8 +270,41 @@ function SystemActions() {
   );
 }
 
-// Chosen elsewhere on the page: the language in the header.
-const ELSEWHERE: ReadonlySet<string> = new Set(["system.language"]);
+/** One setting: its control, help, why it has no effect now, and a way back to the default. */
+function SettingRow({ meta }: { meta: SettingMeta }) {
+  const text = settingText(meta.id);
+  const state = fieldState.value[meta.id] ?? "saved";
+  const value = values.value[meta.id];
+  const idle = idleReason(meta.id, status.value, values.value);
+  const fallback = defaultText(meta);
+  const helpId = `help-${meta.id}`;
+  return (
+    <li class={`setting setting-${state}${idle ? " setting-idle" : ""}`}>
+      <div class="setting-head">
+        <span class="setting-label">{text.label}</span>
+        <span class="setting-control" aria-describedby={helpId}>
+          <Control meta={meta} />
+          {value !== undefined && value !== fallback && (
+            <button
+              type="button"
+              class="reset"
+              title={t("settings.resetTo", { value: valueLabel(meta.id, fallback) })}
+              onClick={() => void changeSetting(meta.id, fallback)}
+            >
+              {t("settings.reset")}
+            </button>
+          )}
+        </span>
+      </div>
+      <p class="setting-help" id={helpId}>
+        {text.help}
+      </p>
+      {idle && <Note notice={info(t(idle))} />}
+      {state === "pending" && <Note notice={info(t("settings.saving"))} />}
+      {state === "failed" && <Note notice={bad(t("settings.failed"))} />}
+    </li>
+  );
+}
 
 export function SettingsPage({ group }: { group: SettingGroup }) {
   const visible = SETTINGS.filter(
@@ -280,29 +317,44 @@ export function SettingsPage({ group }: { group: SettingGroup }) {
   if (!loaded.value) {
     return <p class="muted">{t("conn.reconnecting")}</p>;
   }
+  const sections = SECTIONS[group] ?? [];
+  const inSection = new Set(sections.flatMap((x) => x.ids));
+  const loose = visible.filter((m) => !inSection.has(m.id));
   return (
     <section>
       <ul class="settings">
         {group === "input" && showAdvanced.value && <SyncQuality />}
-        {visible.map((meta) => {
-          const text = settingText(meta.id);
-          const state = fieldState.value[meta.id] ?? "saved";
-          return (
-            <li key={meta.id} class={`setting setting-${state}`}>
-              <div class="setting-head">
-                <span class="setting-label">{text.label}</span>
-                <Control meta={meta} />
-              </div>
-              <p class="setting-help">{text.help}</p>
-              {state === "pending" && <p class="setting-note">{t("settings.saving")}</p>}
-              {state === "failed" && <p class="setting-note bad">{t("settings.failed")}</p>}
-            </li>
-          );
-        })}
+        {loose.map((meta) => (
+          <SettingRow key={meta.id} meta={meta} />
+        ))}
         {group === "input" && showAdvanced.value && <InputActions />}
-        {group === "system" && <FirmwareUpdate />}
-        {group === "system" && <SystemActions />}
       </ul>
+      {sections.map((section) => {
+        const rows = section.ids
+          .map((id) => visible.find((m) => m.id === id))
+          .filter((m): m is SettingMeta => m !== undefined);
+        if (rows.length === 0) return null;
+        return (
+          <div key={section.title} class="settings-section">
+            <h2 class="section-title">{t(section.title)}</h2>
+            <ul class="settings">
+              {rows.map((meta) => (
+                <SettingRow key={meta.id} meta={meta} />
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+      {group === "system" && (
+        <div class="settings-section">
+          <h2 class="section-title">{t("section.maintenance")}</h2>
+          <ul class="settings">
+            <Backup />
+            <FirmwareUpdate />
+            <SystemActions />
+          </ul>
+        </div>
+      )}
       <label class="toggle">
         <input
           type="checkbox"

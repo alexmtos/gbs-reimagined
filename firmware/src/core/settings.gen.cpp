@@ -52,7 +52,7 @@ const char kValueIds[] PROGMEM =
 const Def kDefs[] PROGMEM = {
     {0x108D52FCu, 0, 0, 0, 11, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x11}, // output.resolution
     {0xEF52C848u, 18, 65535, 0, 1, 1, {kNoSpecial, kNoSpecial}, Type::Bool, 0x11}, // output.frameLock
-    {0x6387DF1Bu, 35, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x23}, // output.force60
+    {0x6387DF1Bu, 35, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x21}, // output.force60
     {0xC3D663B6u, 50, 98, 0, 2, 0, {kNoSpecial, kNoSpecial}, Type::Enum, 0x20}, // output.aspect
     {0x798A14DAu, 64, 65535, 0, 1, 0, {kNoSpecial, kNoSpecial}, Type::Bool, 0x20}, // output.integerScale
     {0xE5412A5Du, 84, 65535, -64, 64, 0, {kNoSpecial, kNoSpecial}, Type::Int, 0x20}, // output.hPosition
