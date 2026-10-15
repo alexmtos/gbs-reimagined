@@ -204,7 +204,9 @@ settings:
   system.showAdvanced:
     label: Show advanced
     hint: Expert settings
-    help: Shows the settings for sampling, sync and diagnostics.
+    help: >-
+      Shows the settings for sampling, sync and diagnostics, on the web page and in the board's
+      menu. The switch at the bottom of every page is this same setting.
   system.startupProfile:
     label: Startup profile
     hint: Loaded at power-on

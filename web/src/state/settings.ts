@@ -1,4 +1,4 @@
-import { effect, signal } from "@preact/signals";
+import { computed, effect, signal } from "@preact/signals";
 import { fetchSettings, saveSettings } from "../api/endpoints";
 import type { SetOutcome } from "../api/types";
 import { status } from "./status";
@@ -41,6 +41,16 @@ export async function changeSetting(id: string, value: string): Promise<SetOutco
   }
   fieldState.value = { ...fieldState.value, [id]: ok ? "saved" : "failed" };
   return outcome;
+}
+
+/**
+ * Whether the advanced settings are shown: one setting on the board (system.showAdvanced), so the
+ * switch on every page, the System page and the board's own menu always agree, and it is kept.
+ */
+export const showAdvanced = computed(() => values.value["system.showAdvanced"] === "on");
+
+export function setShowAdvanced(on: boolean): Promise<SetOutcome | "failed"> {
+  return changeSetting("system.showAdvanced", on ? "on" : "off");
 }
 
 /** When a pending revert ends (kept, reverted, or timed out), the values may have moved back. */

@@ -1,4 +1,3 @@
-import { signal } from "@preact/signals";
 import { useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
 import { FirmwareUpdate } from "../components/firmware-update";
@@ -8,10 +7,15 @@ import { SETTINGS } from "../gen/settings.gen";
 import type { MessageKey } from "../i18n";
 import { settingText, t, valueLabel } from "../i18n";
 import { profileName } from "../state/profiles";
-import { changeSetting, fieldState, loaded, values } from "../state/settings";
+import {
+  changeSetting,
+  fieldState,
+  loaded,
+  setShowAdvanced,
+  showAdvanced,
+  values,
+} from "../state/settings";
 import { status } from "../state/status";
-
-export const showAdvanced = signal(false);
 
 /** Integers with named values and a short range read better as a list than as a slider. */
 const LIST_RANGE = 20;
@@ -247,9 +251,7 @@ export function SettingsPage({ group }: { group: SettingGroup }) {
         <input
           type="checkbox"
           checked={showAdvanced.value}
-          onChange={(e) => {
-            showAdvanced.value = e.currentTarget.checked;
-          }}
+          onChange={(e) => void setShowAdvanced(e.currentTarget.checked)}
         />
         {t("settings.advanced")}
       </label>
