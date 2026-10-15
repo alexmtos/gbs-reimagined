@@ -1,11 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
 import { fetchBackup, runCommand } from "../api/endpoints";
 import { FirmwareUpdate } from "../components/firmware-update";
-import { bad, info, Note, type Notice } from "../components/note";
+import { bad, info, Note, type Notice, warn } from "../components/note";
 import { downloadJson } from "../download";
 import type { SettingGroup, SettingMeta } from "../gen/settings.gen";
 import { SETTINGS } from "../gen/settings.gen";
-import type { MessageKey } from "../i18n";
 import { settingText, t, valueLabel } from "../i18n";
 import { profileName } from "../state/profiles";
 import {
@@ -119,27 +118,6 @@ export function Control({ meta }: { meta: SettingMeta }) {
   }
 }
 
-function ActionButton({ label, run }: { label: string; run: () => Promise<MessageKey | null> }) {
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<MessageKey | null>(null);
-  return (
-    <span class="action">
-      <button
-        type="button"
-        disabled={busy}
-        onClick={async () => {
-          setBusy(true);
-          setNote(await run());
-          setBusy(false);
-        }}
-      >
-        {label}
-      </button>
-      {note && <span class="muted">{t(note)}</span>}
-    </span>
-  );
-}
-
 /** Live feedback for the sampling settings: how much of the last second the line PLL held. */
 function SyncQuality() {
   const q = status.value?.source.syncQuality;
@@ -223,40 +201,48 @@ function InputActions() {
   );
 }
 
+/** Restart and factory reset: each asks for a second press, as the board's own menu does. */
 function SystemActions() {
-  const [armed, setArmed] = useState(false);
+  const [armed, setArmed] = useState<"reboot" | "factoryReset" | null>(null);
+  const [note, setNote] = useState<Notice | null>(null);
+  const [busy, setBusy] = useState(false);
+  const press = async (what: "reboot" | "factoryReset") => {
+    if (armed !== what) {
+      setArmed(what);
+      setNote(warn(t(what === "reboot" ? "action.reboot.confirm" : "action.factoryReset.confirm")));
+      return;
+    }
+    setArmed(null);
+    setBusy(true);
+    const ok = (await runCommand(what)).ok;
+    setNote(ok ? info(t("action.done")) : bad(t("action.failed")));
+    setBusy(false);
+  };
   return (
     <li class="setting">
       <div class="actions">
-        <ActionButton
-          label={t("action.reboot")}
-          run={async () => ((await runCommand("reboot")).ok ? "action.done" : "action.failed")}
-        />
-        <ActionButton
-          label={t("action.factoryReset")}
-          run={async () => {
-            if (!armed) {
-              setArmed(true);
-              return "action.factoryReset.confirm";
-            }
-            setArmed(false);
-            return (await runCommand("factoryReset")).ok ? "action.done" : "action.failed";
-          }}
-        />
-        {armed && (
-          <ActionButton
-            label={t("profiles.backup.download")}
-            run={async () => {
+        <button type="button" disabled={busy} onClick={() => void press("reboot")}>
+          {t("action.reboot")}
+        </button>
+        <button type="button" disabled={busy} onClick={() => void press("factoryReset")}>
+          {t("action.factoryReset")}
+        </button>
+        {armed === "factoryReset" && (
+          <button
+            type="button"
+            onClick={async () => {
               try {
                 downloadJson("gbs-backup.json", await fetchBackup());
-                return null;
               } catch {
-                return "action.failed";
+                setNote(bad(t("action.failed")));
               }
             }}
-          />
+          >
+            {t("profiles.backup.download")}
+          </button>
         )}
       </div>
+      <Note notice={note} />
     </li>
   );
 }

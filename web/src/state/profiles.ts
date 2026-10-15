@@ -143,14 +143,27 @@ export function parseBackupFile(text: string): BackupDocument | null {
   }
 }
 
+export interface RestoreReport {
+  profiles: number;
+  /** Settings the board refused, and profile fields this firmware does not know. */
+  refused: string[];
+  /** A restored output setting waits for "Keep", like any risky change. */
+  revertArmed: boolean;
+}
+
+const KEPT: readonly string[] = ["applied", "unchanged", "revertArmed"];
+
 /**
  * Puts a backup back piece by piece (ADR 0014): the settings, the level calibration, then one
- * profile per request. Profiles in slots the backup does not mention stay. Returns how many
- * profiles were restored, or null when a step failed.
+ * profile per request. Profiles in slots the backup does not mention stay. Returns what was
+ * restored and what was not, or null when a step failed.
  */
-export async function restoreBackup(backup: BackupDocument): Promise<number | null> {
+export async function restoreBackup(backup: BackupDocument): Promise<RestoreReport | null> {
   try {
-    await saveSettings(backup.settings);
+    const settings = await saveSettings(backup.settings);
+    const outcomes = Object.entries(settings.results);
+    const refused = outcomes.filter(([, o]) => !KEPT.includes(o)).map(([id]) => id);
+    const revertArmed = outcomes.some(([, o]) => o === "revertArmed");
     await restoreLevels(backup.levels);
     let count = 0;
     for (const [key, content] of Object.entries(backup.profiles)) {
@@ -158,9 +171,10 @@ export async function restoreBackup(backup: BackupDocument): Promise<number | nu
       if (!Number.isInteger(slot) || slot < 1 || slot > SLOTS) continue;
       const answer = await profileAction({ action: "import", slot, profile: content });
       if (!answer.ok) return null;
+      refused.push(...(answer.skipped ?? []).map((id) => `${slot}: ${id}`));
       count += 1;
     }
-    return count;
+    return { profiles: count, refused, revertArmed };
   } catch {
     return null;
   } finally {
