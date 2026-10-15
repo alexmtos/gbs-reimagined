@@ -216,6 +216,24 @@ TEST_CASE("turning Show advanced on lists the advanced System settings at once")
     r.hold();
 }
 
+TEST_CASE("Passthrough is offered with the advanced settings only") {
+    Rig r;
+    const int16_t crt = static_cast<int16_t>(video::OutputMode::R15kHz);
+    const int16_t pass = static_cast<int16_t>(video::OutputMode::Passthrough);
+    r.ctl.set(Id::OutputResolution, crt, core::Origin::Oled, 0);
+    r.openGroup(0); // Output: resolution first
+    r.press();
+    r.turn(1); // past 15 kHz: Passthrough is skipped
+    r.press();
+    CHECK(r.ctl.get(Id::OutputResolution) == pass + 1);
+    r.ctl.set(Id::SystemShowAdvanced, 1, core::Origin::Oled, 0);
+    r.ctl.set(Id::OutputResolution, crt, core::Origin::Oled, 0);
+    r.press();
+    r.turn(1);
+    r.press();
+    CHECK(r.ctl.get(Id::OutputResolution) == pass);
+}
+
 TEST_CASE("factory reset asks for a second press") {
     Rig r;
     r.ctl.set(Id::PictureSaturation, 9, core::Origin::Oled, 0);

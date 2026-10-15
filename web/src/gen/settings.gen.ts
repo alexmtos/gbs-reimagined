@@ -18,7 +18,7 @@ export interface SettingMeta {
   special?: Readonly<Record<string, string>>;
 }
 
-export const SCHEMA_HASH = '59acd3c6';
+export const SCHEMA_HASH = '8c31bc40';
 
 export const SETTING_GROUPS = ["output", "input", "picture", "system"] as const;
 export type SettingGroup = (typeof SETTING_GROUPS)[number];
@@ -94,7 +94,7 @@ export const SETTINGS: readonly SettingMeta[] = [
     "group": "output",
     "type": "bool",
     "default": false,
-    "tier": "advanced",
+    "tier": "essential",
     "milestone": 2,
     "available": true,
     "risky": true
