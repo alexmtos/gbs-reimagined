@@ -84,6 +84,7 @@ clock de saída e o endereço da placa na sua rede.
 | Gire | andar pelo menu ou mudar um valor |
 | Gire segurando o botão apertado | mudar um número de dez em dez |
 | Segure por cerca de um segundo | voltar (e, editando, desfazer a mudança); na tela inicial, abrir os perfis |
+| Aperte duas vezes rápido sobre um ajuste | devolver o valor padrão desse ajuste |
 
 Os ajustes de imagem mudam enquanto você gira, para você acompanhar na TV. A resolução de saída e
 o frame lock só mudam quando você aperta, para a imagem não passar por todos os modos no caminho.
@@ -146,6 +147,34 @@ TV apagada se resolve sozinha. O tempo de espera pode ser mudado em **Sistema �
 Carregar um perfil que muda um desses ajustes pede confirmação do mesmo jeito, e desfazer devolve
 tudo o que o perfil mudou.
 
+## Escolhendo a resolução de saída para a sua tela
+
+A **Resolução de saída** fica na aba **Saída** e no menu da placa. **Auto**, o padrão, é o ponto de
+partida: 1280x960 para consoles de 60 Hz e 1280x1024 para os de 50 Hz. Se a sua tela não mostrar
+nada depois de uma mudança feita na página web, a placa volta sozinha depois de 20 segundos (veja
+[Mudanças que pedem confirmação](#mudanças-que-pedem-confirmação)). Uma mudança feita pelo botão
+vale quando você aperta e não é desfeita: se a tela continuar escura, escolha outra resolução na
+placa, ou ligue-a no modo de segurança (veja
+[O botão giratório e a telinha](#o-botão-giratório-e-a-telinha)).
+
+| A sua tela | Experimente | Por quê |
+|---|---|---|
+| Uma TV pela HDMI | **1080p** | O que as TVs esperam. A imagem 4:3 ganha faixas pretas nas laterais; a **Escala inteira** deixa as linhas do 240p uniformes |
+| Um monitor de PC | **Auto**: **1280x960** ou **1280x1024** | Jogos 240p saem exatamente quatro vezes mais altos em 1280x960; em 1280x1024 (consoles de 50 Hz) a imagem 4:3 ganha faixas finas em cima e embaixo |
+| Uma TV ou monitor que não aceita 1080p | **720p** | Jogos 240p saem exatamente três vezes mais altos |
+| Uma tela ou upscaler que pede uma resolução baixa | **480p / 576p** | Jogos 240p saem exatamente duas vezes mais altos em 480p, e os 288p em 576p |
+| Um CRT na saída VGA / RGBS da placa | **15 kHz (CRT)** | Feito para um CRT. Ainda não testado com um na bancada do projeto, e uma tela HDMI pode não mostrar nada |
+| Um monitor que prefere 1024x768, 800x600, 1600x1200 ou 1920x1200 | os modos **(exp.)** | Veja [Formato, posição e tamanho da imagem](#formato-posição-e-tamanho-da-imagem) |
+
+Na bancada do projeto, a saída HDMI da placa deu imagem em 1280x960, 1280x1024, 1080p, 720p e
+480p / 576p com todas as fontes testadas (um console 240p e um 480i em RGB, um Wii em 480p no
+componente, um PS2 PAL), com o frame lock acompanhando o console. Foi conferido com uma placa de
+captura, não em todo tipo de TV ([notas de bancada, M1, em inglês](../../bench/M1.md)).
+
+O **Frame lock** (na mesma aba) faz a saída acompanhar exatamente a atualização do console: sem
+trancos nem cortes na imagem. Deixe ligado; desligue só se a sua tela recusar a imagem com ele. Com
+um console PAL, o Auto manda 50 Hz: se a sua tela só aceita 60 Hz, ligue **Forçar 60 Hz**.
+
 ## Formato, posição e tamanho da imagem
 
 Na aba **Saída**:
@@ -199,6 +228,21 @@ forma (com um pequeno tranco), ou ajuste a posição e o tamanho.
 Forçar 60 Hz (na aba **Saída**) é para telas que não aceitam 50 Hz: um console PAL passa a ser
 mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá pequenos trancos
 (um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita 50 Hz.
+
+## Ajustes de imagem
+
+Na aba **Imagem**, e em **Imagem** no menu da placa. Eles mudam enquanto você gira, para você ver
+na TV, e cada perfil guarda os seus.
+
+- **Brilho**, **Contraste** e **Saturação** vão de -32 a +32; 0 mostra o console como ele envia.
+  O brilho clareia ou escurece a imagem toda, o contraste aumenta ou diminui a diferença entre
+  escuro e claro, a saturação deixa as cores mais fortes ou mais fracas. Se os brancos parecem
+  estourados ou as cores lavadas, experimente antes os [Níveis de entrada](#níveis-de-entrada)
+  (ajustes avançados, na aba **Entrada**): eles corrigem o próprio sinal.
+- **Nitidez** realça os contornos: **Desligado**, o padrão, mostra a imagem como foi amostrada;
+  **Baixa**, **Média** e **Alta** realçam cada vez mais.
+- **Padrão**, ao lado de um ajuste mudado na página web, ou um toque duplo na placa, devolve o valor
+  padrão.
 
 ## Scanlines e desentrelaçador
 
@@ -334,8 +378,3 @@ Ligue a porta USB da placa a um computador e abra um terminal serial a **115200 
 | `calibrate` | calibra os níveis com uma tela branca |
 | `profile` | os perfis salvos; `profile load 3`, `profile save 3 Mega Drive`, `profile source 3 on` |
 | `factory-reset` | ajustes e níveis voltam ao padrão, os perfis ficam (digite duas vezes) |
-
-## Em breve neste guia
-
-1. Escolhendo a resolução de saída para a sua tela
-2. Ajustes de imagem

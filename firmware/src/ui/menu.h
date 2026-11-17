@@ -131,6 +131,10 @@ private:
     settings::Id editId_{};
     int16_t editValue_ = 0;
     int16_t editOriginal_ = 0;
+    // A press this soon after entering a value, with no turn between, puts its default back.
+    static constexpr uint32_t kDoublePressMs = 400;
+    uint32_t editEnteredMs_ = 0;
+    bool editTurned_ = false;
     Kind pending_ = Kind::Back; // the action a Confirm or Action screen is about
     bool actionStarted_ = false;
     bool revertChoiceKeep_ = true;

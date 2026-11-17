@@ -155,10 +155,11 @@ behind the Advanced toggle).
 
 - **Home** shows the status headline (wrapped), the source line and the output line; it is the
   screen the board returns to after 30 s of inactivity.
-- **Menu:** Output ▸ Input ▸ Picture ▸ Profiles ▸ Network ▸ Status ▸ System. Advanced items appear
-  when *System ▸ Show advanced* is on.
+- **Menu:** Status ▸ Output ▸ Input ▸ Picture ▸ Profiles ▸ Network ▸ System, the web page's order.
+  Advanced items appear when *System ▸ Show advanced* is on.
 - **Gestures:** rotate = move or change; press = enter or confirm; long press (≥ 0.6 s) = back;
-  press-and-turn = coarse steps (×10); double press on a value = reset to default.
+  press-and-turn = coarse steps (×10); double press on a value (enter it and press again within
+  0.4 s, without turning) = reset to default.
 - The bottom line shows a terse hint for the highlighted item (≤ 21 characters).
 - **Network ▸ Join** shows a QR code for the setup access point and then the board's address.
 - The revert countdown takes over the screen with *Keep* highlighted.

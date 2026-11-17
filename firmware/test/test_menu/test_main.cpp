@@ -56,7 +56,7 @@ struct Rig {
     void press() { menu.press(now += 100); }
     void hold() { menu.longPress(now += 100); }
     void turn(int steps, bool coarse = false) { menu.turn(steps, coarse, now += 100); }
-    // Root menu: 0 Output, 1 Input, 2 Picture, 3 Profiles, 4 Network, 5 Status, 6 System, 7 Back.
+    // Root menu: 0 Status, 1 Output, 2 Input, 3 Picture, 4 Profiles, 5 Network, 6 System, 7 Back.
     void openGroup(int index) {
         press();
         turn(index);
@@ -88,8 +88,9 @@ TEST_CASE("the menu lists the groups and highlights the cursor") {
     Rig r;
     r.press();
     ui::Frame f = r.frame();
-    CHECK(std::string(f.line[0]) == "Output");
-    CHECK(std::string(f.line[2]) == "Picture");
+    CHECK(std::string(f.line[0]) == "Status");
+    CHECK(std::string(f.line[1]) == "Output");
+    CHECK(std::string(f.line[3]) == "Picture");
     CHECK(f.inverted == 0x01);
     r.turn(2);
     CHECK(r.frame().inverted == 0x04);
@@ -101,7 +102,7 @@ TEST_CASE("the menu lists the groups and highlights the cursor") {
 
 TEST_CASE("picture settings change while turning; a long press backs the change out") {
     Rig r;
-    r.openGroup(2); // Picture
+    r.openGroup(3); // Picture
     CHECK(r.line(0).rfind("Brightness", 0) == 0);
     CHECK(r.line(0).find("+0") != std::string::npos);
     r.press(); // edit brightness
@@ -119,7 +120,7 @@ TEST_CASE("editing a sampling setting shows the live sync quality") {
     Rig r;
     r.ctl.set(Id::SystemShowAdvanced, 1, core::Origin::Oled, 0);
     r.status.syncQuality = 97;
-    r.openGroup(1); // Input: port, sync threshold, phase, ...
+    r.openGroup(2); // Input: port, sync threshold, phase, ...
     r.turn(2);
     r.press(); // edit the sampling phase
     CHECK(r.line(0).rfind("Sampling phase", 0) == 0);
@@ -131,7 +132,7 @@ TEST_CASE("editing a sampling setting shows the live sync quality") {
 
 TEST_CASE("risky settings apply on the press, without a revert from the OLED") {
     Rig r;
-    r.openGroup(0); // Output: resolution first
+    r.openGroup(1); // Output: resolution first
     r.press();
     r.turn(1);
     CHECK(r.ctl.get(Id::OutputResolution) == 0); // not yet
@@ -166,12 +167,12 @@ TEST_CASE("the OLED speaks the board's language setting") {
     CHECK(r.line(0) == "Escalando");
     CHECK(r.line(5) == "Aperte para o menu");
     r.press();
-    CHECK(r.line(0) == "Saída");
+    CHECK(r.line(1) == "Saída");
 }
 
 TEST_CASE("the menu returns home after thirty seconds untouched") {
     Rig r;
-    r.openGroup(2);
+    r.openGroup(3);
     r.menu.tick(r.now + 29'000);
     CHECK(r.line(0).rfind("Brightness", 0) == 0);
     r.menu.tick(r.now + 30'000);
@@ -182,7 +183,7 @@ TEST_CASE("the network page shows how to reach the setup access point") {
     Rig r;
     r.net.mode = ui::NetView::Mode::Setup;
     r.net.failure = 1; // refused
-    r.openGroup(4);
+    r.openGroup(5);
     const ui::Frame f = r.frame();
     CHECK(std::string(f.line[0]) == "Setup network:");
     CHECK(std::string(f.line[1]) == "GBS-EAC4");
@@ -194,7 +195,7 @@ TEST_CASE("the network page also says when the network did not answer") {
     Rig r;
     r.net.mode = ui::NetView::Mode::Setup;
     r.net.failure = 3; // no answer
-    r.openGroup(4);
+    r.openGroup(5);
     CHECK(r.line(4) == "Network: no answer");
 }
 
@@ -221,7 +222,7 @@ TEST_CASE("Passthrough is offered with the advanced settings only") {
     const int16_t crt = static_cast<int16_t>(video::OutputMode::R15kHz);
     const int16_t pass = static_cast<int16_t>(video::OutputMode::Passthrough);
     r.ctl.set(Id::OutputResolution, crt, core::Origin::Oled, 0);
-    r.openGroup(0); // Output: resolution first
+    r.openGroup(1); // Output: resolution first
     r.press();
     r.turn(1); // past 15 kHz: Passthrough is skipped
     r.press();
@@ -232,6 +233,53 @@ TEST_CASE("Passthrough is offered with the advanced settings only") {
     r.turn(1);
     r.press();
     CHECK(r.ctl.get(Id::OutputResolution) == pass);
+}
+
+TEST_CASE("a double press on a value puts its default back") {
+    Rig r;
+    r.ctl.set(Id::PictureBrightness, 7, core::Origin::Oled, 0);
+    r.openGroup(3); // Picture: brightness first
+    r.press();      // enter the value
+    r.press();      // and again at once: the default, applied and shown
+    CHECK(r.ctl.get(Id::PictureBrightness) == 0);
+    CHECK(r.line(2).find("< +0 >") != std::string::npos);
+    r.press(); // the next press leaves
+    CHECK(r.line(0).rfind("Brightness", 0) == 0);
+    // Entering, turning, then pressing is an ordinary change.
+    r.press();
+    r.turn(2);
+    r.press();
+    CHECK(r.ctl.get(Id::PictureBrightness) == 2);
+    // Leaving and entering again at once keeps the value.
+    r.press();
+    r.menu.press(r.now += 1000);
+    r.press();
+    r.turn(1);
+    r.press();
+    CHECK(r.ctl.get(Id::PictureBrightness) == 3);
+}
+
+TEST_CASE("the home screen says why frame lock is inactive, within one line") {
+    struct Case {
+        core::FrameLockState state;
+        core::FrameLockReason reason;
+        const char* word;
+    };
+    const Case cases[] = {
+        {core::FrameLockState::Locked, core::FrameLockReason::None, "frame lock"},
+        {core::FrameLockState::Off, core::FrameLockReason::None, "lock off"},
+        {core::FrameLockState::Inactive, core::FrameLockReason::Passthrough, "bypass"},
+        {core::FrameLockState::Inactive, core::FrameLockReason::Force60, "60 forced"},
+        {core::FrameLockState::Inactive, core::FrameLockReason::NoClockGen, "no clock"},
+        {core::FrameLockState::Inactive, core::FrameLockReason::OutOfRange, "no match"},
+        {core::FrameLockState::Inactive, core::FrameLockReason::Locking, "locking"},
+    };
+    for (const Case& c : cases) {
+        Rig r;
+        r.status.frameLock = c.state;
+        r.status.lockReason = c.reason;
+        CHECK(r.line(3).find(c.word) != std::string::npos); // frame() checks the width
+    }
 }
 
 TEST_CASE("factory reset asks for a second press") {
@@ -297,8 +345,8 @@ TEST_CASE("the OLED marks a profile for the current source, saves over it and de
     Rig r;
     REQUIRE(r.ctl.saveProfile(1, "SNES", core::Controller::SaveSource::None));
     r.press();
-    r.turn(3); // Profiles in the root menu
-    CHECK(r.line(3) == "Profiles");
+    r.turn(4); // Profiles in the root menu
+    CHECK(r.line(4) == "Profiles");
     r.press();
     r.press(); // profile 1
     r.turn(2);
@@ -341,8 +389,8 @@ TEST_CASE("the OLED marks a profile for the current source, saves over it and de
     CHECK_FALSE(r.ctl.profiles().exists(1));
     r.hold();
     r.hold();
-    CHECK(r.line(3) == "Profiles"); // back in the root menu, on Profiles
-    CHECK(r.frame().inverted == 0x08);
+    CHECK(r.line(4) == "Profiles"); // back in the root menu, on Profiles
+    CHECK(r.frame().inverted == 0x10);
 }
 
 TEST_CASE("the startup profile reads as words or a profile number") {

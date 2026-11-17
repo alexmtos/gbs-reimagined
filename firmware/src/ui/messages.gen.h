@@ -49,6 +49,11 @@ enum class Msg : uint8_t {
     StatusHeap, // oled.status.heap
     StatusLockOn, // oled.status.lockOn
     StatusLockOff, // oled.status.lockOff
+    LockPassthrough, // oled.lock.passthrough
+    LockForce60, // oled.lock.force60
+    LockNoClockGen, // oled.lock.noClockGen
+    LockOutOfRange, // oled.lock.outOfRange
+    LockLocking, // oled.lock.locking
     On, // oled.on
     Off, // oled.off
     CalibrateTooHot, // oled.calibrate.tooHot
