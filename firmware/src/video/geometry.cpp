@@ -49,6 +49,25 @@ bool frameFor(uint8_t presetId, Frame& f) {
     }
 }
 
+// The PAL programs, with a 15 kHz PAL source: how many source lines down a full-height picture
+// (all 576 lines) sits centred on the lines the converter shows. The programs' windows start above
+// those lines, so the top of the picture was lost (1080p: 15 output lines cut, 15 black at the
+// bottom). Measured with a PS2 menu that fills all 576 lines, by stepping the vertical position
+// (docs/bench/B05.md). The NTSC programs' windows are already centred on the converter's lines.
+int8_t palCentreFor(uint8_t presetId) {
+    switch (presetId) {
+    case 0x15: // 1080p: the picture then fills the 1080 lines exactly
+    case 0x11: // 1280x960: likewise
+        return 4;
+    case 0x12: // 1280x1024: 33 black lines above, 35 below (of the 1080 captured)
+        return 3;
+    case 0x14: // 576p: 22 above, 25 below
+        return 12;
+    default: // 720p: already centred
+        return 0;
+    }
+}
+
 // Horizontally the user's size stops at 2x (divisor 512), or at the shape's own divisor where that
 // is lower (480p: 478, clean): at 1280x960, 489 displaced a line now and then, 467 several and 447
 // garbled the picture (docs/bench/M2.md). Vertically the reference's limit holds (445 was clean).
@@ -143,6 +162,10 @@ GeometryBase readGeometryBase(tv5725::Chip& chip, const PathContext& ctx) {
         b.shapeW = f.shapeW;
         b.shapeH = f.shapeH;
     }
+    // Not with output.force60 (a PAL source on the 60 Hz programs: preset ids below 0x10, which
+    // palCentreFor answers with 0), nor for a 576p source, whose capture this was not measured
+    // with.
+    b.vCentre = ctx.standard == Standard::Pal ? palCentreFor(b.presetId) : 0;
 
     if (chip.errorCount() != errorsBefore || b.htotal < 256 || b.disHbSt <= b.disHbSp ||
         b.disHbSt > b.htotal || b.disVbSt <= b.disVbSp || b.disVbSt > b.vtotal || b.ifLine < 256 ||
@@ -322,9 +345,10 @@ GeometryRegs computeGeometry(const GeometryBase& b, const GeometryAdjust& adj, u
     h = clampTo(h, kMinWindow, h0);
     const int32_t k = divRound(static_cast<int64_t>(h) * vs, 1024);
     const int32_t vPlaced = (b.disVbSt + b.disVbSp) / 2 - h / 2;
-    // One source line per step, in output lines at the program's own scale.
+    // One source line per step, in output lines at the program's own scale; the PAL programs start
+    // from their centred place (vCentre).
     const int32_t vMove =
-        divRound(static_cast<int64_t>(adj.vPosition) * b.lineStep * 1024, b.vscale);
+        divRound(static_cast<int64_t>(adj.vPosition + b.vCentre) * b.lineStep * 1024, b.vscale);
     // The window may not start before the sync plus the fetch lead, nor end after the frame (the
     // programs already end at the last line): past either limit the picture is cut there.
     const int32_t fetchLeadV = b.disVbSp - (b.vbSt < b.vbSp ? b.vbSt : b.vbSp);

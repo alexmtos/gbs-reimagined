@@ -51,3 +51,8 @@ para voltar aos seus ajustes.
 **A página web não abre:** use o endereço mostrado na tela inicial da placa (alguns celulares não
 entendem `gbs.local`). Se a telinha mostrar a rede própria da placa (**GBS-** e quatro caracteres),
 ela não conseguiu entrar na sua: veja [Conectando ao seu Wi-Fi](README.md#conectando-ao-seu-wi-fi).
+
+**A página web para de responder com um console de 50 Hz (PAL) em 1280x960:** com o frame lock
+ligado, essa combinação atrapalha o próprio Wi-Fi da placa, enquanto a imagem continua ([notas de
+bancada, B-05, em inglês](../../bench/B05.md)). No menu da placa, em **Saída**, escolha **Auto**
+(1280x1024 para consoles de 50 Hz) ou outra resolução, ou desligue o **Frame lock**.

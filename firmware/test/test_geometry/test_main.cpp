@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "../support/doctest_main.h"
 #include "../support/fake_i2c.h"
 #include "chip/fields.gen.h"
@@ -325,6 +327,57 @@ TEST_CASE("the 15 kHz programs take position only") {
     CHECK(g.vscale == g0.vscale);
     CHECK(g.disHbSp == g0.disHbSp - 8);
     CHECK(g.ifHbSp2 == g0.ifHbSp2);
+}
+
+TEST_CASE("the PAL programs start the picture lower, onto the lines the converter shows") {
+    // Source lines down, as measured with a full-height PS2 picture (docs/bench/B05.md).
+    const std::pair<tv5725::ProgramId, int> kMoves[] = {
+        {tv5725::ProgramId::Pal1080p, 4}, {tv5725::ProgramId::Pal960p, 4},
+        {tv5725::ProgramId::Pal1024p, 3}, {tv5725::ProgramId::Pal576p, 12},
+        {tv5725::ProgramId::Pal720p, 0},
+    };
+    for (const auto& [id, lines] : kMoves) {
+        Rig r(id, Standard::Pal, 625);
+        CHECK(r.base.vCentre == lines);
+        // The same place as the user's vertical position would give from the program's window,
+        // and the user's position still moves from there.
+        video::GeometryBase raw = r.base;
+        raw.vCentre = 0;
+        GeometryAdjust moved;
+        moved.vPosition = static_cast<int8_t>(lines);
+        CHECK(r.at({}) == video::computeGeometry(raw, moved, raw.htotal));
+        // Across the user's whole range: the window stays inside the frame and is cut, not
+        // wrapped, at either end.
+        for (const int8_t v : {int8_t{-64}, int8_t{-2}, int8_t{64}}) {
+            GeometryAdjust user;
+            user.vPosition = v;
+            moved.vPosition = static_cast<int8_t>(lines + v);
+            const GeometryRegs g = r.at(user);
+            CHECK(g == video::computeGeometry(raw, moved, raw.htotal));
+            CHECK(g.disVbSp < g.disVbSt);
+            CHECK(g.disVbSt <= r.base.vtotal);
+            CHECK(g.ifVbSp >= r.base.ifVbSp);
+        }
+        // The frame lock's shorter line changes the horizontal fields only.
+        const GeometryRegs shorter = video::computeGeometry(r.base, {}, r.base.htotal - 8);
+        CHECK(shorter.disVbSp == r.at({}).disVbSp);
+        CHECK(shorter.disVbSt == r.at({}).disVbSt);
+        CHECK(shorter.ifVbSp == r.at({}).ifVbSp);
+    }
+    Rig pal1080(tv5725::ProgramId::Pal1080p, Standard::Pal, 625);
+    video::GeometryBase raw = pal1080.base;
+    raw.vCentre = 0;
+    const GeometryRegs g = pal1080.at({});
+    const GeometryRegs g0 = video::computeGeometry(raw, {}, raw.htotal);
+    // Four source lines: eight IF lines behind the line doubler, at the base's scale.
+    CHECK(g.disVbSp - g0.disVbSp == (8 * 1024 + raw.vscale / 2) / raw.vscale);
+    CHECK(g.ifVbSp == g0.ifVbSp); // the capture itself is unchanged
+
+    // Only a 15 kHz PAL source on the PAL programs: not output.force60 (the 60 Hz programs), not a
+    // 576p source, not NTSC.
+    CHECK(Rig(tv5725::ProgramId::Ntsc1080p, Standard::Pal, 625).base.vCentre == 0);
+    CHECK(Rig(tv5725::ProgramId::Pal1080p, Standard::Edtv50, 625).base.vCentre == 0);
+    CHECK(Rig(tv5725::ProgramId::Ntsc1080p, Standard::Ntsc).base.vCentre == 0);
 }
 
 TEST_CASE("PAL 4:3 uses the 625-line width: 960p is a little narrower than the program") {
