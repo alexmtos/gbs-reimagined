@@ -84,6 +84,7 @@ clock de saída e o endereço da placa na sua rede.
 | Gire | andar pelo menu ou mudar um valor |
 | Gire segurando o botão apertado | mudar um número de dez em dez |
 | Segure por cerca de um segundo | voltar (e, editando, desfazer a mudança); na tela inicial, abrir os perfis |
+| Aperte duas vezes rápido sobre um ajuste | devolver o valor padrão desse ajuste |
 
 Os ajustes de imagem mudam enquanto você gira, para você acompanhar na TV. A resolução de saída e
 o frame lock só mudam quando você aperta, para a imagem não passar por todos os modos no caminho.

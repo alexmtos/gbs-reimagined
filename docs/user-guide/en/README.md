@@ -83,6 +83,7 @@ output clock, and the board's address on your network.
 | Turn it | move through the menu, or change a value |
 | Turn it while holding it down | change a number ten steps at a time |
 | Hold it for about a second | go back (and, while editing, undo the change); on the home screen, open the profiles |
+| Press it twice quickly on a setting | put that setting's default value back |
 
 Picture settings change as you turn, so you can watch the TV. The output resolution and frame lock
 change only when you press, so the picture does not jump through every mode on the way. The

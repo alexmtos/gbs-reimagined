@@ -25,10 +25,10 @@ struct RootItem {
     RootEntry entry;
     uint8_t group; // for RootEntry::Group
 };
+// The web page's order: Status, Output, Input, Picture, Profiles, Network, System.
 constexpr RootItem kRoot[] = {
-    {RootEntry::Group, 0},    {RootEntry::Group, 1},   {RootEntry::Group, 2},
-    {RootEntry::Profiles, 0}, {RootEntry::Network, 0}, {RootEntry::Status, 0},
-    {RootEntry::Group, 3},    {RootEntry::Back, 0},
+    {RootEntry::Status, 0},   {RootEntry::Group, 0},   {RootEntry::Group, 1}, {RootEntry::Group, 2},
+    {RootEntry::Profiles, 0}, {RootEntry::Network, 0}, {RootEntry::Group, 3}, {RootEntry::Back, 0},
 };
 constexpr uint8_t kRootItems = sizeof kRoot / sizeof kRoot[0];
 
@@ -173,6 +173,29 @@ bool inGroup(Id id, uint8_t group) {
     return strncmp(name, kGroupPrefix[group], strlen(kGroupPrefix[group])) == 0;
 }
 
+// The word after a clock on the board's screen (10 characters at most): locked, switched off, or
+// why frame lock is inactive (core::FrameLockReason), as the web page's Status says it.
+i18n::Msg lockWord(const core::StatusModel& s) {
+    if (s.frameLock == core::FrameLockState::Locked) {
+        return i18n::Msg::StatusLockOn;
+    }
+    if (s.frameLock == core::FrameLockState::Off) {
+        return i18n::Msg::StatusLockOff;
+    }
+    switch (s.lockReason) {
+    case core::FrameLockReason::Passthrough:
+        return i18n::Msg::LockPassthrough;
+    case core::FrameLockReason::Force60:
+        return i18n::Msg::LockForce60;
+    case core::FrameLockReason::NoClockGen:
+        return i18n::Msg::LockNoClockGen;
+    case core::FrameLockReason::OutOfRange:
+        return i18n::Msg::LockOutOfRange;
+    default:
+        return i18n::Msg::LockLocking;
+    }
+}
+
 } // namespace
 
 bool Frame::operator==(const Frame& o) const {
@@ -269,6 +292,7 @@ void Menu::openGroup(uint8_t group) {
 
 void Menu::startEdit(Id id) {
     editId_ = id;
+    editTurned_ = false;
     editValue_ = editOriginal_ = ctl_.get(id);
     screen_ = Screen::Edit;
 }
@@ -335,6 +359,7 @@ void Menu::turn(int steps, bool coarse, uint32_t nowMs) {
         moveCursor(steps, 5);
         break;
     case Screen::Edit: {
+        editTurned_ = true;
         const settings::Def d = settings::def(editId_);
         int v = editValue_;
         if (d.type == settings::Type::Bool) {
@@ -417,9 +442,19 @@ void Menu::press(uint32_t nowMs) {
         }
         break;
     case Screen::Group:
+        editEnteredMs_ = nowMs;
         activate(items_[cursor_], nowMs);
         break;
     case Screen::Edit:
+        if (!editTurned_ && nowMs - editEnteredMs_ <= kDoublePressMs) {
+            // A double press on a value (enter it, press again at once): its default, applied and
+            // shown; the next press leaves (docs/design/ux.md, gestures). Entering and leaving
+            // without a turn changed nothing before, so no other gesture is lost.
+            editValue_ = settings::def(editId_).def;
+            ctl_.set(editId_, editValue_, core::Origin::Oled, nowMs);
+            editTurned_ = true;
+            break;
+        }
         if (settings::def(editId_).risky()) {
             ctl_.set(editId_, editValue_, core::Origin::Oled, nowMs);
         }
@@ -702,9 +737,7 @@ void Menu::renderHome(Frame& f) const {
         setLine(f, 2, a);
     }
     if (s.pixelClockHz != 0) {
-        msg(s.frameLock == core::FrameLockState::Locked ? i18n::Msg::StatusLockOn
-                                                        : i18n::Msg::StatusLockOff,
-            b, sizeof b);
+        msg(lockWord(s), b, sizeof b);
         snprintf(a, sizeof a, "%lu.%02lu MHz %s",
                  static_cast<unsigned long>(s.pixelClockHz / 1'000'000),
                  static_cast<unsigned long>(s.pixelClockHz / 10'000 % 100), b);
@@ -887,9 +920,7 @@ void Menu::renderStatus(Frame& f) const {
              static_cast<unsigned long>(s.pixelClockHz / 1'000'000),
              static_cast<unsigned long>(s.pixelClockHz / 10'000 % 100));
     setLine(f, 2, text);
-    msg(s.frameLock == core::FrameLockState::Locked ? i18n::Msg::StatusLockOn
-                                                    : i18n::Msg::StatusLockOff,
-        word, sizeof word);
+    msg(lockWord(s), word, sizeof word);
     snprintf(text, sizeof text, "%lu.%03lu Hz %s", static_cast<unsigned long>(s.rateMilliHz / 1000),
              static_cast<unsigned long>(s.rateMilliHz % 1000), word);
     setLine(f, 3, text);
