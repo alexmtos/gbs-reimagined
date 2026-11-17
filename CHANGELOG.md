@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.2.0...v1.3.0) (2026-11-17)
+
+
+### Features
+
+* **video:** 8:7 aspect ([#28](https://github.com/alexmtos/gbs-reimagined/issues/28)) ([63a7b91](https://github.com/alexmtos/gbs-reimagined/commit/63a7b91a798cbdb0eff9c1545b62621d9463fd5b))
+
 ## [1.2.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.2...v1.2.0) (2026-11-17)
 
 ### New
