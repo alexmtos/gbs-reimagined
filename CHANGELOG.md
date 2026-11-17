@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.1...v1.1.2) (2026-11-17)
+
+
+### Bug Fixes
+
+* show the top of a PAL picture on HDMI; bench B-05 ([#23](https://github.com/alexmtos/gbs-reimagined/issues/23)) ([215c10d](https://github.com/alexmtos/gbs-reimagined/commit/215c10d6f9ff2631e824f57bcf6901b9aaa730fc))
+
 ## [1.1.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.0...v1.1.1) (2026-11-17)
 
 ### Fixes
