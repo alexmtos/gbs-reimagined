@@ -146,6 +146,34 @@ TV fixes itself. The waiting time can be changed in **System → Confirm within*
 that changes one of these settings asks the same way, and a revert brings back everything the
 profile changed.
 
+## Choosing the output resolution for your display
+
+**Output resolution** is on the **Output** page and in the board's menu. **Auto**, the default, is
+the place to start: 1280x960 for 60 Hz consoles and 1280x1024 for 50 Hz ones. If your display shows
+nothing after a change made on the web page, the board goes back by itself after 20 seconds (see
+[Changes that need your confirmation](#changes-that-need-your-confirmation)). A change made with the
+knob applies when you press and is not undone: if the display stays dark, choose another resolution
+on the board, or start it in safe mode (see
+[The knob and the small screen](#the-knob-and-the-small-screen)).
+
+| Your display | Try | Why |
+|---|---|---|
+| A TV over HDMI | **1080p** | What TVs expect. The 4:3 picture gets black bars at the sides; **Integer scale** makes 240p lines even |
+| A PC monitor | **Auto**: **1280x960** or **1280x1024** | 240p games come out exactly four times taller at 1280x960; at 1280x1024 (50 Hz consoles) a 4:3 picture gets thin bars above and below |
+| A TV or monitor that does not take 1080p | **720p** | 240p games come out exactly three times taller |
+| A display or upscaler that wants a low resolution | **480p / 576p** | 240p games come out exactly twice as tall at 480p, 288p ones at 576p |
+| A CRT on the board's VGA / RGBS output | **15 kHz (CRT)** | Meant for a CRT. Not yet tried with one on the project's bench, and an HDMI display may show nothing |
+| A monitor that prefers 1024x768, 800x600, 1600x1200 or 1920x1200 | the **(exp.)** modes | See [Picture shape, position and size](#picture-shape-position-and-size) |
+
+On the project's bench, the board's HDMI output gave a picture at 1280x960, 1280x1024, 1080p, 720p
+and 480p / 576p with every source tried (a 240p and a 480i console on RGB, a Wii at 480p on
+component, a PAL PS2), with frame lock following the console. It was checked with a capture card,
+not on every kind of TV ([bench notes, M1](../../bench/M1.md)).
+
+**Frame lock** (on the same page) makes the output follow the console's refresh exactly: no judder,
+no tearing. Keep it on; turn it off only if your display refuses the picture with it. With a PAL
+console, Auto sends 50 Hz: if your display takes 60 Hz only, turn on **Force 60 Hz**.
+
 ## Picture shape, position and size
 
 On the **Output** page:
@@ -200,6 +228,21 @@ adjust the position and size.
 Force 60 Hz (on the **Output** page) is for displays that do not accept 50 Hz: a PAL console is then
 shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little (one frame in five is
 shown twice); leave it off if your display takes 50 Hz.
+
+## Picture settings
+
+On the **Picture** page, and under **Picture** in the board's menu. They change as you turn, so you
+can watch the TV, and each profile keeps its own.
+
+- **Brightness**, **Contrast** and **Saturation** go from -32 to +32; 0 shows the console as it is
+  sent. Brightness raises or lowers the whole picture, contrast widens or narrows the gap between
+  dark and bright, saturation makes colours stronger or weaker. If whites look burnt or colours
+  washed out, try [Input levels](#input-levels) first (advanced settings, on the **Input** page):
+  they fix the signal itself.
+- **Sharpness** emphasises edges: **Off**, the default, shows the picture as sampled; **Low**,
+  **Medium** and **High** add more and more.
+- **Default**, next to a changed setting on the web page, or a double press on the board, puts its
+  default back.
 
 ## Scanlines and the deinterlacer
 
@@ -330,8 +373,3 @@ Connect the board's USB port to a computer and open a serial terminal at **11520
 | `calibrate` | calibrate levels against a white screen |
 | `profile` | the saved profiles; `profile load 3`, `profile save 3 Mega Drive`, `profile source 3 on` |
 | `factory-reset` | settings and levels back to defaults, profiles kept (type it twice) |
-
-## Coming in this guide
-
-1. Choosing the output resolution for your display
-2. Picture settings
