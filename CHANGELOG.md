@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.2.0...v1.3.0) (2026-11-17)
+
+### New
+
+* **8:7 aspect** ([#28](https://github.com/alexmtos/gbs-reimagined/pull/28)): a new choice under **Aspect**, on the **Output** page and in the board's menu.
+  * The picture is a little narrower than 4:3 (six sevenths of its width), the shape many players prefer for consoles that draw 256 pixels per line, such as the SNES and the NES: their pixels come out square.
+  * At **1280x1024** it fills the screen's height, where 4:3 has thin bars above and below.
+* **User guide**, in English and Portuguese: the new choice is described under *Picture shape, position and size*.
+
 ## [1.2.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.2...v1.2.0) (2026-11-17)
 
 ### New
