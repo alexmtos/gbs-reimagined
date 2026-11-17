@@ -49,7 +49,9 @@ settings:
     risky: true
   output.aspect:
     type: enum
-    values: [a4x3, a16x9, full]
+    # New values go at the end: settings store the index. a8x7 is the community's 8:7, six
+    # sevenths of the 4:3 width (docs/bench/M2.md, 8:7).
+    values: [a4x3, a16x9, full, a8x7]
     default: a4x3
     tier: essential
     milestone: M2

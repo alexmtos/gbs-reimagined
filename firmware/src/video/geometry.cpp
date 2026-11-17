@@ -212,6 +212,11 @@ Shape shapeOf(const GeometryBase& b, const GeometryAdjust& adj, uint16_t htotal)
     } else if (adj.aspect == Aspect::Full) {
         rw = b.shapeW;
         rh = b.shapeH;
+    } else if (adj.aspect == Aspect::EightSeven) {
+        // The community's 8:7 (RetroTINK, OSSC): the full height at 8:7, six sevenths of the 4:3
+        // width, so a 256-pixel console's pixels come out square (user decision 2026-11-17).
+        rw = 8;
+        rh = 7;
     }
     // Share of the frame the picture's full height and 4:3 width fill. A picture wider than the
     // frame is letterboxed (user decision 2026-10-14).

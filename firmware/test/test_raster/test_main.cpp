@@ -223,6 +223,23 @@ TEST_CASE("1080p gets a longer line only when the picture would be over 2 % too 
     CHECK_FALSE(video::stretchFor(ntsc, narrower, 0x85).valid);
 }
 
+TEST_CASE("8:7 at 1080p takes a longer line and comes out six sevenths of 4:3") {
+    GeometryAdjust adj;
+    adj.aspect = Aspect::EightSeven;
+    const video::GeometryBase ntsc = programBase(tv5725::ProgramId::Ntsc1080p, Standard::Ntsc, 525);
+    const video::LoadStretch n = video::stretchFor(ntsc, adj, 0x85);
+    REQUIRE(n.valid);
+    const GeometryRegs gn = video::computeGeometry(n.base, adj, n.htotal);
+    CHECK(gn.hscale <= 1014); // within the scaler's reach, with room for the user's size
+    CHECK(widthShare(n.base, gn) == doctest::Approx(750 * 6 / 7.0).epsilon(0.01));
+
+    const video::GeometryBase pal = programBase(tv5725::ProgramId::Pal1080p, Standard::Pal, 625);
+    const video::LoadStretch p = video::stretchFor(pal, adj, 0x65);
+    REQUIRE(p.valid);
+    const GeometryRegs gp = video::computeGeometry(p.base, adj, p.htotal);
+    CHECK(widthShare(p.base, gp) == doctest::Approx(750 * 6 / 7.0).epsilon(0.01));
+}
+
 TEST_CASE("every extra mode also fits a PAL source's 1080p program at 50 Hz") {
     const video::GeometryBase pal = programBase(tv5725::ProgramId::Pal1080p, Standard::Pal, 625);
     REQUIRE(pal.valid);
@@ -259,6 +276,9 @@ TEST_CASE("only the 1080p programs ever ask for a longer line") {
         const uint8_t code = tv5725::programInfo(c.id).displayClock;
         CHECK_FALSE(video::stretchFor(b, {}, code).valid);
         CHECK_FALSE(video::stretchFor(b, integer(), code).valid);
+        GeometryAdjust eightSeven;
+        eightSeven.aspect = Aspect::EightSeven;
+        CHECK_FALSE(video::stretchFor(b, eightSeven, code).valid);
     }
     const video::GeometryBase ntsc = programBase(P::Ntsc1080p, Standard::Ntsc, 525);
     CHECK(video::stretchFor(ntsc, integer(), tv5725::programInfo(P::Ntsc1080p).displayClock).valid);

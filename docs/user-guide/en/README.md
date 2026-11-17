@@ -196,6 +196,10 @@ On the **Output** page:
     at 1080p and 720p; at 1280x960 and 1280x1024 it gets black bars above and below, so it still
     looks right on a 4:3 or 5:4 monitor. At 480p / 576p it looks the same as 4:3.
   - **Full screen** fills the screen whatever its shape, stretching the picture.
+  - **8:7** is a little narrower than 4:3 (six sevenths of its width), the shape many players
+    prefer for consoles that draw 256 pixels per line, such as the SNES and the NES: their pixels
+    come out square. At **1280x1024** it fills the screen's height, where 4:3 has thin bars above
+    and below.
 - **Horizontal position** and **Vertical position** — move the picture, for consoles that put it a
   little off centre. Each vertical step is one line of the console's picture. Where the picture
   reaches the edge of the screen, it is cut there.

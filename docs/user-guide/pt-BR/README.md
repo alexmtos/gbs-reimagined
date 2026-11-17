@@ -196,6 +196,10 @@ Na aba **Saída**:
     1080p e 720p; em 1280x960 e 1280x1024 ganha faixas pretas em cima e embaixo, para continuar
     correta num monitor 4:3 ou 5:4. Em 480p / 576p fica igual a 4:3.
   - **Tela cheia** ocupa a tela, seja qual for o formato dela, esticando a imagem.
+  - **8:7** é um pouco mais estreito que 4:3 (seis sétimos da largura), o formato que muitos
+    jogadores preferem para consoles que desenham 256 pixels por linha, como o Super Nintendo e o
+    Nintendinho: os pixels deles ficam quadrados. Em **1280x1024** ele ocupa a altura toda da tela,
+    onde o 4:3 tem faixas finas em cima e embaixo.
 - **Posição horizontal** e **Posição vertical** — movem a imagem, para consoles que a colocam um
   pouco fora do centro. Cada passo vertical é uma linha da imagem do console. Onde a imagem chega à
   borda da tela, ela é cortada ali.
