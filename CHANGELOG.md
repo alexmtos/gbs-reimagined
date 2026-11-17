@@ -2,10 +2,15 @@
 
 ## [1.1.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.1...v1.1.2) (2026-11-17)
 
+### Fixes
 
-### Bug Fixes
-
-* show the top of a PAL picture on HDMI; bench B-05 ([#23](https://github.com/alexmtos/gbs-reimagined/issues/23)) ([215c10d](https://github.com/alexmtos/gbs-reimagined/commit/215c10d6f9ff2631e824f57bcf6901b9aaa730fc))
+* **The top of a 50 Hz (PAL) console's picture is no longer cut on HDMI** ([#23](https://github.com/alexmtos/gbs-reimagined/pull/23)):
+  * at 1080p and 1280x960 the whole picture now fits the screen; before, about 15 lines at the top were lost while a black band was left at the bottom;
+  * at 576p and 1280x1024 the picture is now centred;
+  * if you had moved the picture down with **Vertical position** to see its top, set it back to 0.
+* **User guide**, in English and Portuguese:
+  * with **Force 60 Hz**, 480p shows 480 of a PAL console's 576 lines;
+  * with a PAL console at 1280x960 and frame lock on, the board's Wi-Fi can stop answering: choose **Auto** (1280x1024) or turn frame lock off.
 
 ## [1.1.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.0...v1.1.1) (2026-11-17)
 
