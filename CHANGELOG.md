@@ -2,10 +2,13 @@
 
 ## [1.1.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.0...v1.1.1) (2026-11-17)
 
+### Fixes
 
-### Bug Fixes
-
-* board menu matches the web page; guide sections; no Renovate ([#21](https://github.com/alexmtos/gbs-reimagined/issues/21)) ([f70c74c](https://github.com/alexmtos/gbs-reimagined/commit/f70c74c571e6188ccd874f36ce1e7b1085938dbe))
+* **The board's menu matches the web page** ([#21](https://github.com/alexmtos/gbs-reimagined/pull/21)):
+  * the menu follows the page's order: Status, Output, Input, Picture, Profiles, Network, System;
+  * the home screen says why frame lock is inactive (bypass, 60 forced, no clock, no match, locking);
+  * entering a setting and pressing again at once puts its default value back.
+* **User guide:** new sections on choosing the output resolution for your display and on the picture settings, in English and Portuguese.
 
 ## [1.1.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.3...v1.1.0) (2026-10-15)
 
