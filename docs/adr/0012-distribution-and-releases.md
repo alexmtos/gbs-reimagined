@@ -1,6 +1,6 @@
 # 0012. Distribution: browser installer, browser-assisted OTA, release-please, Renovate
 
-- Status: accepted
+- Status: accepted; the dependency-update decision superseded by [0016](0016-dependencies-updated-by-hand.md)
 - Date: 2026-10-13
 
 ## Context
