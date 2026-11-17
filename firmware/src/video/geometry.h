@@ -38,6 +38,9 @@ struct GeometryBase {
     // programs, which bypass the converter: position only.
     uint16_t frameActive = 0, frameTotal = 0, frameLines = 0;
     uint8_t shapeW = 0, shapeH = 0;
+    // Source lines the picture moves down before the user's vertical position: the PAL programs'
+    // windows start above what the converter shows. Zero for every other program and source.
+    int8_t vCentre = 0;
     bool hasFrame() const { return frameTotal != 0 && frameLines != 0; }
 };
 
