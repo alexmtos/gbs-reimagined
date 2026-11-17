@@ -2,10 +2,13 @@
 
 ## [1.2.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.2...v1.2.0) (2026-11-17)
 
+### New
 
-### Features
-
-* QR codes on the board's screen ([#26](https://github.com/alexmtos/gbs-reimagined/issues/26)) ([f787fe8](https://github.com/alexmtos/gbs-reimagined/commit/f787fe8fbf260459ca5cd2662d0152967492a40f))
+* **QR codes on the board's screen** ([#26](https://github.com/alexmtos/gbs-reimagined/pull/26)): in the board's menu, choose **Network** and press the knob.
+  * On the board's own setup network (**GBS-** and four characters), the code lets a phone join it without typing the password.
+  * On your Wi-Fi, the code opens the board's web page from the phone's camera, with no address to type.
+  * The screen dims while a code shows, and the code stays a minute; press again, or hold, to go back.
+* **User guide**, in English and Portuguese: the Wi-Fi steps and the board's menu explain the codes.
 
 ## [1.1.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.1...v1.1.2) (2026-11-17)
 
