@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "platform/progmem.h"
+#include "ui/qr.h"
 #include "ui/strings.h"
 #include "version.h"
 #include "video/adc_levels.h"
@@ -199,7 +200,7 @@ i18n::Msg lockWord(const core::StatusModel& s) {
 } // namespace
 
 bool Frame::operator==(const Frame& o) const {
-    if (inverted != o.inverted) {
+    if (inverted != o.inverted || strcmp(qr, o.qr) != 0) {
         return false;
     }
     for (uint8_t i = 0; i < kLines; ++i) {
@@ -208,6 +209,31 @@ bool Frame::operator==(const Frame& o) const {
         }
     }
     return true;
+}
+
+uint32_t Frame::hash() const {
+    uint32_t h = 2166136261u;
+    const auto mix = [&h](uint8_t byte) {
+        h ^= byte;
+        h *= 16777619u;
+    };
+    // The text up to each terminator, and the terminator itself, so "ab"+"" and "a"+"b" differ.
+    for (uint8_t i = 0; i < kLines; ++i) {
+        for (const char* p = line[i];; ++p) {
+            mix(static_cast<uint8_t>(*p));
+            if (*p == '\0') {
+                break;
+            }
+        }
+    }
+    mix(inverted);
+    for (const char* p = qr;; ++p) {
+        mix(static_cast<uint8_t>(*p));
+        if (*p == '\0') {
+            break;
+        }
+    }
+    return h;
 }
 
 uint8_t Menu::locale() const {
@@ -481,7 +507,15 @@ void Menu::press(uint32_t nowMs) {
     case Screen::Action:
         screen_ = Screen::Group;
         break;
-    case Screen::Network:
+    case Screen::Network: {
+        // A QR code to join the setup network or to open the web page (docs/design/ux.md).
+        char text[sizeof Frame::qr];
+        screen_ = networkQrText(text, sizeof text) ? Screen::NetworkQr : Screen::Root;
+        break;
+    }
+    case Screen::NetworkQr:
+        screen_ = Screen::Network;
+        break;
     case Screen::Status:
         screen_ = Screen::Root;
         break;
@@ -511,6 +545,9 @@ void Menu::longPress(uint32_t nowMs) {
     case Screen::Network:
     case Screen::Status:
         leaveToRoot(rootIndex(screen_ == Screen::Network ? RootEntry::Network : RootEntry::Status));
+        break;
+    case Screen::NetworkQr:
+        screen_ = Screen::Network;
         break;
     case Screen::Confirm:
     case Screen::Action:
@@ -663,8 +700,18 @@ void Menu::tick(uint32_t nowMs) {
         screen_ = Screen::Home; // answered elsewhere, or timed out
         return;
     }
+    // The network changed under the QR code (the board is joining again): back to the page, whose
+    // hint and press then say and do the same as everywhere else.
+    if (screen_ == Screen::NetworkQr) {
+        char text[sizeof Frame::qr];
+        if (!networkQrText(text, sizeof text)) {
+            screen_ = Screen::Network;
+        }
+    }
+    // A QR code stays twice as long: time to take out a phone and point it.
+    const uint32_t homeAfterMs = screen_ == Screen::NetworkQr ? 2 * kHomeAfterMs : kHomeAfterMs;
     if (screen_ != Screen::Home && screen_ != Screen::Revert &&
-        nowMs - lastInputMs_ >= kHomeAfterMs) {
+        nowMs - lastInputMs_ >= homeAfterMs) {
         screen_ = Screen::Home;
     }
 }
@@ -687,6 +734,9 @@ void Menu::render(Frame& f, uint32_t nowMs) const {
         break;
     case Screen::Network:
         renderNetwork(f);
+        break;
+    case Screen::NetworkQr:
+        renderNetworkQr(f);
         break;
     case Screen::Status:
         renderStatus(f);
@@ -899,8 +949,34 @@ void Menu::renderNetwork(Frame& f) const {
         }
         break;
     }
-    msg(i18n::Msg::MenuHintBack, text, sizeof text);
+    char qr[sizeof Frame::qr];
+    msg(networkQrText(qr, sizeof qr) ? i18n::Msg::NetQrHint : i18n::Msg::MenuHintBack, text,
+        sizeof text);
     setLine(f, 5, text);
+}
+
+bool Menu::networkQrText(char* out, size_t cap) const {
+    out[0] = '\0';
+    switch (net_.mode) {
+    case NetView::Mode::Setup:
+        return wifiQrText(net_.apSsid, net_.apPassword, out, cap);
+    case NetView::Mode::Joined:
+        if (net_.ip == 0) {
+            return false;
+        }
+        urlQrText(net_.ip, out, cap);
+        return true;
+    case NetView::Mode::Joining:
+        break;
+    }
+    return false;
+}
+
+void Menu::renderNetworkQr(Frame& f) const {
+    // The network may have changed meanwhile (the board joined, or lost, the home Wi-Fi).
+    if (!networkQrText(f.qr, sizeof f.qr)) {
+        renderNetwork(f);
+    }
 }
 
 void Menu::renderStatus(Frame& f) const {

@@ -40,6 +40,7 @@ enum class Msg : uint8_t {
     NetRefused, // oled.net.refused
     NetNotFound, // oled.net.notFound
     NetNoAnswer, // oled.net.noAnswer
+    NetQrHint, // oled.net.qrHint
     Reboot, // oled.reboot
     FactoryReset, // oled.factoryReset
     Confirm, // oled.confirm

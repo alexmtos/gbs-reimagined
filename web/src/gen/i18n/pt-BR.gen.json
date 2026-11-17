@@ -383,6 +383,7 @@
     "oled.net.refused": "Senha recusada",
     "oled.net.notFound": "Rede não encontrada",
     "oled.net.noAnswer": "A rede não respondeu",
+    "oled.net.qrHint": "Aperte: QR code",
     "oled.reboot": "Reiniciar",
     "oled.factoryReset": "Restaurar fábrica",
     "oled.confirm": "Aperte de novo: ok",

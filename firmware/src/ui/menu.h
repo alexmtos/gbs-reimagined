@@ -16,9 +16,13 @@ struct Frame {
     static constexpr uint8_t kCols = 21;
     char line[kLines][kCols * 2 + 1] = {};
     uint8_t inverted = 0; // bit n: line n highlighted
+    // Text shown as a QR code filling the screen's height, instead of the lines; empty for none.
+    char qr[48] = {};
 
     bool operator==(const Frame& o) const;
     bool operator!=(const Frame& o) const { return !(*this == o); }
+    // FNV-1a over what is shown: the renderer keeps this instead of a copy of the last frame.
+    uint32_t hash() const;
 };
 
 // The network as the OLED needs it, filled by the composition root from net::Wifi.
@@ -68,6 +72,7 @@ private:
         Group,
         Edit,
         Network,
+        NetworkQr, // the network page's QR code: join the setup network, or open the web page
         Status,
         Confirm,
         Action,
@@ -104,6 +109,9 @@ private:
     void renderList(Frame& f) const;
     void renderEdit(Frame& f) const;
     void renderNetwork(Frame& f) const;
+    void renderNetworkQr(Frame& f) const;
+    // The QR code's text for the network as it is now; false when there is none (joining).
+    bool networkQrText(char* out, size_t cap) const;
     void renderStatus(Frame& f) const;
     void renderConfirm(Frame& f) const;
     void renderAction(Frame& f) const;

@@ -21,6 +21,16 @@ Both were converted by the importers in `tools/codegen/` (`import_tv5725.py`,
 `import_programs.py`), which read the address annotated beside every value rather than assuming an
 order. No code was taken.
 
+## Third-party code
+
+| Code | Where it lives here | Licence |
+|---|---|---|
+| Project Nayuki's [QR Code generator library](https://www.nayuki.io/page/qr-code-generator-library), C version, v1.8.0, unmodified | `firmware/lib/qrcodegen/` (provenance and checksums in its README) | MIT, `firmware/lib/qrcodegen/LICENSE` |
+
+The firmware's other libraries (ArduinoJson, Improv, U8g2) and the web and tool dependencies are
+not copied here: they are fetched at build time at the versions pinned in `firmware/platformio.ini`,
+`web/package.json`, `installer/package.json` and `uv.lock`.
+
 ## Vendor documentation
 
 Register access (read-only or read/write), block names and page numbers in

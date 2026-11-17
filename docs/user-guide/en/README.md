@@ -90,6 +90,11 @@ change only when you press, so the picture does not jump through every mode on t
 screen goes back home after 30 seconds untouched and turns itself off after the time set in
 **System → Screen saver**; any turn or press wakes it, and so does a change of signal.
 
+**Network** in the menu shows how the board is connected. Press the knob there for a QR code that a
+phone's camera reads: on the board's own network, it joins that network; on yours, it opens the
+web page. The screen dims while the code shows, and the code stays for a minute; press again, or
+hold, to go back.
+
 **Safe mode.** If a setting ever leaves you without a picture and without the web page, restart the
 board and, **while the first screen shows "Hold knob: safe mode"**, press and hold the knob for
 five seconds. The board then starts with the factory settings and 480p output, without changing
@@ -121,14 +126,18 @@ its Wi-Fi chip, an ESP8266, has no 5 GHz radio.
 1. Power the board. It opens a Wi-Fi network called **GBS-** followed by four letters and digits
    that are unique to your board (for example `GBS-EAC4`). The password is **`qqqqqqqq`** (eight
    letters q) — the same one the original GBS-Control project uses.
-2. Connect your phone or computer to that network. The GBS Reimagined page opens by itself; if it
-   does not, open **http://192.168.4.1** in the browser.
+2. Connect your phone or computer to that network. With a phone, you can skip the typing: on the
+   board, press the knob, choose **Network** and press again. The small screen shows a QR code;
+   point the phone's camera at it (the usual camera app reads it on most phones) and accept the
+   network it offers. The GBS Reimagined page opens
+   by itself; if it does not, open **http://192.168.4.1** in the browser.
 3. Go to the **Network** tab, press **Find networks**, pick your home network, type its password
    and press **Join**. Your password goes straight to the board.
 4. The board joins your network and closes its own network about a minute later (sooner if your
    phone leaves it). Put your phone back on your usual network and open **http://gbs.local**.
    Some Android phones do not understand `.local` addresses: use the address shown on the
-   **Network** page, or the one your router lists for the board.
+   **Network** page, or the one your router lists for the board. On the board, **Network** and a
+   press show that address as a QR code, which opens the page from the phone's camera.
 
 If the board cannot reach your network for 30 seconds (the router is off, or you changed its
 password), it opens its own network again so you can fix it, and keeps trying your network every

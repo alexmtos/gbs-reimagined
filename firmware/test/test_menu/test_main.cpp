@@ -199,6 +199,77 @@ TEST_CASE("the network page also says when the network did not answer") {
     CHECK(r.line(4) == "Network: no answer");
 }
 
+TEST_CASE("a frame's hash changes with anything shown, and only with that") {
+    ui::Frame a;
+    strcpy(a.line[0], "ab");
+    ui::Frame b = a;
+    CHECK(a.hash() == b.hash());
+    strcpy(b.line[0], "a");
+    strcpy(b.line[1], "b"); // the same characters, split differently
+    CHECK(a.hash() != b.hash());
+    b = a;
+    b.inverted = 1;
+    CHECK(a.hash() != b.hash());
+    b = a;
+    strcpy(b.qr, "http://10.0.1.119/");
+    CHECK(a.hash() != b.hash());
+    b = a;
+    b.line[0][4] = 'x'; // past the terminator: not shown
+    CHECK(a.hash() == b.hash());
+}
+
+TEST_CASE("a press on the network page shows a QR code to join the setup network") {
+    Rig r;
+    r.net.mode = ui::NetView::Mode::Setup;
+    r.openGroup(5);
+    CHECK(r.line(5) == "Press: QR code");
+    r.press();
+    ui::Frame f = r.frame();
+    CHECK(std::string(f.qr) == "WIFI:T:WPA;S:GBS-EAC4;P:qqqqqqqq;;");
+    for (const auto& line : f.line) {
+        CHECK(line[0] == '\0'); // the code alone
+    }
+    r.press(); // a press goes back to the page
+    CHECK(r.line(0) == "Setup network:");
+    CHECK(r.frame().qr[0] == '\0');
+    r.press();
+    r.hold(); // and so does a long press
+    CHECK(r.line(0) == "Setup network:");
+    r.hold();
+    CHECK(r.line(4) == "Network"); // the root menu, on Network
+    CHECK(r.frame().inverted == 0x10);
+}
+
+TEST_CASE("a QR code stays a minute untouched, twice the other screens") {
+    Rig r;
+    r.openGroup(5);
+    r.press();
+    r.menu.tick(r.now + 59'000);
+    CHECK(r.frame().qr[0] != '\0');
+    r.menu.tick(r.now + 60'000);
+    CHECK(r.frame().qr[0] == '\0');
+    CHECK(r.line(0) == "Scaling"); // home
+}
+
+TEST_CASE("joined, the QR code opens the web page; while joining there is none") {
+    Rig r;
+    r.openGroup(5);
+    r.press();
+    CHECK(std::string(r.frame().qr) == "HTTP://10.0.1.119/");
+    // The code follows the network while it is on screen.
+    r.net.mode = ui::NetView::Mode::Setup;
+    CHECK(std::string(r.frame().qr) == "WIFI:T:WPA;S:GBS-EAC4;P:qqqqqqqq;;");
+    r.net.mode = ui::NetView::Mode::Joining;
+    CHECK(r.frame().qr[0] == '\0'); // at once, before the next tick
+    CHECK(r.line(0) == "Joining Wi-Fi...");
+    r.menu.tick(r.now += 100); // the tick puts the page back
+    r.turn(3);                 // turning does nothing here
+    CHECK(r.line(5) == "Long press: back");
+    r.press(); // a press there leaves, as before
+    CHECK(r.line(4) == "Network");
+    CHECK(r.frame().inverted == 0x10);
+}
+
 TEST_CASE("turning Show advanced on lists the advanced System settings at once") {
     Rig r;
     r.openGroup(6); // System: Language, Show advanced, Startup profile, ...

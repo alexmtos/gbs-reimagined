@@ -402,6 +402,7 @@ messages:
   oled.net.refused: "Password refused"
   oled.net.notFound: "Network not found"
   oled.net.noAnswer: "Network: no answer"
+  oled.net.qrHint: "Press: QR code"
   oled.reboot: "Restart"
   oled.factoryReset: "Factory reset"
   oled.confirm: "Press again: confirm"

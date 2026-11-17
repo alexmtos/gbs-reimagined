@@ -1,0 +1,10 @@
+{
+  "name": "qrcodegen",
+  "version": "1.8.0",
+  "description": "Project Nayuki's QR Code generator library, C version (vendored, unmodified; see README.md)",
+  "license": "MIT",
+  "build": {
+    "flags": "-DNDEBUG",
+    "unflags": "-Wno-volatile"
+  }
+}
