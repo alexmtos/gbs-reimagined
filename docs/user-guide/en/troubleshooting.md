@@ -54,6 +54,6 @@ understand `gbs.local`). If the board's screen shows its own network (**GBS-** a
 it could not join yours: see [Joining your Wi-Fi](README.md#joining-your-wi-fi).
 
 **The web page stops answering with a 50 Hz (PAL) console at 1280x960:** with frame lock on, that
-combination disturbs the board's own Wi-Fi, while the picture carries on ([bench notes,
-B-05](../../bench/B05.md)). On the board's menu, under **Output**, choose **Auto** (1280x1024 for
+combination can disturb the board's own Wi-Fi, at times, while the picture carries on ([bench
+notes, B-05](../../bench/B05.md)). On the board's menu, under **Output**, choose **Auto** (1280x1024 for
 50 Hz consoles) or another resolution, or turn **Frame lock** off.
