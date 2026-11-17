@@ -162,8 +162,9 @@ GeometryBase readGeometryBase(tv5725::Chip& chip, const PathContext& ctx) {
         b.shapeW = f.shapeW;
         b.shapeH = f.shapeH;
     }
-    // Not with output.force60 (a PAL source on the 60 Hz programs: preset ids below 0x10), nor for
-    // a 576p source, whose capture this was not measured with.
+    // Not with output.force60 (a PAL source on the 60 Hz programs: preset ids below 0x10, which
+    // palCentreFor answers with 0), nor for a 576p source, whose capture this was not measured
+    // with.
     b.vCentre = ctx.standard == Standard::Pal ? palCentreFor(b.presetId) : 0;
 
     if (chip.errorCount() != errorsBefore || b.htotal < 256 || b.disHbSt <= b.disHbSp ||

@@ -1,11 +1,11 @@
+#include <utility>
+
 #include "../support/doctest_main.h"
 #include "../support/fake_i2c.h"
 #include "chip/fields.gen.h"
 #include "chip/programs.h"
 #include "chip/tv5725.h"
 #include "video/geometry.h"
-
-#include <utility>
 
 using namespace gbsr;
 using namespace gbsr::tv5725::fields;
@@ -346,10 +346,23 @@ TEST_CASE("the PAL programs start the picture lower, onto the lines the converte
         GeometryAdjust moved;
         moved.vPosition = static_cast<int8_t>(lines);
         CHECK(r.at({}) == video::computeGeometry(raw, moved, raw.htotal));
-        GeometryAdjust user;
-        user.vPosition = -2;
-        moved.vPosition = static_cast<int8_t>(lines - 2);
-        CHECK(r.at(user) == video::computeGeometry(raw, moved, raw.htotal));
+        // Across the user's whole range: the window stays inside the frame and is cut, not
+        // wrapped, at either end.
+        for (const int8_t v : {int8_t{-64}, int8_t{-2}, int8_t{64}}) {
+            GeometryAdjust user;
+            user.vPosition = v;
+            moved.vPosition = static_cast<int8_t>(lines + v);
+            const GeometryRegs g = r.at(user);
+            CHECK(g == video::computeGeometry(raw, moved, raw.htotal));
+            CHECK(g.disVbSp < g.disVbSt);
+            CHECK(g.disVbSt <= r.base.vtotal);
+            CHECK(g.ifVbSp >= r.base.ifVbSp);
+        }
+        // The frame lock's shorter line changes the horizontal fields only.
+        const GeometryRegs shorter = video::computeGeometry(r.base, {}, r.base.htotal - 8);
+        CHECK(shorter.disVbSp == r.at({}).disVbSp);
+        CHECK(shorter.disVbSt == r.at({}).disVbSt);
+        CHECK(shorter.ifVbSp == r.at({}).ifVbSp);
     }
     Rig pal1080(tv5725::ProgramId::Pal1080p, Standard::Pal, 625);
     video::GeometryBase raw = pal1080.base;
