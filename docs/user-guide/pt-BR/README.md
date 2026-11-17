@@ -91,6 +91,11 @@ o frame lock só mudam quando você aperta, para a imagem não passar por todos 
 A telinha volta para o início depois de 30 segundos sem uso e se apaga depois do tempo definido
 em **Sistema → Proteção de tela**; qualquer giro ou toque a acende, e uma mudança de sinal também.
 
+**Rede**, no menu, mostra como a placa está conectada. Aperte o botão nessa opção para ver um QR
+code que a câmera do celular lê: na rede própria da placa, ele entra nessa rede; na sua, ele abre a
+página web. A telinha fica mais escura enquanto o código aparece, e o código fica por um minuto;
+aperte de novo, ou segure, para voltar.
+
 **Modo de segurança.** Se algum ajuste deixar você sem imagem e sem a página web, reinicie a placa
 e, **enquanto a primeira tela mostra "Segure: modo seguro"**, aperte e segure o botão por cinco
 segundos. A placa então começa com os ajustes de fábrica e saída 480p, sem mudar os seus ajustes
@@ -122,14 +127,18 @@ Wi-Fi dela, um ESP8266, não tem rádio de 5 GHz.
 1. Ligue a placa. Ela abre uma rede Wi-Fi chamada **GBS-** seguida de quatro letras e números
    únicos da sua placa (por exemplo `GBS-EAC4`). A senha é **`qqqqqqqq`** (oito letras q) — a
    mesma do projeto GBS-Control original.
-2. Conecte o celular ou o computador a essa rede. A página do GBS Reimagined abre sozinha; se não
-   abrir, acesse **http://192.168.4.1** no navegador.
+2. Conecte o celular ou o computador a essa rede. Com o celular, dá para não digitar nada: na
+   placa, aperte o botão, escolha **Rede** e aperte de novo. A telinha mostra um QR code; aponte a
+   câmera do celular para ele (o app de câmera comum lê na maioria dos celulares) e aceite a rede
+   que ela oferece. A página do GBS Reimagined abre
+   sozinha; se não abrir, acesse **http://192.168.4.1** no navegador.
 3. Vá na aba **Rede**, toque em **Procurar redes**, escolha a sua rede, digite a senha dela e toque
    em **Conectar**. A sua senha vai direto para a placa.
 4. A placa entra na sua rede e fecha a rede própria cerca de um minuto depois (antes, se o celular
    sair dela). Volte o celular para a sua rede de sempre e abra **http://gbs.local**. Alguns
    celulares Android não entendem endereços `.local`: use o endereço mostrado na aba **Rede** ou o
-   que o seu roteador mostra para a placa.
+   que o seu roteador mostra para a placa. Na placa, **Rede** e um aperto mostram esse endereço
+   como um QR code, que abre a página pela câmera do celular.
 
 Se a placa não conseguir falar com a sua rede por 30 segundos (roteador desligado, ou você trocou
 a senha), ela abre a rede própria de novo para você corrigir, e continua tentando a sua rede a cada

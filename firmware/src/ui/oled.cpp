@@ -67,6 +67,8 @@ bool Oled::begin() {
         return false;
     }
     gBus = &bus_;
+    dimmed_ = false; // the display's init sequence sets the normal contrast
+    shownValid_ = false;
     u8g2_Setup_ssd1306_i2c_128x64_noname_f(&gU8g2, U8G2_R0, byteCallback, gpioCallback);
     u8x8_SetI2CAddress(&gU8g2.u8x8, static_cast<uint8_t>(address_ << 1));
     u8g2_InitDisplay(&gU8g2);
@@ -77,10 +79,27 @@ bool Oled::begin() {
 }
 
 void Oled::show(const Frame& f) {
-    if (!present_ || asleep_ || (shownValid_ && f == shown_)) {
+    if (!present_ || asleep_) {
         return;
     }
+    const uint32_t hash = f.hash();
+    if (shownValid_ && hash == shownHash_) {
+        return;
+    }
+    shownHash_ = hash;
+    shownValid_ = true;
+    // Half the contrast while a QR code shows: the lit square glares into the phone's camera.
+    const bool qr = f.qr[0] != '\0';
+    if (qr != dimmed_) {
+        u8g2_SetContrast(&gU8g2, qr ? kContrastQr : kContrastNormal);
+        dimmed_ = qr;
+    }
     u8g2_ClearBuffer(&gU8g2);
+    if (qr) {
+        drawQr(f.qr);
+        u8g2_SendBuffer(&gU8g2);
+        return;
+    }
     for (uint8_t i = 0; i < Frame::kLines; ++i) {
         const uint8_t top = static_cast<uint8_t>(i * kLineHeight + 2);
         const bool inverted = (f.inverted >> i) & 1;
@@ -95,8 +114,36 @@ void Oled::show(const Frame& f) {
     }
     u8g2_SetDrawColor(&gU8g2, 1);
     u8g2_SendBuffer(&gU8g2);
-    shown_ = f;
-    shownValid_ = true;
+}
+
+void Oled::drawQr(const char* text) {
+    // Encoded at each draw, on the stack: show() draws only when the frame changes, and a few
+    // milliseconds of encoding cost less than keeping the code in RAM.
+    uint8_t code[kQrBufferLen];
+    if (!qrEncode(text, code)) {
+        return; // too long for version 3: the menu's texts never are
+    }
+    // Dark modules on a lit square: the polarity phone cameras expect. As many whole pixels per
+    // module as the 64-pixel height allows: three for version 1 (the address, 63 pixels), two for
+    // versions 2 and 3 (the setup network, 58 pixels). The light border is two modules wide at the
+    // sides, and whatever the height leaves above and below.
+    const int size = qrcodegen_getSize(code);
+    const int scale = 64 / size;
+    const int side = size * scale;
+    const int x0 = (128 - side) / 2;
+    const int y0 = (64 - side) / 2;
+    const int border = y0 > 2 * scale ? y0 : 2 * scale;
+    u8g2_SetDrawColor(&gU8g2, 1);
+    u8g2_DrawBox(&gU8g2, x0 - border, 0, side + 2 * border, 64);
+    u8g2_SetDrawColor(&gU8g2, 0);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            if (qrcodegen_getModule(code, x, y)) {
+                u8g2_DrawBox(&gU8g2, x0 + x * scale, y0 + y * scale, scale, scale);
+            }
+        }
+    }
+    u8g2_SetDrawColor(&gU8g2, 1);
 }
 
 void Oled::sleep(bool asleep) {

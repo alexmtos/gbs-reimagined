@@ -161,7 +161,15 @@ behind the Advanced toggle).
   press-and-turn = coarse steps (×10); double press on a value (enter it and press again within
   0.4 s, without turning) = reset to default.
 - The bottom line shows a terse hint for the highlighted item (≤ 21 characters).
-- **Network ▸ Join** shows a QR code for the setup access point and then the board's address.
+- **Network**: a press shows a QR code alone on the screen
+  ([ADR 0017](../adr/0017-qr-codes-from-nayukis-library.md)): on the setup network, the `WIFI:` code
+  that joins it (version 3, two pixels per module); on the home Wi-Fi, the board's address in upper
+  case (`HTTP://<IP>/`, alphanumeric, version 1 at three pixels per module). The screen's contrast
+  is halved while a code shows, and the code stays 60 s untouched before home. A press or a long
+  press goes back to the page; while the board is joining there is no code. The address code,
+  which fills the 64-pixel height with no light margin above or below, opened the page from the
+  owner's phone camera on 2026-11-17; the setup network's code is checked by the host tests
+  (`test_qr`) only.
 - The revert countdown takes over the screen with *Keep* highlighted.
 
 ### Serial console (115 200 baud, English)
