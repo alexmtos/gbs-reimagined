@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.0...v1.1.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* board menu matches the web page; guide sections; no Renovate ([#21](https://github.com/alexmtos/gbs-reimagined/issues/21)) ([f70c74c](https://github.com/alexmtos/gbs-reimagined/commit/f70c74c571e6188ccd874f36ce1e7b1085938dbe))
+
 ## [1.1.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.0.3...v1.1.0) (2026-10-15)
 
 ### New
