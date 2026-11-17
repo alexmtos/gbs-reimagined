@@ -227,7 +227,9 @@ adjust the position and size.
 
 Force 60 Hz (on the **Output** page) is for displays that do not accept 50 Hz: a PAL console is then
 shown at 60 Hz. Frame lock cannot follow it there, so motion judders a little (one frame in five is
-shown twice); leave it off if your display takes 50 Hz.
+shown twice); leave it off if your display takes 50 Hz. At **480p** it shows 480 of the console's
+576 lines, so a strip at the top and the bottom of the picture is cut; the other resolutions show
+them all ([bench notes, B-05](../../bench/B05.md)).
 
 ## Picture settings
 

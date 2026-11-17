@@ -227,7 +227,10 @@ forma (com um pequeno tranco), ou ajuste a posição e o tamanho.
 
 Forçar 60 Hz (na aba **Saída**) é para telas que não aceitam 50 Hz: um console PAL passa a ser
 mostrado a 60 Hz. O frame lock não consegue segui-lo assim, então o movimento dá pequenos trancos
-(um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita 50 Hz.
+(um quadro em cinco aparece duas vezes); deixe desligado se a sua tela aceita 50 Hz. Em **480p** ele
+mostra 480 das 576 linhas do console, então uma faixa em cima e outra embaixo da imagem ficam
+cortadas; as outras resoluções mostram todas ([notas de bancada, B-05, em
+inglês](../../bench/B05.md)).
 
 ## Ajustes de imagem
 
