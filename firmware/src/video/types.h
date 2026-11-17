@@ -69,7 +69,7 @@ enum class Headline : uint8_t {
 };
 
 // Values match schema/settings.yaml output.aspect.
-enum class Aspect : uint8_t { FourThree, SixteenNine, Full };
+enum class Aspect : uint8_t { FourThree, SixteenNine, Full, EightSeven };
 
 // output.aspect / hPosition / vPosition / hSize / vSize.
 struct GeometryAdjust {

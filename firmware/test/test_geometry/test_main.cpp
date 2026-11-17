@@ -287,6 +287,46 @@ TEST_CASE("the user's size stops at 2x, below which 1280x960 displaced lines") {
     CHECK(r480.at(adj).hscale == 478);
 }
 
+TEST_CASE("8:7 is six sevenths as wide as 4:3, at the same height") {
+    using P = tv5725::ProgramId;
+    const std::pair<P, Standard> kPrograms[] = {
+        {P::Ntsc960p, Standard::Ntsc}, {P::Ntsc720p, Standard::Ntsc}, {P::Ntsc480p, Standard::Ntsc},
+        {P::Pal960p, Standard::Pal},   {P::Pal720p, Standard::Pal},   {P::Pal576p, Standard::Pal},
+    };
+    for (const auto& [id, standard] : kPrograms) {
+        CAPTURE(static_cast<int>(id));
+        Rig r(id, standard, standard == Standard::Pal ? 625 : 525);
+        const GeometryRegs four = r.at({});
+        const GeometryRegs eight = r.at(aspect(Aspect::EightSeven));
+        // Output units per captured sample, the horizontal enlargement: six sevenths of 4:3's.
+        // (At 480p the 4:3 window shows a little less than the capture, at the fetch limit; the
+        // narrower 8:7 shows it all, so the windows' widths alone would not compare.)
+        CHECK(static_cast<double>(four.hscale) / eight.hscale ==
+              doctest::Approx(6.0 / 7.0).epsilon(0.005));
+        CHECK(eight.vscale == four.vscale);
+        CHECK(eight.disVbSp == four.disVbSp);
+        CHECK(eight.disVbSt == four.disVbSt);
+        // Centred where 4:3 is.
+        CHECK(eight.disHbSp + eight.disHbSt ==
+              doctest::Approx(four.disHbSp + four.disHbSt).epsilon(0.005));
+    }
+}
+
+TEST_CASE("8:7 fits a 5:4 frame at its full height, where 4:3 is letterboxed") {
+    Rig r(tv5725::ProgramId::Ntsc1024p, Standard::Ntsc);
+    const GeometryRegs four = r.at({});
+    const GeometryRegs eight = r.at(aspect(Aspect::EightSeven));
+    CHECK(four.disVbSt - four.disVbSp == 972); // 960 lines of picture in the window
+    CHECK(eight.disVbSt - eight.disVbSp > four.disVbSt - four.disVbSp);
+    CHECK(eight.vscale < four.vscale); // taller
+    // Width over height on the 5:4 frame: 8:7.
+    const double width = (eight.disHbSt - eight.disHbSp) / static_cast<double>(r.base.htotal + 1) *
+                         r.base.frameTotal / r.base.frameActive;
+    const double height =
+        static_cast<double>(r.base.fullHeight) * 1024 / eight.vscale / r.base.frameLines;
+    CHECK(width / height * 5.0 / 4.0 == doctest::Approx(8.0 / 7.0).epsilon(0.02));
+}
+
 TEST_CASE("narrower than 1:1 is out of the scaler's reach") {
     Rig r(tv5725::ProgramId::Ntsc1080p, Standard::Ntsc);
     GeometryAdjust adj;
