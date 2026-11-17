@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.2...v1.2.0) (2026-11-17)
+
+
+### Features
+
+* QR codes on the board's screen ([#26](https://github.com/alexmtos/gbs-reimagined/issues/26)) ([f787fe8](https://github.com/alexmtos/gbs-reimagined/commit/f787fe8fbf260459ca5cd2662d0152967492a40f))
+
 ## [1.1.2](https://github.com/alexmtos/gbs-reimagined/compare/v1.1.1...v1.1.2) (2026-11-17)
 
 ### Fixes
