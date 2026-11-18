@@ -19,12 +19,6 @@
       "Bash(pnpm -C web run *)",
       "Bash(clang-format *)"
     ],
-    "ask": [
-      "Bash(git push *)",
-      "Bash(pio run -e gbsc -t upload *)",
-      "Bash(uv run tools/board/*)",
-      "Bash(gh release *)"
-    ],
     "deny": [
       "Edit(/firmware/src/**/*.gen.*)",
       "Edit(/web/src/**/*.gen.*)",
