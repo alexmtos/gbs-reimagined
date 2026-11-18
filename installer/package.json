@@ -20,11 +20,11 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
-    "esp-web-tools": "10.4.0"
+    "esp-web-tools": "10.5.2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "happy-dom": "21.0.1",
+    "happy-dom": "21.0.4",
     "typescript": "7.0.2",
     "vite": "8.3.4",
     "vitest": "5.0.4"

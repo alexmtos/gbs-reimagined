@@ -8,9 +8,11 @@ steps on the page itself.
 
 - `index.html`, `src/` — the page, built by `src/main.ts`. Its text comes from `schema/i18n/*.yaml`
   (`installer:`), generated into `src/gen/i18n/` by `uv run tools/codegen/generate.py`.
-- `esp-web-tools` 10.4.0 from npm, imported as the bundle the project publishes for the web
-  (`dist/web/install-button.js`), which carries its own dependencies. Its plain modules import a
-  file Material Web 2.5 no longer has, so they do not build.
+- `esp-web-tools` 10.5.2 from npm (with Improv Serial SDK 3.0.0), imported as the bundle the
+  project publishes for the web (`dist/web/install-button.js`), which carries its own dependencies.
+  Its plain modules import a file Material Web 2.5 no longer has, so they do not build. 10.5.2 was
+  checked on the bench: an update over USB and the board's Improv state
+  ([bench M3](../docs/bench/M3.md), 2026-11-18).
 - `public/` — the firmware to install, staged by `tools/release/installer_site.py` and never
   committed:
   - `firmware/gbs-reimagined-<version>-gbsc.bin`, the full image, flashed at offset 0;
@@ -45,7 +47,7 @@ install over USB is tested without erasing the board.
   answers 2.45 s after a reset, or once it has joined a saved network: 7.7 s on the bench
   ([bench M3](../docs/bench/M3.md)). By design it answers within about 10.5 s: 2.45 s plus the
   8 s it holds the state while joining (`kStateHoldMs`).
-- On a board already running, the installer waits only 1.5 s for an answer (ESP Web Tools 10.4.0
+- On a board already running, the installer waits only 1.5 s for an answer (ESP Web Tools 10.5.2
   source, `install-dialog.ts`).
 - The installer tells an update from another firmware by comparing the name and version the
   board reports (`GBS Reimagined`, `GBSR_VERSION`) with the manifest's `name` and `version`.
