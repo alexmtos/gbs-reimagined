@@ -6,7 +6,13 @@ disable-model-invocation: true
 
 1. Confirm the milestone's bench gate passed (`docs/bench/<milestone>.md`) and `main` is green.
 2. Find the open release PR (`gh pr list --label "autorelease: pending"`). Review its CHANGELOG
-   entries: user-facing wording, nothing internal leaking, breaking changes called out.
+   entries: user-facing wording, nothing internal leaking, breaking changes called out. Rewrite
+   them for users in `CHANGELOG.md` on the release branch and in the PR body (the owner's
+   standing practice). The CI run release-please's own push triggers fails at once with no jobs:
+   GitHub does not run other workflows for events made with the default `GITHUB_TOKEN`
+   (release-please-action's README). That is expected
+   (owner's decision, 2026-11-18, not to add a token): the notes commit, pushed by a person, runs
+   the CI, and the release workflow runs it again before publishing.
 3. Ask the owner to approve the version number and the notes; merge only with their go-ahead
    (`gh pr merge <n> --squash`).
 4. Watch the release workflow (`gh run watch`). When it finishes, check the release has the
